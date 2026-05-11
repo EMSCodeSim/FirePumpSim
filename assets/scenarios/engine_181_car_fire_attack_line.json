@@ -1,17 +1,37 @@
 {
+  "schemaVersion": 1,
   "id": "engine_181_car_fire_attack_line",
   "title": "Engine 181 Car Fire Attack Line",
-  "type": "Attack Line",
+  "type": "attack-line",
+  "category": "attack-line",
   "chip": "CAR FIRE",
+  "difficulty": "beginner",
+  "timedMode": true,
+  "timedModeAvailable": true,
+  "estimatedTimeSeconds": 60,
+  "free": true,
+  "featured": true,
+  "pack": "free-starter",
+  "tags": [
+    "vehicle-fire",
+    "engine-181",
+    "attack-line",
+    "1-3-4",
+    "fog-nozzle",
+    "friction-loss",
+    "beginner"
+  ],
   "image": "assets/images/Car_Fire_Engine181_001.png",
   "scene": "Engine 181 is positioned on the street for a working car fire. A single 1¾\" attack line is stretched from the engine to the vehicle. All labels are generated from this JSON using overlay coordinates.",
-  "difficulty": "Beginner",
-  "timedModeAvailable": true,
   "studentQuestion": "Engine 181 is operating at a car fire. The crew stretched 200′ of 1¾\" hose with a fog nozzle flowing 150 GPM at 50 PSI. There is no elevation change and no appliance loss. What pump pressure should you set?",
+  "answerLabel": "Pump Pressure",
+  "answerUnit": "PSI",
+  "inputLabel": "Your pump pressure answer",
+  "inputPlaceholder": "Enter PSI",
   "details": [
     {
       "label": "Line",
-      "value": "1¾\" attack line"
+      "value": "1¾\" Attack Line"
     },
     {
       "label": "Length",
@@ -19,7 +39,7 @@
     },
     {
       "label": "Nozzle",
-      "value": "Fog nozzle, 150 GPM @ 50 PSI"
+      "value": "Fog 150 GPM @ 50 PSI"
     },
     {
       "label": "C Value",
@@ -52,9 +72,23 @@
     {
       "type": "callout",
       "label": "Nozzle",
-      "text": "Fog 150 @ 50",
+      "text": "Fog 150 GPM @ 50 PSI",
       "x": 0.66,
       "y": 0.36
+    },
+    {
+      "type": "callout",
+      "label": "Elevation",
+      "text": "No Elevation",
+      "x": 0.74,
+      "y": 0.53
+    },
+    {
+      "type": "callout",
+      "label": "Appliance",
+      "text": "No Appliance",
+      "x": 0.48,
+      "y": 0.58
     },
     {
       "type": "callout",
