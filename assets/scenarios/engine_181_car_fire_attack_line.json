@@ -3,7 +3,7 @@
   "title": "Engine 181 Car Fire Attack Line",
   "type": "Attack Line",
   "chip": "CAR FIRE",
-  "image": "assets/images/Car Fire Engine181 001.png",
+  "image": "assets/images/Car_Fire_Engine181_001.png",
   "scene": "Engine 181 is positioned on the street for a working car fire. A single 1¾\" attack line is stretched from the engine to the vehicle. All labels are generated from this JSON using overlay coordinates.",
   "difficulty": "Beginner",
   "timedModeAvailable": true,
