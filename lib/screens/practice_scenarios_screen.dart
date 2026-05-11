@@ -129,6 +129,7 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
     final playable = await _repo.randomPlayable(typeFilter: _selectedType, difficultyFilter: _selectedDifficulty);
     if (!mounted) return;
     if (playable == null) {
+      debugPrint('Random scenario requested but no playable problems matched filters.');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('No scenarios available for these filters.'),
@@ -143,11 +144,31 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
   Future<void> _startBaseScenario(PracticeScenario scenario) async {
     final playable = await _repo.startBaseProblem(scenario.id);
     if (!mounted) return;
-    if (playable == null) return;
+    if (playable == null) {
+      debugPrint('Failed to start base scenario. scenarioId=${scenario.id} title=${scenario.title}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Unable to start this scenario. Check the scenario manifest/JSON.'),
+          backgroundColor: FirePumpSimColors.charcoal2,
+        ),
+      );
+      return;
+    }
     _goToPlayer(playable.problemId);
   }
 
   void _goToPlayer(String problemId) {
+    if (problemId.trim().isEmpty) {
+      debugPrint('Attempted to navigate to Scenario Player with empty problemId.');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('This scenario is missing a problemId.'),
+          backgroundColor: FirePumpSimColors.charcoal2,
+        ),
+      );
+      return;
+    }
+    debugPrint('Navigating to Scenario Player. problemId=$problemId');
     context.push('${AppRoutes.scenarioPlayer}?problemId=${Uri.encodeComponent(problemId)}');
   }
 
@@ -223,7 +244,16 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
                             onPressed: () async {
                               final playable = await _repo.startBaseProblem(scenario.id);
                               if (!context.mounted) return;
-                              if (playable == null) return;
+                              if (playable == null) {
+                                debugPrint('Failed to start base scenario from preview. scenarioId=${scenario.id}');
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: const Text('Unable to start this scenario.'),
+                                    backgroundColor: FirePumpSimColors.charcoal2,
+                                  ),
+                                );
+                                return;
+                              }
                               context.pop();
                               _goToPlayer(playable.problemId);
                             },
@@ -242,7 +272,16 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
                             onPressed: () async {
                               final playable = await _repo.startRandomVariation(scenario.id);
                               if (!context.mounted) return;
-                              if (playable == null) return;
+                              if (playable == null) {
+                                debugPrint('Failed to start random variation from preview. scenarioId=${scenario.id}');
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: const Text('No variations available for this scenario.'),
+                                    backgroundColor: FirePumpSimColors.charcoal2,
+                                  ),
+                                );
+                                return;
+                              }
                               context.pop();
                               _goToPlayer(playable.problemId);
                             },
