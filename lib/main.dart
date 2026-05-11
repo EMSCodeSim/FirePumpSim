@@ -36,7 +36,9 @@ class MyApp extends StatelessWidget {
       // Theme configuration
       theme: lightTheme,
       darkTheme: darkTheme,
-      themeMode: ThemeMode.system,
+      // FirePumpSim is designed as a dark, tactical training UI.
+      // Force dark mode to avoid white backgrounds when the device is in light mode.
+      themeMode: ThemeMode.dark,
 
       // Router configuration
       routerConfig: AppRouter.router,

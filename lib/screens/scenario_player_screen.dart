@@ -186,87 +186,94 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
                 builder: (context, constraints) {
                   final unit = _expectedUnit(p);
                   final totalH = constraints.maxHeight;
-                  // Header + segmented control + bottom breathing room.
-                  const reserved = 84.0 + 12.0 + 44.0 + 18.0;
+                  // Header + segmented control + answer card (collapsed) + bottom breathing room.
+                  // Note: the answer card can expand; in that case the page will scroll.
+                  const reserved = 84.0 + 12.0 + 44.0 + 12.0 + 132.0 + 18.0;
                   final cardH = (totalH - reserved).clamp(360.0, 620.0);
 
-                  return Column(
-                    children: [
-                      Row(
-                        children: [
-                          IconButton(
-                            onPressed: () => context.pop(),
-                            icon: const Icon(Icons.arrow_back, color: FirePumpSimColors.textHigh),
-                            style: IconButton.styleFrom(
-                              backgroundColor: FirePumpSimColors.charcoal2,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                              side: BorderSide(color: FirePumpSimColors.steel.withValues(alpha: 0.8)),
+                  return SingleChildScrollView(
+                    padding: EdgeInsets.zero,
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            IconButton(
+                              onPressed: () => context.pop(),
+                              icon: const Icon(Icons.arrow_back, color: FirePumpSimColors.textHigh),
+                              style: IconButton.styleFrom(
+                                backgroundColor: FirePumpSimColors.charcoal2,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                                side: BorderSide(color: FirePumpSimColors.steel.withValues(alpha: 0.8)),
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: AppSpacing.md),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  p.problemTitle,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: textTheme.titleLarge?.copyWith(
-                                    color: FirePumpSimColors.textHigh,
-                                    fontWeight: FontWeight.w900,
+                            const SizedBox(width: AppSpacing.md),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    p.problemTitle,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: textTheme.titleLarge?.copyWith(
+                                      color: FirePumpSimColors.textHigh,
+                                      fontWeight: FontWeight.w900,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  '${p.type} • ${p.difficulty}${p.timedModeAvailable ? ' • Timed mode' : ' • Untimed'}',
-                                  style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed),
-                                ),
-                              ],
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    '${p.type} • ${p.difficulty}${p.timedModeAvailable ? ' • Timed mode' : ' • Untimed'}',
+                                    style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: AppSpacing.sm),
-
-                      SizedBox(
-                        height: cardH,
-                        width: double.infinity,
-                        child: _MainDisplayCard(
-                          mode: _mode,
-                          photo: _ScenarioImageWithOverlays(
-                            assetPath: p.image,
-                            overlays: p.overlays,
-                            height: cardH,
-                          ),
-                          problem: _ProblemView(
-                            problem: p,
-                            unit: unit,
-                            answerController: _answerController,
-                            hasChecked: _hasChecked,
-                            isCorrect: _isCorrect,
-                            showExplanation: _showExplanation,
-                            onCheck: () {
-                              setState(() {
-                                _hasChecked = true;
-                                _isCorrect = _checkAnswer(p);
-                                _showExplanation = false;
-                              });
-                            },
-                            onToggleExplanation: () => setState(() => _showExplanation = !_showExplanation),
-                          ),
-                          info: _InfoView(problem: p, unit: unit),
+                          ],
                         ),
-                      ),
+                        const SizedBox(height: AppSpacing.sm),
 
-                      const SizedBox(height: 12),
-                      _ModeSegmentedControl(
-                        mode: _mode,
-                        onChanged: (m) => setState(() => _mode = m),
-                      ),
+                        SizedBox(
+                          height: cardH,
+                          width: double.infinity,
+                          child: _MainDisplayCard(
+                            mode: _mode,
+                            photo: _ScenarioImageWithOverlays(
+                              assetPath: p.image,
+                              overlays: p.overlays,
+                              height: cardH,
+                            ),
+                            problem: _ProblemView(problem: p),
+                            info: _InfoView(problem: p, unit: unit),
+                          ),
+                        ),
 
-                      const SizedBox(height: 18),
-                    ],
+                        const SizedBox(height: 12),
+                        _ModeSegmentedControl(
+                          mode: _mode,
+                          onChanged: (m) => setState(() => _mode = m),
+                        ),
+
+                        const SizedBox(height: 12),
+                        _AnswerCard(
+                          problem: p,
+                          unit: unit,
+                          answerController: _answerController,
+                          hasChecked: _hasChecked,
+                          isCorrect: _isCorrect,
+                          showExplanation: _showExplanation,
+                          onCheck: () {
+                            setState(() {
+                              _hasChecked = true;
+                              _isCorrect = _checkAnswer(p);
+                              _showExplanation = false;
+                            });
+                          },
+                          onToggleExplanation: () => setState(() => _showExplanation = !_showExplanation),
+                        ),
+
+                        const SizedBox(height: 18),
+                      ],
+                    ),
                   );
                 },
               ),
@@ -353,7 +360,7 @@ class _ModeSegmentedControl extends StatelessWidget {
           const SizedBox(width: 6),
           Expanded(
             child: _ModeSegmentButton(
-              label: 'Problem',
+              label: 'Question',
               selected: mode == _PlayerMode.problem,
               onTap: () => onChanged(_PlayerMode.problem),
             ),
@@ -617,7 +624,46 @@ class _OverlayLabel extends StatelessWidget {
 }
 
 class _ProblemView extends StatelessWidget {
-  const _ProblemView({
+  const _ProblemView({required this.problem});
+
+  final PlayableScenarioProblem problem;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Container(
+      color: FirePumpSimColors.charcoal2,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'THE PROBLEM',
+              style: textTheme.labelLarge?.copyWith(
+                color: FirePumpSimColors.textHigh,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0.6,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              problem.studentQuestion,
+              style: textTheme.bodyMedium?.copyWith(
+                color: FirePumpSimColors.textHigh,
+                height: 1.55,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AnswerCard extends StatelessWidget {
+  const _AnswerCard({
     required this.problem,
     required this.unit,
     required this.answerController,
@@ -640,154 +686,161 @@ class _ProblemView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final showExplanationButton = problem.instructorExplanation.trim().isNotEmpty || problem.formulaBreakdown.isNotEmpty;
+    final showExplanationButton =
+        problem.instructorExplanation.trim().isNotEmpty || problem.formulaBreakdown.isNotEmpty || problem.explainMistake.trim().isNotEmpty;
 
     return Container(
-      color: FirePumpSimColors.charcoal2,
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  'THE PROBLEM',
-                  style: textTheme.labelLarge?.copyWith(
-                    color: FirePumpSimColors.textHigh,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 0.6,
-                  ),
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: FirePumpSimColors.charcoal2,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.85)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                'Your Answer',
+                style: textTheme.labelLarge?.copyWith(
+                  color: FirePumpSimColors.textHigh,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0.2,
                 ),
-                const Spacer(),
-                if (hasChecked) _ResultPill(isCorrect: isCorrect),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Text(
-              problem.studentQuestion,
-              style: textTheme.bodyMedium?.copyWith(
-                color: FirePumpSimColors.textHigh,
-                height: 1.55,
               ),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: answerController,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: false),
-                    textInputAction: TextInputAction.done,
-                    style: textTheme.titleMedium?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900),
-                    decoration: InputDecoration(
-                      isDense: true,
-                      hintText: 'Answer',
-                      hintStyle: textTheme.bodyMedium?.copyWith(color: FirePumpSimColors.textMed.withValues(alpha: 0.85)),
-                      filled: true,
-                      fillColor: FirePumpSimColors.charcoal3.withValues(alpha: 0.75),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(AppRadius.lg),
-                        borderSide: BorderSide(color: FirePumpSimColors.steel.withValues(alpha: 0.6)),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(AppRadius.lg),
-                        borderSide: BorderSide(color: FirePumpSimColors.steel.withValues(alpha: 0.6)),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(AppRadius.lg),
-                        borderSide: const BorderSide(color: FirePumpSimColors.red, width: 1.3),
-                      ),
+              const Spacer(),
+              if (hasChecked) _ResultPill(isCorrect: isCorrect),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: answerController,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: false),
+                  textInputAction: TextInputAction.done,
+                  style: textTheme.titleMedium?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900),
+                  decoration: InputDecoration(
+                    isDense: true,
+                    hintText: 'Enter PSI',
+                    hintStyle: textTheme.bodyMedium?.copyWith(color: FirePumpSimColors.textMed.withValues(alpha: 0.85)),
+                    filled: true,
+                    fillColor: FirePumpSimColors.charcoal3.withValues(alpha: 0.75),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                      borderSide: BorderSide(color: FirePumpSimColors.steel.withValues(alpha: 0.6)),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                      borderSide: BorderSide(color: FirePumpSimColors.steel.withValues(alpha: 0.6)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                      borderSide: const BorderSide(color: FirePumpSimColors.red, width: 1.3),
                     ),
                   ),
                 ),
-                const SizedBox(width: 10),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: FirePumpSimColors.charcoal3.withValues(alpha: 0.55),
-                    borderRadius: BorderRadius.circular(AppRadius.lg),
-                    border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.55)),
-                  ),
-                  child: Text(
-                    unit,
-                    style: textTheme.labelLarge?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900),
+              ),
+              const SizedBox(width: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                decoration: BoxDecoration(
+                  color: FirePumpSimColors.charcoal3.withValues(alpha: 0.55),
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
+                  border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.55)),
+                ),
+                child: Text(
+                  unit,
+                  style: textTheme.labelLarge?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900),
+                ),
+              ),
+              const SizedBox(width: 10),
+              SizedBox(
+                height: 48,
+                child: FilledButton(
+                  onPressed: onCheck,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: FirePumpSimColors.red,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.lg)),
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                  ).copyWith(overlayColor: const WidgetStatePropertyAll(Colors.transparent)),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.check, color: Colors.white, size: 18),
+                      const SizedBox(width: 8),
+                      Text('Check', style: textTheme.labelLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w900)),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 10),
-                SizedBox(
-                  height: 48,
-                  child: FilledButton(
-                    onPressed: onCheck,
-                    style: FilledButton.styleFrom(
-                      backgroundColor: FirePumpSimColors.red,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.lg)),
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
+              ),
+            ],
+          ),
+          if (hasChecked) ...[
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    isCorrect ? 'Correct.' : 'Try again.',
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: isCorrect ? FirePumpSimColors.textHigh : FirePumpSimColors.textMed,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                if (showExplanationButton)
+                  TextButton(
+                    onPressed: onToggleExplanation,
+                    style: TextButton.styleFrom(
+                      foregroundColor: FirePumpSimColors.red,
+                      textStyle: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
                     ).copyWith(overlayColor: const WidgetStatePropertyAll(Colors.transparent)),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
+                    child: Text(showExplanation ? 'Hide explanation' : 'Explanation'),
+                  ),
+              ],
+            ),
+          ],
+          AnimatedSize(
+            duration: const Duration(milliseconds: 180),
+            curve: Curves.easeOutCubic,
+            alignment: Alignment.topCenter,
+            child: (!hasChecked || !showExplanation)
+                ? const SizedBox.shrink()
+                : Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Column(
                       children: [
-                        const Icon(Icons.check, color: Colors.white, size: 18),
-                        const SizedBox(width: 8),
-                        Text('Check', style: textTheme.labelLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w900)),
+                        if (problem.formulaBreakdown.isNotEmpty) ...[
+                          _ExplanationSection(
+                            title: 'Formula breakdown',
+                            lines: problem.formulaBreakdown.map((e) => e.toString()).toList(growable: false),
+                          ),
+                          const SizedBox(height: AppSpacing.md),
+                        ],
+                        if (problem.instructorExplanation.trim().isNotEmpty) ...[
+                          _ExplanationSection(
+                            title: 'Instructor explanation',
+                            lines: [problem.instructorExplanation.trim()],
+                          ),
+                          const SizedBox(height: AppSpacing.md),
+                        ],
+                        if (!isCorrect && problem.explainMistake.trim().isNotEmpty)
+                          _ExplanationSection(
+                            title: 'Common mistake',
+                            lines: [problem.explainMistake.trim()],
+                            accent: FirePumpSimColors.redSoft,
+                          ),
                       ],
                     ),
                   ),
-                ),
-              ],
-            ),
-            if (hasChecked) ...[
-              const SizedBox(height: AppSpacing.md),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      isCorrect ? 'Correct.' : 'Try again.',
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: isCorrect ? FirePumpSimColors.textHigh : FirePumpSimColors.textMed,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ),
-                  if (showExplanationButton)
-                    TextButton(
-                      onPressed: onToggleExplanation,
-                      style: TextButton.styleFrom(
-                        foregroundColor: FirePumpSimColors.red,
-                        textStyle: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
-                      ).copyWith(overlayColor: const WidgetStatePropertyAll(Colors.transparent)),
-                      child: Text(showExplanation ? 'Hide explanation' : 'Explanation'),
-                    ),
-                ],
-              ),
-            ],
-            if (hasChecked && showExplanation) ...[
-              const SizedBox(height: 6),
-              if (problem.formulaBreakdown.isNotEmpty) ...[
-                _ExplanationSection(
-                  title: 'Formula breakdown',
-                  lines: problem.formulaBreakdown.map((e) => e.toString()).toList(growable: false),
-                ),
-                const SizedBox(height: AppSpacing.md),
-              ],
-              if (problem.instructorExplanation.trim().isNotEmpty) ...[
-                _ExplanationSection(
-                  title: 'Instructor explanation',
-                  lines: [problem.instructorExplanation.trim()],
-                ),
-                const SizedBox(height: AppSpacing.md),
-              ],
-              if (!isCorrect && problem.explainMistake.trim().isNotEmpty)
-                _ExplanationSection(
-                  title: 'Common mistake',
-                  lines: [problem.explainMistake.trim()],
-                  accent: FirePumpSimColors.redSoft,
-                ),
-            ],
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

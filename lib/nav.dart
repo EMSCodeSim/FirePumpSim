@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:firepumpsim/screens/formulas_screen.dart';
 import 'package:firepumpsim/screens/home_screen.dart';
+import 'package:firepumpsim/screens/how_to_screen.dart';
 import 'package:firepumpsim/screens/practice_scenarios_screen.dart';
 import 'package:firepumpsim/screens/pump_card_screen.dart';
 import 'package:firepumpsim/screens/scenario_player_screen.dart';
@@ -87,6 +88,27 @@ class AppRouter {
           ),
 
           GoRoute(
+            path: AppRoutes.howTo,
+            name: 'howTo',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                key: state.pageKey,
+                child: const HowToScreen(),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+                  return FadeTransition(
+                    opacity: curved,
+                    child: SlideTransition(
+                      position: Tween<Offset>(begin: const Offset(0, 0.02), end: Offset.zero).animate(curved),
+                      child: child,
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+
+          GoRoute(
             path: AppRoutes.scenarioPlayer,
             name: 'scenarioPlayer',
             pageBuilder: (context, state) {
@@ -126,6 +148,7 @@ class AppRoutes {
   static const String home = '/home';
   static const String formulas = '/formulas';
   static const String pumpCard = '/pump-card';
+  static const String howTo = '/how-to';
   static const String practiceScenarios = '/practice-scenarios';
   static const String scenarioPlayer = '/scenario-player';
 }
@@ -163,6 +186,25 @@ class _AppShell extends StatelessWidget {
   Widget build(BuildContext context) {
     final selectedIndex = _locationToIndex(state.uri.toString());
 
+    final navTheme = NavigationBarThemeData(
+      height: 66,
+      backgroundColor: FirePumpSimColors.charcoal2,
+      indicatorColor: FirePumpSimColors.red.withValues(alpha: 0.12),
+      labelTextStyle: WidgetStateProperty.resolveWith((states) {
+        final base = Theme.of(context).textTheme.labelSmall ?? const TextStyle(fontSize: 11);
+        if (states.contains(WidgetState.selected)) {
+          return base.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w800, letterSpacing: 0.2);
+        }
+        return base.copyWith(color: FirePumpSimColors.textMed.withValues(alpha: 0.88), fontWeight: FontWeight.w700);
+      }),
+      iconTheme: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return const IconThemeData(color: FirePumpSimColors.red, size: 24);
+        }
+        return IconThemeData(color: FirePumpSimColors.textMed.withValues(alpha: 0.85), size: 24);
+      }),
+    );
+
     return Scaffold(
       body: child,
       bottomNavigationBar: Padding(
@@ -174,27 +216,39 @@ class _AppShell extends StatelessWidget {
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(AppRadius.xl),
-          child: NavigationBar(
-            height: 68,
-            selectedIndex: selectedIndex,
-            onDestinationSelected: (index) => _onTap(context, index),
-            destinations: const [
-              NavigationDestination(
-                icon: Icon(Icons.home_outlined),
-                selectedIcon: Icon(Icons.home),
-                label: 'Home',
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: FirePumpSimColors.charcoal2,
+              border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.85)),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withValues(alpha: 0.55), blurRadius: 22, offset: const Offset(0, 14)),
+                BoxShadow(color: FirePumpSimColors.red.withValues(alpha: 0.06), blurRadius: 18, offset: const Offset(0, 10)),
+              ],
+            ),
+            child: NavigationBarTheme(
+              data: navTheme,
+              child: NavigationBar(
+                selectedIndex: selectedIndex,
+                onDestinationSelected: (index) => _onTap(context, index),
+                destinations: const [
+                  NavigationDestination(
+                    icon: Icon(Icons.home_outlined),
+                    selectedIcon: Icon(Icons.home),
+                    label: 'Home',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.calculate_outlined),
+                    selectedIcon: Icon(Icons.calculate),
+                    label: 'Formulas',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.credit_card_outlined),
+                    selectedIcon: Icon(Icons.credit_card),
+                    label: 'Pump Card',
+                  ),
+                ],
               ),
-              NavigationDestination(
-                icon: Icon(Icons.calculate_outlined),
-                selectedIcon: Icon(Icons.calculate),
-                label: 'Formulas',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.credit_card_outlined),
-                selectedIcon: Icon(Icons.credit_card),
-                label: 'Pump Card',
-              ),
-            ],
+            ),
           ),
         ),
       ),

@@ -16,6 +16,10 @@ class PracticeScenariosScreen extends StatefulWidget {
 class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
   final ScenarioRepository _repo = ScenarioRepository();
 
+  /// Prevents rapid double-taps from pushing the same route twice.
+  /// Duplicate route keys will crash Navigator with `!keyReservation.contains(key)`.
+  bool _navInFlight = false;
+
   static const List<String> _typeFilters = [
     'All',
     'Attack Line',
@@ -138,7 +142,7 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
       );
       return;
     }
-    _goToPlayer(playable.problemId);
+    await _goToPlayer(playable.problemId);
   }
 
   Future<void> _startBaseScenario(PracticeScenario scenario) async {
@@ -154,10 +158,10 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
       );
       return;
     }
-    _goToPlayer(playable.problemId);
+    await _goToPlayer(playable.problemId);
   }
 
-  void _goToPlayer(String problemId) {
+  Future<void> _goToPlayer(String problemId) async {
     if (problemId.trim().isEmpty) {
       debugPrint('Attempted to navigate to Scenario Player with empty problemId.');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -168,8 +172,21 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
       );
       return;
     }
+
+    if (_navInFlight) {
+      debugPrint('Navigation ignored: Scenario Player push already in flight.');
+      return;
+    }
+    _navInFlight = true;
+
     debugPrint('Navigating to Scenario Player. problemId=$problemId');
-    context.push('${AppRoutes.scenarioPlayer}?problemId=${Uri.encodeComponent(problemId)}');
+    try {
+      await context.push('${AppRoutes.scenarioPlayer}?problemId=${Uri.encodeComponent(problemId)}');
+    } catch (e) {
+      debugPrint('Failed to navigate to Scenario Player: $e');
+    } finally {
+      _navInFlight = false;
+    }
   }
 
   Future<void> _openPreview(PracticeScenario scenario) async {
@@ -255,7 +272,7 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
                                 return;
                               }
                               context.pop();
-                              _goToPlayer(playable.problemId);
+                               await _goToPlayer(playable.problemId);
                             },
                           ),
                         ),
@@ -283,7 +300,7 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
                                 return;
                               }
                               context.pop();
-                              _goToPlayer(playable.problemId);
+                               await _goToPlayer(playable.problemId);
                             },
                           ),
                         ),
