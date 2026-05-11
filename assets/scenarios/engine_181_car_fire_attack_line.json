@@ -3,86 +3,87 @@
   "title": "Engine 181 Car Fire Attack Line",
   "type": "Attack Line",
   "chip": "CAR FIRE",
-  "image": "assets/images/fire_engine_side_view_night_training_photo_black_1778511209771.jpg",
-  "scene": "assets/images/fire_truck_pump_panel_close_up_gauges_valves_photo_black_1778511210715.jpg",
+  "image": "assets/images/Car Fire Engine181 001.png",
+  "scene": "Engine 181 is positioned on the street for a working car fire. A single 1¾\" attack line is stretched from the engine to the vehicle. All labels are generated from this JSON using overlay coordinates.",
   "difficulty": "Beginner",
   "timedModeAvailable": true,
-  "studentQuestion": "Engine 181 is operating at a car fire. You are supplying a single 1¾\" attack line. Determine the correct pump discharge pressure (PDP/PP) based on the line package below.",
+  "studentQuestion": "Engine 181 is operating at a car fire. The crew stretched 200′ of 1¾\" hose with a fog nozzle flowing 150 GPM at 50 PSI. There is no elevation change and no appliance loss. What pump pressure should you set?",
   "details": [
-    {"label": "Line", "value": "1¾\" attack line"},
-    {"label": "Length", "value": "200 ft"},
-    {"label": "Nozzle", "value": "Fog, 150 GPM"},
-    {"label": "Appliance", "value": "None"}
-  ],
-  "overlays": [
-    {"type": "callout", "x": 0.18, "y": 0.62, "text": "Attack line to vehicle"},
-    {"type": "callout", "x": 0.72, "y": 0.45, "text": "Pump panel"}
-  ],
-  "answers": {
-    "pdp": {"type": "number", "unit": "psi"}
-  },
-  "formulaBreakdown": [
-    {"step": "NP", "value": 100, "unit": "psi"},
-    {"step": "FL", "value": 50, "unit": "psi", "note": "Example only"},
-    {"step": "AP", "value": 0, "unit": "psi"},
-    {"step": "Total", "value": 150, "unit": "psi"}
-  ],
-  "correctPP": 150,
-  "tolerance": 10,
-  "instructorExplanation": "This sample pack uses placeholder friction loss numbers for demonstration. Replace with your department’s approved coefficients and target nozzle pressure.",
-  "explainMistake": "Common mistakes include forgetting nozzle pressure, double-counting line length, or applying the wrong coefficient for 1¾\" hose.",
-  "variations": [
     {
-      "id": "engine_181_car_fire_attack_line_v1",
-      "title": "Variation 1 — Longer Stretch",
-      "difficulty": "Beginner",
-      "timedModeAvailable": true,
-      "studentQuestion": "Same car fire. The attack line is now 250 ft. Determine the PDP/PP.",
-      "details": [
-        {"label": "Line", "value": "1¾\" attack line"},
-        {"label": "Length", "value": "250 ft"},
-        {"label": "Nozzle", "value": "Fog, 150 GPM"}
-      ],
-      "overlays": [
-        {"type": "callout", "x": 0.2, "y": 0.62, "text": "Longer stretch"}
-      ],
-      "answers": {
-        "pdp": {"type": "number", "unit": "psi"}
-      },
-      "correctPP": 165,
-      "tolerance": 10,
-      "formulaBreakdown": [
-        {"step": "NP", "value": 100, "unit": "psi"},
-        {"step": "FL", "value": 65, "unit": "psi", "note": "Example only"},
-        {"step": "AP", "value": 0, "unit": "psi"},
-        {"step": "Total", "value": 165, "unit": "psi"}
-      ],
-      "instructorExplanation": "In this variation, friction loss increases with line length. Ensure students scale friction loss correctly per 100 ft sections."
+      "label": "Line",
+      "value": "1¾\" attack line"
     },
     {
-      "id": "engine_181_car_fire_attack_line_v2",
-      "title": "Variation 2 — Smooth Bore",
-      "difficulty": "Intermediate",
-      "timedModeAvailable": false,
-      "studentQuestion": "Switch to a smooth bore at 160 GPM. Determine the PDP/PP.",
-      "details": [
-        {"label": "Line", "value": "1¾\" attack line"},
-        {"label": "Length", "value": "200 ft"},
-        {"label": "Nozzle", "value": "Smooth bore, 160 GPM"}
-      ],
-      "overlays": [],
-      "answers": {
-        "pdp": {"type": "number", "unit": "psi"}
-      },
-      "correctPP": 140,
-      "tolerance": 10,
-      "formulaBreakdown": [
-        {"step": "NP", "value": 80, "unit": "psi"},
-        {"step": "FL", "value": 60, "unit": "psi", "note": "Example only"},
-        {"step": "AP", "value": 0, "unit": "psi"},
-        {"step": "Total", "value": 140, "unit": "psi"}
-      ],
-      "instructorExplanation": "Smooth bore nozzle pressure targets differ from fog nozzles. Verify department policy and nozzle specs."
+      "label": "Length",
+      "value": "200 ft"
+    },
+    {
+      "label": "Nozzle",
+      "value": "Fog nozzle, 150 GPM @ 50 PSI"
+    },
+    {
+      "label": "C Value",
+      "value": "15.5"
+    },
+    {
+      "label": "Elevation",
+      "value": "0 PSI"
+    },
+    {
+      "label": "Appliance",
+      "value": "None"
     }
-  ]
+  ],
+  "overlays": [
+    {
+      "type": "callout",
+      "label": "Engine",
+      "text": "Engine 181",
+      "x": 0.18,
+      "y": 0.63
+    },
+    {
+      "type": "callout",
+      "label": "Attack Line",
+      "text": "200′ 1¾\"",
+      "x": 0.43,
+      "y": 0.49
+    },
+    {
+      "type": "callout",
+      "label": "Nozzle",
+      "text": "Fog 150 @ 50",
+      "x": 0.66,
+      "y": 0.36
+    },
+    {
+      "type": "callout",
+      "label": "Fire",
+      "text": "Vehicle Fire",
+      "x": 0.76,
+      "y": 0.28
+    }
+  ],
+  "answers": {
+    "frictionLoss": 70,
+    "nozzlePressure": 50,
+    "elevationPressure": 0,
+    "applianceLoss": 0,
+    "totalGpm": 150,
+    "pumpPressure": 120
+  },
+  "formulaBreakdown": [
+    "PP = FL + NP + elevation + appliance loss",
+    "FL = C × (GPM ÷ 100)^2 × hose length in hundreds",
+    "FL = 15.5 × (150 ÷ 100)^2 × 2",
+    "FL = 15.5 × 1.5^2 × 2",
+    "FL = 70 PSI",
+    "PP = 70 + 50 + 0 + 0",
+    "PP = 120 PSI"
+  ],
+  "correctPP": 120,
+  "tolerance": 5,
+  "instructorExplanation": "For this car fire, calculate friction loss in the 200′ 1¾\" attack line, then add the 50 PSI fog nozzle pressure. There is no elevation change and no appliance loss.",
+  "explainMistake": "Common mistakes include using the wrong C value, forgetting to convert 200′ into 2 hundred-foot sections, using 100 PSI nozzle pressure instead of 50 PSI, or adding appliance loss when none is listed.",
+  "variations": []
 }
