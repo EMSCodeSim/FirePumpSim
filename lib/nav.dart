@@ -8,19 +8,6 @@ import 'package:firepumpsim/screens/pump_card_screen.dart';
 import 'package:firepumpsim/screens/scenario_player_screen.dart';
 import 'package:firepumpsim/theme.dart';
 
-/// GoRouter configuration for app navigation
-///
-/// This uses go_router for declarative routing, which provides:
-/// - Type-safe navigation
-/// - Deep linking support (web URLs, app links)
-/// - Easy route parameters
-/// - Navigation guards and redirects
-///
-/// To add a new route:
-/// 1. Add a route constant to AppRoutes below
-/// 2. Add a GoRoute to the routes list
-/// 3. Navigate using context.go() or context.push()
-/// 4. Use context.pop() to go back.
 class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: AppRoutes.home,
@@ -29,18 +16,27 @@ class AppRouter {
         path: AppRoutes.root,
         redirect: (context, state) => AppRoutes.home,
       ),
+
       GoRoute(
         path: AppRoutes.practiceScenarios,
         name: 'practiceScenarios',
         pageBuilder: (context, state) {
           return CustomTransitionPage(
+            key: state.pageKey,
             child: const PracticeScenariosScreen(),
             transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+              final curved = CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeOutCubic,
+              );
+
               return FadeTransition(
                 opacity: curved,
                 child: SlideTransition(
-                  position: Tween<Offset>(begin: const Offset(0, 0.02), end: Offset.zero).animate(curved),
+                  position: Tween<Offset>(
+                    begin: const Offset(0, 0.02),
+                    end: Offset.zero,
+                  ).animate(curved),
                   child: child,
                 ),
               );
@@ -48,38 +44,70 @@ class AppRouter {
           );
         },
       ),
+
       ShellRoute(
-        builder: (context, state, child) => _AppShell(state: state, child: child),
+        builder: (context, state, child) {
+          return _AppShell(
+            state: state,
+            child: child,
+          );
+        },
         routes: [
           GoRoute(
             path: AppRoutes.home,
             name: 'home',
-            pageBuilder: (context, state) => const NoTransitionPage(child: HomeScreen()),
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: const HomeScreen(),
+              );
+            },
           ),
+
           GoRoute(
             path: AppRoutes.formulas,
             name: 'formulas',
-            pageBuilder: (context, state) => const NoTransitionPage(child: FormulasScreen()),
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: const FormulasScreen(),
+              );
+            },
           ),
+
           GoRoute(
             path: AppRoutes.pumpCard,
             name: 'pumpCard',
-            pageBuilder: (context, state) => const NoTransitionPage(child: PumpCardScreen()),
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: const PumpCardScreen(),
+              );
+            },
           ),
+
           GoRoute(
-            // Scenario player should keep the locked bottom navigation visible.
             path: AppRoutes.scenarioPlayer,
             name: 'scenarioPlayer',
             pageBuilder: (context, state) {
               final problemId = state.uri.queryParameters['problemId'] ?? '';
+
               return CustomTransitionPage(
+                key: state.pageKey,
                 child: ScenarioPlayerScreen(problemId: problemId),
                 transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                  final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+                  final curved = CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                  );
+
                   return FadeTransition(
                     opacity: curved,
                     child: SlideTransition(
-                      position: Tween<Offset>(begin: const Offset(0, 0.02), end: Offset.zero).animate(curved),
+                      position: Tween<Offset>(
+                        begin: const Offset(0, 0.02),
+                        end: Offset.zero,
+                      ).animate(curved),
                       child: child,
                     ),
                   );
@@ -93,23 +121,20 @@ class AppRouter {
   );
 }
 
-/// Route path constants
-/// Use these instead of hard-coding route strings
 class AppRoutes {
   static const String root = '/';
   static const String home = '/home';
   static const String formulas = '/formulas';
   static const String pumpCard = '/pump-card';
-
-  // Full-screen routes outside the bottom navigation shell.
   static const String practiceScenarios = '/practice-scenarios';
-
-  // Kept inside the bottom navigation shell so Home/Formulas/Pump Card is always visible.
   static const String scenarioPlayer = '/scenario-player';
 }
 
 class _AppShell extends StatelessWidget {
-  const _AppShell({required this.state, required this.child});
+  const _AppShell({
+    required this.state,
+    required this.child,
+  });
 
   final GoRouterState state;
   final Widget child;
@@ -137,10 +162,16 @@ class _AppShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selectedIndex = _locationToIndex(state.uri.toString());
+
     return Scaffold(
       body: child,
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.md),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          0,
+          AppSpacing.md,
+          AppSpacing.md,
+        ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(AppRadius.xl),
           child: NavigationBar(
@@ -149,18 +180,36 @@ class _AppShell extends StatelessWidget {
             onDestinationSelected: (index) => _onTap(context, index),
             destinations: const [
               NavigationDestination(
-                icon: Icon(Icons.home_outlined, color: FirePumpSimColors.textMed),
-                selectedIcon: Icon(Icons.home, color: FirePumpSimColors.textHigh),
+                icon: Icon(
+                  Icons.home_outlined,
+                  color: FirePumpSimColors.textMed,
+                ),
+                selectedIcon: Icon(
+                  Icons.home,
+                  color: FirePumpSimColors.textHigh,
+                ),
                 label: 'Home',
               ),
               NavigationDestination(
-                icon: Icon(Icons.calculate_outlined, color: FirePumpSimColors.textMed),
-                selectedIcon: Icon(Icons.calculate, color: FirePumpSimColors.textHigh),
+                icon: Icon(
+                  Icons.calculate_outlined,
+                  color: FirePumpSimColors.textMed,
+                ),
+                selectedIcon: Icon(
+                  Icons.calculate,
+                  color: FirePumpSimColors.textHigh,
+                ),
                 label: 'Formulas',
               ),
               NavigationDestination(
-                icon: Icon(Icons.credit_card_outlined, color: FirePumpSimColors.textMed),
-                selectedIcon: Icon(Icons.credit_card, color: FirePumpSimColors.textHigh),
+                icon: Icon(
+                  Icons.credit_card_outlined,
+                  color: FirePumpSimColors.textMed,
+                ),
+                selectedIcon: Icon(
+                  Icons.credit_card,
+                  color: FirePumpSimColors.textHigh,
+                ),
                 label: 'Pump Card',
               ),
             ],
