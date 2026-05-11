@@ -1,0 +1,88 @@
+{
+  "id": "engine_181_car_fire_attack_line",
+  "title": "Engine 181 Car Fire Attack Line",
+  "type": "Attack Line",
+  "chip": "CAR FIRE",
+  "image": "assets/images/fire_engine_side_view_night_training_photo_black_1778511209771.jpg",
+  "scene": "assets/images/fire_truck_pump_panel_close_up_gauges_valves_photo_black_1778511210715.jpg",
+  "difficulty": "Beginner",
+  "timedModeAvailable": true,
+  "studentQuestion": "Engine 181 is operating at a car fire. You are supplying a single 1¾\" attack line. Determine the correct pump discharge pressure (PDP/PP) based on the line package below.",
+  "details": [
+    {"label": "Line", "value": "1¾\" attack line"},
+    {"label": "Length", "value": "200 ft"},
+    {"label": "Nozzle", "value": "Fog, 150 GPM"},
+    {"label": "Appliance", "value": "None"}
+  ],
+  "overlays": [
+    {"type": "callout", "x": 0.18, "y": 0.62, "text": "Attack line to vehicle"},
+    {"type": "callout", "x": 0.72, "y": 0.45, "text": "Pump panel"}
+  ],
+  "answers": {
+    "pdp": {"type": "number", "unit": "psi"}
+  },
+  "formulaBreakdown": [
+    {"step": "NP", "value": 100, "unit": "psi"},
+    {"step": "FL", "value": 50, "unit": "psi", "note": "Example only"},
+    {"step": "AP", "value": 0, "unit": "psi"},
+    {"step": "Total", "value": 150, "unit": "psi"}
+  ],
+  "correctPP": 150,
+  "tolerance": 10,
+  "instructorExplanation": "This sample pack uses placeholder friction loss numbers for demonstration. Replace with your department’s approved coefficients and target nozzle pressure.",
+  "explainMistake": "Common mistakes include forgetting nozzle pressure, double-counting line length, or applying the wrong coefficient for 1¾\" hose.",
+  "variations": [
+    {
+      "id": "engine_181_car_fire_attack_line_v1",
+      "title": "Variation 1 — Longer Stretch",
+      "difficulty": "Beginner",
+      "timedModeAvailable": true,
+      "studentQuestion": "Same car fire. The attack line is now 250 ft. Determine the PDP/PP.",
+      "details": [
+        {"label": "Line", "value": "1¾\" attack line"},
+        {"label": "Length", "value": "250 ft"},
+        {"label": "Nozzle", "value": "Fog, 150 GPM"}
+      ],
+      "overlays": [
+        {"type": "callout", "x": 0.2, "y": 0.62, "text": "Longer stretch"}
+      ],
+      "answers": {
+        "pdp": {"type": "number", "unit": "psi"}
+      },
+      "correctPP": 165,
+      "tolerance": 10,
+      "formulaBreakdown": [
+        {"step": "NP", "value": 100, "unit": "psi"},
+        {"step": "FL", "value": 65, "unit": "psi", "note": "Example only"},
+        {"step": "AP", "value": 0, "unit": "psi"},
+        {"step": "Total", "value": 165, "unit": "psi"}
+      ],
+      "instructorExplanation": "In this variation, friction loss increases with line length. Ensure students scale friction loss correctly per 100 ft sections."
+    },
+    {
+      "id": "engine_181_car_fire_attack_line_v2",
+      "title": "Variation 2 — Smooth Bore",
+      "difficulty": "Intermediate",
+      "timedModeAvailable": false,
+      "studentQuestion": "Switch to a smooth bore at 160 GPM. Determine the PDP/PP.",
+      "details": [
+        {"label": "Line", "value": "1¾\" attack line"},
+        {"label": "Length", "value": "200 ft"},
+        {"label": "Nozzle", "value": "Smooth bore, 160 GPM"}
+      ],
+      "overlays": [],
+      "answers": {
+        "pdp": {"type": "number", "unit": "psi"}
+      },
+      "correctPP": 140,
+      "tolerance": 10,
+      "formulaBreakdown": [
+        {"step": "NP", "value": 80, "unit": "psi"},
+        {"step": "FL", "value": 60, "unit": "psi", "note": "Example only"},
+        {"step": "AP", "value": 0, "unit": "psi"},
+        {"step": "Total", "value": 140, "unit": "psi"}
+      ],
+      "instructorExplanation": "Smooth bore nozzle pressure targets differ from fog nozzles. Verify department policy and nozzle specs."
+    }
+  ]
+}
