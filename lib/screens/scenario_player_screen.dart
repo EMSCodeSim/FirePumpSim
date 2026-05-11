@@ -5,10 +5,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// Scenario Player (minimal shell).
+/// Scenario Player.
 ///
-/// This screen deliberately shows **one problem at a time**.
-/// The full input/answer workflow can be built here later.
+/// Shows one playable scenario problem at a time.
 class ScenarioPlayerScreen extends StatefulWidget {
   const ScenarioPlayerScreen({super.key, required this.problemId});
 
@@ -32,8 +31,14 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
           future: _repo.findPlayableByProblemId(widget.problemId),
           builder: (context, snapshot) {
             final p = snapshot.data;
+
             if (snapshot.connectionState != ConnectionState.done) {
-              return const Center(child: CircularProgressIndicator(color: FirePumpSimColors.red, strokeWidth: 2));
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: FirePumpSimColors.red,
+                  strokeWidth: 2,
+                ),
+              );
             }
 
             if (p == null) {
@@ -44,19 +49,35 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
                   children: [
                     IconButton(
                       onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back, color: FirePumpSimColors.textHigh),
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        color: FirePumpSimColors.textHigh,
+                      ),
                       style: IconButton.styleFrom(
                         backgroundColor: FirePumpSimColors.charcoal2,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                        side: BorderSide(color: FirePumpSimColors.steel.withValues(alpha: 0.8)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        side: BorderSide(
+                          color: FirePumpSimColors.steel.withValues(alpha: 0.8),
+                        ),
                       ),
                     ),
                     const SizedBox(height: AppSpacing.lg),
-                    Text('Scenario not found', style: textTheme.titleLarge?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
+                    Text(
+                      'Scenario not found',
+                      style: textTheme.titleLarge?.copyWith(
+                        color: FirePumpSimColors.textHigh,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
                     const SizedBox(height: 10),
                     Text(
                       'This scenario problem may have been removed or the pack manifest is out of date.',
-                      style: textTheme.bodyMedium?.copyWith(color: FirePumpSimColors.textMed, height: 1.5),
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: FirePumpSimColors.textMed,
+                        height: 1.5,
+                      ),
                     ),
                   ],
                 ),
@@ -67,16 +88,28 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
               slivers: [
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.md),
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.md,
+                      AppSpacing.md,
+                      AppSpacing.md,
+                      AppSpacing.md,
+                    ),
                     child: Row(
                       children: [
                         IconButton(
                           onPressed: () => context.pop(),
-                          icon: const Icon(Icons.arrow_back, color: FirePumpSimColors.textHigh),
+                          icon: const Icon(
+                            Icons.arrow_back,
+                            color: FirePumpSimColors.textHigh,
+                          ),
                           style: IconButton.styleFrom(
                             backgroundColor: FirePumpSimColors.charcoal2,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                            side: BorderSide(color: FirePumpSimColors.steel.withValues(alpha: 0.8)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            side: BorderSide(
+                              color: FirePumpSimColors.steel.withValues(alpha: 0.8),
+                            ),
                           ),
                         ),
                         const SizedBox(width: AppSpacing.md),
@@ -88,12 +121,17 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
                                 p.problemTitle,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: textTheme.titleLarge?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900),
+                                style: textTheme.titleLarge?.copyWith(
+                                  color: FirePumpSimColors.textHigh,
+                                  fontWeight: FontWeight.w900,
+                                ),
                               ),
                               const SizedBox(height: 6),
                               Text(
                                 '${p.type} • ${p.difficulty}${p.timedModeAvailable ? ' • Timed' : ''}',
-                                style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed),
+                                style: textTheme.bodySmall?.copyWith(
+                                  color: FirePumpSimColors.textMed,
+                                ),
                               ),
                             ],
                           ),
@@ -102,44 +140,96 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
                     ),
                   ),
                 ),
+
                 SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.lg),
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.md,
+                    0,
+                    AppSpacing.md,
+                    AppSpacing.lg,
+                  ),
                   sliver: SliverToBoxAdapter(
                     child: Container(
                       decoration: BoxDecoration(
                         color: FirePumpSimColors.charcoal2,
                         borderRadius: BorderRadius.circular(AppRadius.xl),
-                        border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.8)),
+                        border: Border.all(
+                          color: FirePumpSimColors.steel.withValues(alpha: 0.8),
+                        ),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(AppSpacing.md),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _SceneImage(assetPath: p.scene),
+                            // IMPORTANT:
+                            // Load the actual image path from p.image.
+                            // p.scene is scenario description text, not an asset path.
+                            _SceneImage(assetPath: p.image),
+
                             const SizedBox(height: AppSpacing.md),
-                            Text('Student Prompt', style: textTheme.labelLarge?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
+
+                            if (p.scene.trim().isNotEmpty) ...[
+                              Text(
+                                'Scene',
+                                style: textTheme.labelLarge?.copyWith(
+                                  color: FirePumpSimColors.textHigh,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                p.scene,
+                                style: textTheme.bodySmall?.copyWith(
+                                  color: FirePumpSimColors.textMed,
+                                  height: 1.45,
+                                ),
+                              ),
+                              const SizedBox(height: AppSpacing.lg),
+                            ],
+
+                            Text(
+                              'Student Prompt',
+                              style: textTheme.labelLarge?.copyWith(
+                                color: FirePumpSimColors.textHigh,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
                             const SizedBox(height: 8),
                             Text(
                               p.studentQuestion,
-                              style: textTheme.bodyMedium?.copyWith(color: FirePumpSimColors.textMed, height: 1.55),
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: FirePumpSimColors.textMed,
+                                height: 1.55,
+                              ),
                             ),
+
                             const SizedBox(height: AppSpacing.lg),
+
                             Container(
                               padding: const EdgeInsets.all(AppSpacing.md),
                               decoration: BoxDecoration(
                                 color: FirePumpSimColors.charcoal3.withValues(alpha: 0.75),
                                 borderRadius: BorderRadius.circular(AppRadius.lg),
-                                border: Border.all(color: FirePumpSimColors.red.withValues(alpha: 0.25)),
+                                border: Border.all(
+                                  color: FirePumpSimColors.red.withValues(alpha: 0.25),
+                                ),
                               ),
                               child: Row(
                                 children: [
-                                  Icon(Icons.info_outline, color: FirePumpSimColors.redSoft, size: 18),
+                                  Icon(
+                                    Icons.info_outline,
+                                    color: FirePumpSimColors.redSoft,
+                                    size: 18,
+                                  ),
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: Text(
-                                      'This is the Scenario Player shell. The solving workflow (inputs, answer checking, overlays, formula breakdown) can be implemented here next.',
-                                      style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed, height: 1.4),
+                                      'This is the Scenario Player shell. The solving workflow, answer checking, overlays, and formula breakdown can be implemented here next.',
+                                      style: textTheme.bodySmall?.copyWith(
+                                        color: FirePumpSimColors.textMed,
+                                        height: 1.4,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -151,6 +241,7 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
                     ),
                   ),
                 ),
+
                 const SliverToBoxAdapter(child: SizedBox(height: 40)),
               ],
             );
@@ -173,19 +264,36 @@ class _SceneImage extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppRadius.xl),
-          border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.8)),
+          border: Border.all(
+            color: FirePumpSimColors.steel.withValues(alpha: 0.8),
+          ),
           color: FirePumpSimColors.charcoal3,
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(AppRadius.xl),
           child: ColorFiltered(
-            colorFilter: ColorFilter.mode(FirePumpSimColors.charcoal.withValues(alpha: 0.55), BlendMode.darken),
+            colorFilter: ColorFilter.mode(
+              FirePumpSimColors.charcoal.withValues(alpha: 0.35),
+              BlendMode.darken,
+            ),
             child: Image.asset(
               assetPath,
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
-                debugPrint('Scenario scene image failed to load ($assetPath): $error');
-                return const Center(child: Icon(Icons.image_not_supported, color: FirePumpSimColors.textMed));
+                debugPrint('Scenario image failed to load ($assetPath): $error');
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    child: Text(
+                      'Image not found:\n$assetPath',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: FirePumpSimColors.textMed,
+                            height: 1.4,
+                          ),
+                    ),
+                  ),
+                );
               },
             ),
           ),
