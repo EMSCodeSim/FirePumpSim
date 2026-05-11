@@ -180,36 +180,18 @@ class _AppShell extends StatelessWidget {
             onDestinationSelected: (index) => _onTap(context, index),
             destinations: const [
               NavigationDestination(
-                icon: Icon(
-                  Icons.home_outlined,
-                  color: FirePumpSimColors.textMed,
-                ),
-                selectedIcon: Icon(
-                  Icons.home,
-                  color: FirePumpSimColors.textHigh,
-                ),
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
                 label: 'Home',
               ),
               NavigationDestination(
-                icon: Icon(
-                  Icons.calculate_outlined,
-                  color: FirePumpSimColors.textMed,
-                ),
-                selectedIcon: Icon(
-                  Icons.calculate,
-                  color: FirePumpSimColors.textHigh,
-                ),
+                icon: Icon(Icons.calculate_outlined),
+                selectedIcon: Icon(Icons.calculate),
                 label: 'Formulas',
               ),
               NavigationDestination(
-                icon: Icon(
-                  Icons.credit_card_outlined,
-                  color: FirePumpSimColors.textMed,
-                ),
-                selectedIcon: Icon(
-                  Icons.credit_card,
-                  color: FirePumpSimColors.textHigh,
-                ),
+                icon: Icon(Icons.credit_card_outlined),
+                selectedIcon: Icon(Icons.credit_card),
                 label: 'Pump Card',
               ),
             ],
