@@ -55,15 +55,67 @@ class PracticeScenario {
   final String? difficulty;
   final bool? timedModeAvailable;
 
+  static String _normalizeAssetPath(String raw) {
+    final trimmed = raw.trim();
+    if (trimmed.isEmpty) return '';
+
+    // Some packs may include spaces in filenames while the actual bundled
+    // asset uses underscores (common when generated or renamed for web).
+    // We apply a conservative normalization on the final path segment.
+    final uri = Uri.tryParse(trimmed);
+    final path = (uri != null && uri.scheme.isNotEmpty) ? uri.path : trimmed;
+    final parts = path.split('/');
+    if (parts.isEmpty) return trimmed;
+    final file = parts.removeLast();
+    final normalizedFile = file.replaceAll(' ', '_');
+    final rebuilt = [...parts, normalizedFile].join('/');
+
+    // Preserve any original query/fragment if it exists (rare for assets).
+    if (uri != null && (uri.hasQuery || uri.hasFragment)) {
+      return Uri(
+        path: rebuilt,
+        query: uri.hasQuery ? uri.query : null,
+        fragment: uri.hasFragment ? uri.fragment : null,
+      ).toString();
+    }
+    return rebuilt;
+  }
+
+  static bool _looksLikeAssetPath(String v) {
+    final s = v.trim();
+    if (s.isEmpty) return false;
+    final lower = s.toLowerCase();
+    final hasExt = lower.endsWith('.png') || lower.endsWith('.jpg') || lower.endsWith('.jpeg') || lower.endsWith('.webp') || lower.endsWith('.gif');
+    if (!hasExt) return false;
+    return lower.startsWith('assets/');
+  }
+
+  static String _pickBestImagePath(dynamic image, dynamic scene) {
+    final candidates = <String>[
+      if (image != null) image.toString(),
+      if (scene != null) scene.toString(),
+    ].map(_normalizeAssetPath).toList(growable: false);
+
+    for (final c in candidates) {
+      if (_looksLikeAssetPath(c)) return c;
+    }
+    // If nothing qualifies, return empty so the UI can show a graceful
+    // placeholder without attempting to fetch an obviously-invalid asset path.
+    return '';
+  }
+
   static PracticeScenario fromJson(Map<String, dynamic> json) {
     final variationsRaw = json['variations'];
+    final rawImage = json['image'];
+    final rawScene = json['scene'];
+    final bestImage = _pickBestImagePath(rawImage, rawScene);
     return PracticeScenario(
       id: (json['id'] ?? '').toString(),
       title: (json['title'] ?? '').toString(),
       type: (json['type'] ?? '').toString(),
       chip: (json['chip'] ?? '').toString(),
-      image: (json['image'] ?? '').toString(),
-      scene: (json['scene'] ?? json['image'] ?? '').toString(),
+      image: bestImage,
+      scene: _normalizeAssetPath((rawScene ?? rawImage ?? '').toString()),
       studentQuestion: (json['studentQuestion'] ?? '').toString(),
       details: (json['details'] is List) ? List<dynamic>.from(json['details'] as List) : const [],
       overlays: (json['overlays'] is List) ? List<dynamic>.from(json['overlays'] as List) : const [],

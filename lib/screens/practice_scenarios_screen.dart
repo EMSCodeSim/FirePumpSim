@@ -540,6 +540,18 @@ class _ScenarioThumbnail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (assetPath.trim().isEmpty) {
+      return Container(
+        height: 92,
+        width: 92,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.8)),
+          color: FirePumpSimColors.charcoal3,
+        ),
+        child: const Center(child: Icon(Icons.image_not_supported, color: FirePumpSimColors.textMed)),
+      );
+    }
     return Container(
       height: 92,
       width: 92,
@@ -573,6 +585,17 @@ class _ScenePreviewImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (assetPath.trim().isEmpty) {
+      return Container(
+        height: 140,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AppRadius.xl),
+          border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.8)),
+          color: FirePumpSimColors.charcoal3,
+        ),
+        child: const Center(child: Icon(Icons.image_not_supported, color: FirePumpSimColors.textMed)),
+      );
+    }
     return AspectRatio(
       aspectRatio: 16 / 9,
       child: Container(

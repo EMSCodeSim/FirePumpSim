@@ -48,26 +48,6 @@ class AppRouter {
           );
         },
       ),
-      GoRoute(
-        path: AppRoutes.scenarioPlayer,
-        name: 'scenarioPlayer',
-        pageBuilder: (context, state) {
-          final problemId = state.uri.queryParameters['problemId'] ?? '';
-          return CustomTransitionPage(
-            child: ScenarioPlayerScreen(problemId: problemId),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
-              return FadeTransition(
-                opacity: curved,
-                child: SlideTransition(
-                  position: Tween<Offset>(begin: const Offset(0, 0.03), end: Offset.zero).animate(curved),
-                  child: child,
-                ),
-              );
-            },
-          );
-        },
-      ),
       ShellRoute(
         builder: (context, state, child) => _AppShell(state: state, child: child),
         routes: [
@@ -86,6 +66,27 @@ class AppRouter {
             name: 'pumpCard',
             pageBuilder: (context, state) => const NoTransitionPage(child: PumpCardScreen()),
           ),
+          GoRoute(
+            // Scenario player should keep the locked bottom navigation visible.
+            path: AppRoutes.scenarioPlayer,
+            name: 'scenarioPlayer',
+            pageBuilder: (context, state) {
+              final problemId = state.uri.queryParameters['problemId'] ?? '';
+              return CustomTransitionPage(
+                child: ScenarioPlayerScreen(problemId: problemId),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+                  return FadeTransition(
+                    opacity: curved,
+                    child: SlideTransition(
+                      position: Tween<Offset>(begin: const Offset(0, 0.02), end: Offset.zero).animate(curved),
+                      child: child,
+                    ),
+                  );
+                },
+              );
+            },
+          ),
         ],
       ),
     ],
@@ -102,6 +103,8 @@ class AppRoutes {
 
   // Full-screen routes outside the bottom navigation shell.
   static const String practiceScenarios = '/practice-scenarios';
+
+  // Kept inside the bottom navigation shell so Home/Formulas/Pump Card is always visible.
   static const String scenarioPlayer = '/scenario-player';
 }
 
