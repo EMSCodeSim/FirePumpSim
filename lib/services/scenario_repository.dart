@@ -124,6 +124,12 @@ class ScenarioRepository {
         final variationTimed = v.timedModeAvailable ?? s.timedModeAvailable ?? false;
         final variationId = v.id.trim().isNotEmpty ? v.id.trim() : '${s.id}__v$i';
         final variationTitle = v.title.trim().isNotEmpty ? v.title.trim() : '${s.title} (Variation ${i + 1})';
+        final variationQuestion = v.studentQuestion.trim().isNotEmpty ? v.studentQuestion : s.studentQuestion;
+        final variationDetails = v.details.isNotEmpty ? v.details : s.details;
+        final variationOverlays = v.overlays.isNotEmpty ? v.overlays : s.overlays;
+        final variationAnswers = v.answers.isNotEmpty ? v.answers : s.answers;
+        final variationFormula = v.formulaBreakdown.isNotEmpty ? v.formulaBreakdown : s.formulaBreakdown;
+        final variationExplanation = v.instructorExplanation.trim().isNotEmpty ? v.instructorExplanation : s.instructorExplanation;
         playable.add(
           PlayableScenarioProblem(
             scenarioId: s.id,
@@ -132,14 +138,14 @@ class ScenarioRepository {
             chip: s.chip,
             image: s.image,
             scene: s.scene,
-            studentQuestion: v.studentQuestion,
-            details: v.details,
-            overlays: v.overlays,
-            answers: v.answers,
-            formulaBreakdown: v.formulaBreakdown,
-            correctPP: v.correctPP,
-            tolerance: v.tolerance,
-            instructorExplanation: v.instructorExplanation,
+            studentQuestion: variationQuestion,
+            details: variationDetails,
+            overlays: variationOverlays,
+            answers: variationAnswers,
+            formulaBreakdown: variationFormula,
+            correctPP: v.correctPP ?? s.correctPP,
+            tolerance: v.tolerance ?? s.tolerance,
+            instructorExplanation: variationExplanation,
             explainMistake: s.explainMistake,
             problemId: variationId,
             problemTitle: variationTitle,
