@@ -1,0 +1,115 @@
+{
+  "id": "advanced_standpipe_floor5",
+  "title": "Advanced Standpipe Floor 5",
+  "category": "standpipe",
+  "difficulty": "advanced",
+  "type": "pump",
+  "image": "advanced_standpipe_floor5.png",
+  "scene": {
+    "engine": "Engine 181",
+    "description": "Engine 181 is pumping a standpipe operation at a 5-story apartment building. Crews are operating from the 5th-floor standpipe outlet, which is 40 feet above pump level using the floor-height rule (1st floor = 0 feet, each floor above adds 10 feet). The crew has 150’ of 2½” hose and a 1⅛” smooth bore nozzle flowing 265 GPM at 50 PSI. Add 25 PSI for standpipe/FDC system loss. What pump pressure should the driver/operator set?",
+    "baseOverlays": []
+  },
+  "sceneElements": {
+    "engine": "Engine 181",
+    "hoses": [
+      "Engine 181 to FDC",
+      "150’ 2½” attack line from 5th-floor standpipe outlet"
+    ],
+    "nozzles": [
+      "1⅛” smooth bore nozzle flowing 265 GPM at 50 PSI"
+    ],
+    "appliances": [
+      "FDC",
+      "Standpipe system",
+      "5th-floor standpipe outlet"
+    ],
+    "elevation": "5th floor outlet is 40 feet above pump level, +20 PSI"
+  },
+  "problems": [
+    {
+      "id": "advanced_standpipe_floor5_q1",
+      "title": "Advanced Standpipe Floor 5",
+      "question": "Engine 181 is pumping a standpipe operation at a 5-story apartment building. Crews are operating from the 5th-floor standpipe outlet, which is 40 feet above pump level using the floor-height rule: 1st floor = 0 feet, 2nd floor = 10 feet, 3rd floor = 20 feet, 4th floor = 30 feet, 5th floor = 40 feet. The crew has 150’ of 2½” hose and a 1⅛” smooth bore nozzle flowing 265 GPM at 50 PSI. Add 25 PSI for standpipe/FDC system loss. What pump pressure should the driver/operator set?",
+      "answerLabel": "Pump Pressure",
+      "answerUnit": "PSI",
+      "inputLabel": "Enter pump pressure",
+      "inputPlaceholder": "PSI",
+      "answerValue": 115,
+      "correctPP": 115,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 21,
+        "nozzlePressure": 50,
+        "elevation": 20,
+        "applianceLoss": 25,
+        "totalGpm": 265,
+        "pumpPressure": 115,
+        "tolerance": 5
+      },
+      "overlays": [
+        {
+          "id": "engine",
+          "text": "Engine 181",
+          "x": 18,
+          "y": 72
+        },
+        {
+          "id": "fdc",
+          "text": "FDC +25 PSI",
+          "x": 42,
+          "y": 66
+        },
+        {
+          "id": "floor",
+          "text": "Floor 5 +20 PSI",
+          "x": 70,
+          "y": 22
+        },
+        {
+          "id": "hose",
+          "text": "150' 2½",
+          "x": 64,
+          "y": 33
+        },
+        {
+          "id": "nozzle",
+          "text": "SB 1⅛ 265 @ 50",
+          "x": 78,
+          "y": 38
+        },
+        {
+          "id": "flow",
+          "text": "265 GPM",
+          "x": 52,
+          "y": 47
+        }
+      ],
+      "formulaBreakdown": [
+        "PP = FL + NP + elevation + appliance loss",
+        "FL = C × (GPM / 100)^2 × hose length in hundreds",
+        "FL = 2 × (265 / 100)^2 × 1.5",
+        "FL = 2 × 2.65^2 × 1.5",
+        "FL = 21 PSI",
+        "NP = 50 PSI",
+        "Floor-height rule: 1st floor = 0 feet, each floor above adds 10 feet",
+        "5th floor height = (5 - 1) × 10 feet = 40 feet",
+        "Elevation = 40 feet × 0.5 PSI per foot = 20 PSI",
+        "Standpipe/FDC loss = 25 PSI",
+        "PP = 21 + 50 + 20 + 25 = 116 PSI",
+        "Rounded final pump pressure = 115 PSI"
+      ],
+      "instructorExplanation": "This scenario uses the corrected floor-height rule: the 1st floor is pump level/0 feet, and each floor above adds 10 feet. A 5th-floor outlet is therefore 40 feet above pump level, not 50 feet. Elevation is 40 × 0.5 = 20 PSI. Add hose friction loss, nozzle pressure, elevation, and standpipe/FDC system loss, then round the final pump pressure to 115 PSI.",
+      "explainMistake": "Common mistakes include treating the 5th floor as 5 full floors above the pump instead of 4 floor rises, using 25 PSI elevation instead of 20 PSI, forgetting the 25 PSI standpipe/FDC loss, using the wrong hose coefficient, or rounding before the final pump pressure calculation."
+    }
+  ],
+  "tags": [
+    "advanced",
+    "standpipe",
+    "fdc",
+    "smooth_bore",
+    "engine_181",
+    "pump_pressure",
+    "apartment_building"
+  ]
+}
