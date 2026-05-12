@@ -103,40 +103,123 @@ class PracticeScenario {
     // placeholder without attempting to fetch an obviously-invalid asset path.
     return '';
   }
+  static String _firstText(Map<String, dynamic> json, List<String> keys) {
+    for (final key in keys) {
+      final raw = json[key];
+      if (raw == null) continue;
+      final s = raw.toString().trim();
+      if (s.isNotEmpty && s.toLowerCase() != 'null') return s;
+    }
+    return '';
+  }
+
+  static String _humanizeLabel(String raw) {
+    final s = raw.trim();
+    if (s.isEmpty) return '';
+    final cleaned = s.replaceAll('_', ' ').replaceAll('-', ' ');
+    final parts = cleaned.split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList(growable: false);
+    return parts
+        .map((part) {
+          final lower = part.toLowerCase();
+          if (lower == 'gpm' || lower == 'psi' || lower == 'ldh') return lower.toUpperCase();
+          if (lower == 'xd') return 'XD';
+          return lower[0].toUpperCase() + lower.substring(1);
+        })
+        .join(' ');
+  }
+
+  static List<dynamic> _listFromAny(dynamic raw) {
+    if (raw is List) return List<dynamic>.from(raw);
+    if (raw is Map) {
+      return raw.entries
+          .map((e) => <String, dynamic>{'label': e.key.toString(), 'value': e.value.toString()})
+          .toList(growable: false);
+    }
+    return const [];
+  }
+
+  static Map<String, dynamic> _answersFromJson(Map<String, dynamic> json) {
+    final answers = <String, dynamic>{};
+    if (json['answers'] is Map) answers.addAll(Map<String, dynamic>.from(json['answers'] as Map));
+
+    final topLevelAliases = <String>[
+      'answer',
+      'correctAnswer',
+      'correctPP',
+      'pumpPressure',
+      'answerUnit',
+      'unit',
+      'answerLabel',
+      'tolerance',
+      'frictionLoss',
+      'nozzlePressure',
+      'elevationPressure',
+      'applianceLoss',
+      'totalGpm',
+    ];
+    for (final key in topLevelAliases) {
+      if (json.containsKey(key) && !answers.containsKey(key)) answers[key] = json[key];
+    }
+
+    // Common aliases used by the player and daily challenge helpers.
+    final answerValue = answers['pumpPressure'] ?? answers['correctPP'] ?? answers['correctAnswer'] ?? answers['answer'] ?? answers['value'];
+    if (answerValue != null) {
+      answers['correctAnswer'] ??= answerValue;
+      answers['value'] ??= answerValue;
+      answers['pp'] ??= answerValue;
+    }
+    answers['answerUnit'] ??= answers['unit'] ?? json['answerUnit'] ?? 'PSI';
+    answers['unit'] ??= answers['answerUnit'];
+    answers['answerLabel'] ??= json['answerLabel'] ?? 'Pump Pressure';
+    answers['tolerance'] ??= json['tolerance'] ?? 5;
+    return answers;
+  }
+
+  static num? _numFromAny(dynamic raw) {
+    if (raw is num) return raw;
+    return num.tryParse((raw ?? '').toString());
+  }
+
 
   static PracticeScenario fromJson(Map<String, dynamic> json) {
-    final variationsRaw = json['variations'];
-    final rawImage = json['image'];
-    final rawScene = json['scene'];
+    final variationsRaw = json['variations'] ?? json['problems'];
+    final rawImage = json['image'] ?? json['thumbnail'];
+    final rawScene = json['scene'] ?? json['sceneImage'] ?? json['image'];
     final bestImage = _pickBestImagePath(rawImage, rawScene);
+    final normalizedScene = _normalizeAssetPath((rawScene ?? rawImage ?? '').toString());
+    final bestScene = _looksLikeAssetPath(normalizedScene) ? normalizedScene : bestImage;
+    final answers = _answersFromJson(json);
+    final title = _firstText(json, const ['title', 'name']);
+    final type = _humanizeLabel(_firstText(json, const ['type', 'scenarioType', 'skillType', 'questionType']));
+    final chip = _humanizeLabel(_firstText(json, const ['chip', 'category', 'type', 'scenarioType']));
+    final difficulty = _humanizeLabel(_firstText(json, const ['difficulty', 'level']));
+
     return PracticeScenario(
-      id: (json['id'] ?? '').toString(),
-      title: (json['title'] ?? '').toString(),
-      type: (json['type'] ?? '').toString(),
-      chip: (json['chip'] ?? '').toString(),
+      id: _firstText(json, const ['id', 'scenarioId']),
+      title: title,
+      type: type.isEmpty ? 'Scenario' : type,
+      chip: chip.isEmpty ? 'Practice' : chip,
       image: bestImage,
-      scene: _normalizeAssetPath((rawScene ?? rawImage ?? '').toString()),
-      studentQuestion: (json['studentQuestion'] ?? '').toString(),
-      details: (json['details'] is List) ? List<dynamic>.from(json['details'] as List) : const [],
-      overlays: (json['overlays'] is List) ? List<dynamic>.from(json['overlays'] as List) : const [],
-      answers: (json['answers'] is Map)
-          ? Map<String, dynamic>.from(json['answers'] as Map)
-          : const <String, dynamic>{},
-      formulaBreakdown: (json['formulaBreakdown'] is List)
-          ? List<dynamic>.from(json['formulaBreakdown'] as List)
-          : const [],
-      correctPP: json['correctPP'] is num ? json['correctPP'] as num : num.tryParse('${json['correctPP']}'),
-      tolerance: json['tolerance'] is num ? json['tolerance'] as num : num.tryParse('${json['tolerance']}'),
-      instructorExplanation: (json['instructorExplanation'] ?? '').toString(),
-      explainMistake: (json['explainMistake'] ?? '').toString(),
+      scene: bestScene,
+      studentQuestion: _firstText(json, const ['studentQuestion', 'question', 'problem', 'prompt']),
+      details: _listFromAny(json['details'] ?? json['info'] ?? json['facts']),
+      overlays: _listFromAny(json['overlays'] ?? json['labels'] ?? json['callouts']),
+      answers: answers,
+      formulaBreakdown: _listFromAny(json['formulaBreakdown'] ?? json['formula'] ?? json['math'] ?? json['steps']),
+      correctPP: _numFromAny(json['correctPP'] ?? json['pumpPressure'] ?? answers['pumpPressure'] ?? answers['correctAnswer'] ?? answers['value'] ?? answers['pp']),
+      tolerance: _numFromAny(json['tolerance'] ?? answers['tolerance']),
+      instructorExplanation: _firstText(json, const ['instructorExplanation', 'explanation', 'teachingPoint', 'teachingFeedback']),
+      explainMistake: _firstText(json, const ['explainMistake', 'commonMistake', 'mistakeExplanation']),
       variations: (variationsRaw is List)
           ? variationsRaw
               .whereType<Map>()
               .map((e) => ScenarioVariation.fromJson(Map<String, dynamic>.from(e)))
               .toList(growable: false)
           : const [],
-      difficulty: json['difficulty']?.toString(),
-      timedModeAvailable: json['timedModeAvailable'] is bool ? json['timedModeAvailable'] as bool : null,
+      difficulty: difficulty.isEmpty ? null : difficulty,
+      timedModeAvailable: json['timedModeAvailable'] is bool
+          ? json['timedModeAvailable'] as bool
+          : (json['timedMode'] is bool ? json['timedMode'] as bool : null),
     );
   }
 }
@@ -175,23 +258,23 @@ class ScenarioVariation {
   final bool? timedModeAvailable;
 
   static ScenarioVariation fromJson(Map<String, dynamic> json) {
+    final answers = PracticeScenario._answersFromJson(json);
+    final difficulty = PracticeScenario._humanizeLabel(PracticeScenario._firstText(json, const ['difficulty', 'level']));
     return ScenarioVariation(
-      id: (json['id'] ?? '').toString(),
-      title: (json['title'] ?? '').toString(),
-      studentQuestion: (json['studentQuestion'] ?? '').toString(),
-      details: (json['details'] is List) ? List<dynamic>.from(json['details'] as List) : const [],
-      overlays: (json['overlays'] is List) ? List<dynamic>.from(json['overlays'] as List) : const [],
-      answers: (json['answers'] is Map)
-          ? Map<String, dynamic>.from(json['answers'] as Map)
-          : const <String, dynamic>{},
-      correctPP: json['correctPP'] is num ? json['correctPP'] as num : num.tryParse('${json['correctPP']}'),
-      tolerance: json['tolerance'] is num ? json['tolerance'] as num : num.tryParse('${json['tolerance']}'),
-      formulaBreakdown: (json['formulaBreakdown'] is List)
-          ? List<dynamic>.from(json['formulaBreakdown'] as List)
-          : const [],
-      instructorExplanation: (json['instructorExplanation'] ?? '').toString(),
-      difficulty: json['difficulty']?.toString(),
-      timedModeAvailable: json['timedModeAvailable'] is bool ? json['timedModeAvailable'] as bool : null,
+      id: PracticeScenario._firstText(json, const ['id', 'problemId', 'variationId']),
+      title: PracticeScenario._firstText(json, const ['title', 'name']),
+      studentQuestion: PracticeScenario._firstText(json, const ['studentQuestion', 'question', 'problem', 'prompt']),
+      details: PracticeScenario._listFromAny(json['details'] ?? json['info'] ?? json['facts']),
+      overlays: PracticeScenario._listFromAny(json['overlays'] ?? json['labels'] ?? json['callouts']),
+      answers: answers,
+      correctPP: PracticeScenario._numFromAny(json['correctPP'] ?? json['pumpPressure'] ?? answers['pumpPressure'] ?? answers['correctAnswer'] ?? answers['value'] ?? answers['pp']),
+      tolerance: PracticeScenario._numFromAny(json['tolerance'] ?? answers['tolerance']),
+      formulaBreakdown: PracticeScenario._listFromAny(json['formulaBreakdown'] ?? json['formula'] ?? json['math'] ?? json['steps']),
+      instructorExplanation: PracticeScenario._firstText(json, const ['instructorExplanation', 'explanation', 'teachingPoint', 'teachingFeedback']),
+      difficulty: difficulty.isEmpty ? null : difficulty,
+      timedModeAvailable: json['timedModeAvailable'] is bool
+          ? json['timedModeAvailable'] as bool
+          : (json['timedMode'] is bool ? json['timedMode'] as bool : null),
     );
   }
 }
