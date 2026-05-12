@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'theme.dart';
 import 'nav.dart';
@@ -8,6 +9,8 @@ import 'nav.dart';
 /// - go_router navigation
 /// - Material 3 theming with light/dark modes
 void main() {
+  // Helps detect “reverting” builds across multiple devices/sessions.
+  debugPrint('FirePumpSim build stamp: 2026-05-12 locked-nav+dropdown-filters+hero');
   runApp(const MyApp());
 }
 

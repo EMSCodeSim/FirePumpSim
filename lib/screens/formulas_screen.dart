@@ -58,11 +58,13 @@ class _FormulasOverlaySheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topInset = MediaQuery.viewInsetsOf(context).top;
+    // Use padding (not viewInsets) so the close button is never hidden
+    // under a notch/status bar.
+    final topSafe = MediaQuery.paddingOf(context).top;
     return SafeArea(
-      top: false,
+      top: true,
       child: Padding(
-        padding: EdgeInsets.only(top: topInset),
+        padding: EdgeInsets.only(top: topSafe),
         child: ClipRRect(
           borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
           child: DecoratedBox(

@@ -20,7 +20,9 @@ class _HomeScreenState extends State<HomeScreen> {
     // The banner artwork has important content at the very top (logo/flame).
     // Even with BoxFit.contain, a too-short header can *feel* like it's cropped.
     // So we size the header by width (similar to an AspectRatio) with sensible clamps.
-    final double heroHeight = (screenWidth / (isTight ? 1.85 : 1.75)).clamp(200.0, 280.0);
+    // Increase the height range so BoxFit.fitWidth never clips the top artwork
+    // on taller-narrow phones.
+    final double heroHeight = (screenWidth / (isTight ? 1.65 : 1.58)).clamp(240.0, 340.0);
     final double heroTopInset = isTight ? 10 : 12;
     final double cardHeight = isTight ? 62 : 68;
     const double gap = 7;
