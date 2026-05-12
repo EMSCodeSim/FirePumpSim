@@ -1,11 +1,12 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "engine_181_car_fire_attack_line",
   "title": "Engine 181 Car Fire Attack Line",
-  "type": "attack-line",
-  "category": "attack-line",
-  "chip": "CAR FIRE",
-  "difficulty": "beginner",
+  "type": "Attack Line",
+  "category": "Attack Line",
+  "chip": "Vehicle Fire",
+  "difficulty": "Beginner",
+  "questionType": "pump_pressure",
   "timedMode": true,
   "timedModeAvailable": true,
   "estimatedTimeSeconds": 60,
@@ -21,8 +22,9 @@
     "friction-loss",
     "beginner"
   ],
-  "image": "assets/images/Car_Fire_Engine181_001.png",
-  "scene": "Engine 181 is positioned on the street for a working car fire. A single 1¾\" attack line is stretched from the engine to the vehicle. All labels are generated from this JSON using overlay coordinates.",
+  "image": "assets/images/car_fire_engine181_001.png",
+  "scene": "assets/images/car_fire_engine181_001.png",
+  "sceneDescription": "Engine 181 is positioned on the street for a working car fire. A single 1¾\" attack line is stretched from the engine to the vehicle. All labels are generated from this JSON using overlay coordinates.",
   "studentQuestion": "Engine 181 is operating at a car fire. The crew stretched 200′ of 1¾\" hose with a fog nozzle flowing 150 GPM at 50 PSI. There is no elevation change and no appliance loss. What pump pressure should you set?",
   "answerLabel": "Pump Pressure",
   "answerUnit": "PSI",
@@ -104,7 +106,11 @@
     "elevationPressure": 0,
     "applianceLoss": 0,
     "totalGpm": 150,
-    "pumpPressure": 120
+    "pumpPressure": 120,
+    "unit": "PSI",
+    "answerUnit": "PSI",
+    "answerLabel": "Pump Pressure",
+    "tolerance": 5
   },
   "formulaBreakdown": [
     "PP = FL + NP + elevation + appliance loss",
