@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       title: 'Printable Scenarios',
                       description: 'Worksheets and answer keys',
                       icon: Icons.print,
-                      onTap: () => _comingSoon(context, 'Printable Scenarios'),
+                      onTap: () => context.go(AppRoutes.printableScenarios),
                     ),
                     const SizedBox(height: gap),
                     _MainMenuCard(

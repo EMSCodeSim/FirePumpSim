@@ -88,7 +88,9 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
               child: _CompactHeader(
                 title: 'Pick Scenario',
                 subtitle: 'Find a pump problem or start random practice',
-                onBack: () => context.pop(),
+                // Locked behavior: Back from Scenario Picker always returns to Home.
+                // (This screen may be opened from multiple entry points, so pop() can be ambiguous.)
+                onBack: () => context.go(AppRoutes.home),
               ),
             ),
             SliverToBoxAdapter(

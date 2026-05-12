@@ -6,6 +6,7 @@ import 'package:firepumpsim/screens/formulas_screen.dart';
 import 'package:firepumpsim/screens/home_screen.dart';
 import 'package:firepumpsim/screens/how_to_screen.dart';
 import 'package:firepumpsim/screens/practice_scenarios_screen.dart';
+import 'package:firepumpsim/screens/printable_scenarios_screen.dart';
 import 'package:firepumpsim/screens/pump_card_screen.dart';
 import 'package:firepumpsim/screens/scenario_player_screen.dart';
 import 'package:firepumpsim/theme.dart';
@@ -92,6 +93,27 @@ class AppRouter {
             },
           ),
 
+          GoRoute(
+            path: AppRoutes.printableScenarios,
+            name: 'printableScenarios',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                key: state.pageKey,
+                child: const PrintableScenariosScreen(),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+                  return FadeTransition(
+                    opacity: curved,
+                    child: SlideTransition(
+                      position: Tween<Offset>(begin: const Offset(0, 0.02), end: Offset.zero).animate(curved),
+                      child: child,
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+
           // Keep these as normal routes for deep links / standalone browsing.
           GoRoute(
             path: AppRoutes.calculator,
@@ -123,6 +145,7 @@ class AppRoutes {
   static const String howTo = '/how-to';
   static const String practiceScenarios = '/practice-scenarios';
   static const String scenarioPlayer = '/scenario-player';
+  static const String printableScenarios = '/printable-scenarios';
 }
 
 class _AppShell extends StatelessWidget {
