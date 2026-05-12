@@ -28,6 +28,7 @@ flutter:
     - assets/icons/
     - assets/images/
     - assets/scenarios/
+    - assets/printable/
 
 flutter_launcher_icons:
   android: true
