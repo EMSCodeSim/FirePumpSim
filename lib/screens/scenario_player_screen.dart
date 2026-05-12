@@ -65,7 +65,16 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
     if (p.correctPP is num) return p.correctPP;
 
     // Fall back to answers map if a pack uses it for numeric targets.
-    final candidates = <dynamic>[p.answers['pp'], p.answers['PP'], p.answers['correctPP'], p.answers['target']];
+    final candidates = <dynamic>[
+      p.answers['pp'],
+      p.answers['PP'],
+      p.answers['correctPP'],
+      p.answers['pumpPressure'],
+      p.answers['correctAnswer'],
+      p.answers['answer'],
+      p.answers['value'],
+      p.answers['target'],
+    ];
     for (final c in candidates) {
       if (c is num) return c;
       final parsed = num.tryParse('$c');
@@ -83,7 +92,7 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
       final parsed = num.tryParse('$c');
       if (parsed != null) return parsed.toDouble();
     }
-    return 0;
+    return 5;
   }
 
   bool _checkAnswer(PlayableScenarioProblem p) {
