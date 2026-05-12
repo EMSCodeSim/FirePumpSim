@@ -15,76 +15,84 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.sizeOf(context).height;
+    final screenWidth = MediaQuery.sizeOf(context).width;
     final bool isTight = screenHeight < 720;
-    final double heroHeight = isTight ? 142 : 156;
+    // The banner artwork has important content at the very top (logo/flame).
+    // Even with BoxFit.contain, a too-short header can *feel* like it's cropped.
+    // So we size the header by width (similar to an AspectRatio) with sensible clamps.
+    final double heroHeight = (screenWidth / (isTight ? 1.85 : 1.75)).clamp(200.0, 280.0);
+    final double heroTopInset = isTight ? 10 : 12;
     final double cardHeight = isTight ? 62 : 68;
     const double gap = 7;
 
-    final pagePadding = EdgeInsets.fromLTRB(
-      AppSpacing.md,
-      AppSpacing.sm,
-      AppSpacing.md,
-      0,
-    );
-
     return Scaffold(
+      backgroundColor: FirePumpSimColors.charcoal,
       body: SafeArea(
         bottom: false,
-        child: Padding(
-          padding: pagePadding,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _HeroHeader(height: heroHeight),
-              const SizedBox(height: 10),
-
-              const _SectionLabel('TRAINING'),
-              const SizedBox(height: 6),
-              _MainMenuCard(
-                height: cardHeight,
-                title: 'Practice Scenarios',
-                description: 'Start pump training',
-                icon: Icons.safety_check,
-                onTap: () => context.go(AppRoutes.practiceScenarios),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Add breathing room above the hero so the artwork never feels clipped
+            // against the very top edge (even on devices with small safe areas).
+            const SizedBox(height: AppSpacing.sm),
+            // Edge-to-edge branded header: no side padding, no outer card styling.
+            _HeroHeader(height: heroHeight, topInset: heroTopInset),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: 10),
+                    const _SectionLabel('TRAINING'),
+                    const SizedBox(height: 6),
+                    _MainMenuCard(
+                      height: cardHeight,
+                      title: 'Practice Scenarios',
+                      description: 'Start pump training',
+                      icon: Icons.safety_check,
+                      onTap: () => context.go(AppRoutes.practiceScenarios),
+                    ),
+                    const SizedBox(height: gap),
+                    _MainMenuCard(
+                      height: cardHeight,
+                      title: 'Daily Challenge',
+                      description: 'One new problem daily',
+                      icon: Icons.calendar_today,
+                      indicator: const _TodayPill(),
+                      onTap: () => _comingSoon(context, 'Daily Challenge'),
+                    ),
+                    const SizedBox(height: gap),
+                    _MainMenuCard(
+                      height: cardHeight,
+                      title: 'Scenario Library',
+                      description: 'Browse scenario packs',
+                      icon: Icons.auto_stories,
+                      onTap: () => _comingSoon(context, 'Scenario Library'),
+                    ),
+                    const SizedBox(height: 10),
+                    const _SectionLabel('TOOLS'),
+                    const SizedBox(height: 6),
+                    _MainMenuCard(
+                      height: cardHeight,
+                      title: 'Printable Scenarios',
+                      description: 'Worksheets and answer keys',
+                      icon: Icons.print,
+                      onTap: () => _comingSoon(context, 'Printable Scenarios'),
+                    ),
+                    const SizedBox(height: gap),
+                    _MainMenuCard(
+                      height: cardHeight,
+                      title: 'How To',
+                      description: 'Step-by-step calculations',
+                      icon: Icons.school,
+                      onTap: () => context.go(AppRoutes.howTo),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: gap),
-              _MainMenuCard(
-                height: cardHeight,
-                title: 'Daily Challenge',
-                description: 'One new problem daily',
-                icon: Icons.calendar_today,
-                indicator: const _TodayPill(),
-                onTap: () => _comingSoon(context, 'Daily Challenge'),
-              ),
-              const SizedBox(height: gap),
-              _MainMenuCard(
-                height: cardHeight,
-                title: 'Scenario Library',
-                description: 'Browse scenario packs',
-                icon: Icons.auto_stories,
-                onTap: () => _comingSoon(context, 'Scenario Library'),
-              ),
-
-              const SizedBox(height: 10),
-              const _SectionLabel('TOOLS'),
-              const SizedBox(height: 6),
-              _MainMenuCard(
-                height: cardHeight,
-                title: 'Printable Scenarios',
-                description: 'Worksheets and answer keys',
-                icon: Icons.print,
-                onTap: () => _comingSoon(context, 'Printable Scenarios'),
-              ),
-              const SizedBox(height: gap),
-              _MainMenuCard(
-                height: cardHeight,
-                title: 'How To',
-                description: 'Step-by-step calculations',
-                icon: Icons.school,
-                onTap: () => context.go(AppRoutes.howTo),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -103,9 +111,10 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class _HeroHeader extends StatelessWidget {
-  const _HeroHeader({required this.height});
+  const _HeroHeader({required this.height, required this.topInset});
 
   final double height;
+  final double topInset;
 
   /// TODO: Replace this with the exact filename of your uploaded FirePumpSim
   /// branding artwork (Assets panel → images). Example:
@@ -114,52 +123,44 @@ class _HeroHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.center,
-      child: FractionallySizedBox(
-        widthFactor: 0.94,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            boxShadow: [
-              BoxShadow(color: FirePumpSimColors.red.withValues(alpha: 0.08), blurRadius: 16, offset: const Offset(0, 10)),
-              BoxShadow(color: Colors.black.withValues(alpha: 0.50), blurRadius: 24, offset: const Offset(0, 18)),
-            ],
-          ),
-          child: Container(
-            height: height,
-            decoration: BoxDecoration(
-              color: FirePumpSimColors.charcoal2,
-              border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.90), width: 1),
-            ),
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: _BrandBannerImage(
+    return SizedBox(
+      height: height,
+      width: double.infinity,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          ColoredBox(
+            color: FirePumpSimColors.charcoal,
+            child: Padding(
+              // Creates a small "dead zone" at the very top so the banner content isn't visually cut off.
+              padding: EdgeInsets.only(top: topInset),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  _BrandBannerImage(
                     assetPath: _brandingBannerAssetPath,
                     fallbackLeft: 'assets/images/fire_engine_side_view_night_training_photo_black_1778511209771.jpg',
                     fallbackRight: 'assets/images/fire_truck_pump_panel_close_up_gauges_valves_photo_black_1778511210715.jpg',
                   ),
-                ),
-                Positioned.fill(
-                  child: DecoratedBox(
+                  DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
+                          Colors.black.withValues(alpha: 0.22),
                           Colors.transparent,
-                          FirePumpSimColors.charcoal.withValues(alpha: 0.16),
-                          FirePumpSimColors.charcoal.withValues(alpha: 0.55),
+                          FirePumpSimColors.charcoal.withValues(alpha: 0.42),
                         ],
-                        stops: const [0.60, 0.82, 1.0],
+                        stops: const [0.0, 0.55, 1.0],
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -176,34 +177,24 @@ class _BrandBannerImage extends StatelessWidget {
   Widget build(BuildContext context) {
     // We try to render the branded artwork first. If it isn't present yet (or the
     // filename differs), we gracefully fall back to the previous split-image hero.
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      child: Transform.scale(
-        scale: 1.04,
-        child: Image.asset(
-          assetPath,
-          fit: BoxFit.contain,
-          alignment: Alignment.center,
-          errorBuilder: (context, error, stackTrace) {
-            debugPrint('Brand banner failed to load ($assetPath): $error');
-            return Row(
-              children: [
-                Expanded(
-                  child: _HeaderImage(
-                    assetPath: fallbackLeft,
-                    alignment: Alignment.centerLeft,
-                  ),
-                ),
-                Expanded(
-                  child: _HeaderImage(
-                    assetPath: fallbackRight,
-                    alignment: Alignment.centerRight,
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
+    return ColoredBox(
+      color: FirePumpSimColors.charcoal,
+      child: Image.asset(
+        assetPath,
+        // Prefer to fill the full width (no side letterboxing). Header height is
+        // sized to the asset so the top doesn't look clipped.
+        fit: BoxFit.fitWidth,
+        alignment: Alignment.topCenter,
+        filterQuality: FilterQuality.high,
+        errorBuilder: (context, error, stackTrace) {
+          debugPrint('Brand banner failed to load ($assetPath): $error');
+          return Row(
+            children: [
+              Expanded(child: _HeaderImage(assetPath: fallbackLeft, alignment: const Alignment(-1, 0.18))),
+              Expanded(child: _HeaderImage(assetPath: fallbackRight, alignment: const Alignment(1, 0.18))),
+            ],
+          );
+        },
       ),
     );
   }

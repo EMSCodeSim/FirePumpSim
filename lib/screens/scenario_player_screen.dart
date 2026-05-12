@@ -1,4 +1,5 @@
 import 'package:firepumpsim/models/scenario_models.dart';
+import 'package:firepumpsim/screens/calculator_screen.dart';
 import 'package:firepumpsim/services/scenario_repository.dart';
 import 'package:firepumpsim/theme.dart';
 import 'dart:math' as math;
@@ -110,10 +111,20 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    const pageHPad = 12.0;
 
     return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: FloatingActionButton.small(
+        heroTag: 'scenario_calc_fab_${widget.problemId}',
+        backgroundColor: FirePumpSimColors.red,
+        foregroundColor: Colors.white,
+        onPressed: () => showCalculatorOverlay(context),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: const Icon(Icons.calculate, color: Colors.white, size: 20),
+      ),
       body: SafeArea(
-        bottom: false,
+        bottom: true,
         child: FutureBuilder<PlayableScenarioProblem?>(
           future: _loadProblem(widget.problemId),
           builder: (context, snapshot) {
@@ -181,15 +192,15 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
             }
 
             return Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 0),
+              padding: const EdgeInsets.fromLTRB(pageHPad, 10, pageHPad, 0),
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   final unit = _expectedUnit(p);
                   final totalH = constraints.maxHeight;
                   // Header + segmented control + answer card (collapsed) + bottom breathing room.
                   // Note: the answer card can expand; in that case the page will scroll.
-                  const reserved = 84.0 + 12.0 + 44.0 + 12.0 + 132.0 + 18.0;
-                  final cardH = (totalH - reserved).clamp(360.0, 620.0);
+                  const reserved = 76.0 + 8.0 + 44.0 + 8.0 + 122.0 + 12.0;
+                  final cardH = (totalH - reserved).clamp(420.0, 700.0);
 
                   return SingleChildScrollView(
                     padding: EdgeInsets.zero,
@@ -206,7 +217,7 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
                                 side: BorderSide(color: FirePumpSimColors.steel.withValues(alpha: 0.8)),
                               ),
                             ),
-                            const SizedBox(width: AppSpacing.md),
+                            const SizedBox(width: 12),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -220,7 +231,7 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
                                       fontWeight: FontWeight.w900,
                                     ),
                                   ),
-                                  const SizedBox(height: 6),
+                                  const SizedBox(height: 4),
                                   Text(
                                     '${p.type} • ${p.difficulty}${p.timedModeAvailable ? ' • Timed mode' : ' • Untimed'}',
                                     style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed),
@@ -230,7 +241,7 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: AppSpacing.sm),
+                        const SizedBox(height: 8),
 
                         SizedBox(
                           height: cardH,
@@ -247,13 +258,13 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
                           ),
                         ),
 
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 10),
                         _ModeSegmentedControl(
                           mode: _mode,
                           onChanged: (m) => setState(() => _mode = m),
                         ),
 
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 10),
                         _AnswerCard(
                           problem: p,
                           unit: unit,
@@ -271,7 +282,7 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
                           onToggleExplanation: () => setState(() => _showExplanation = !_showExplanation),
                         ),
 
-                        const SizedBox(height: 18),
+                        const SizedBox(height: 12),
                       ],
                     ),
                   );
@@ -447,7 +458,49 @@ class _ScenarioImageWithOverlays extends StatelessWidget {
     if (text.isEmpty) return null;
     final x = _normalizeCoord(m['x'] ?? m['left'] ?? m['px'] ?? m['cx']);
     final y = _normalizeCoord(m['y'] ?? m['top'] ?? m['py'] ?? m['cy']);
-    return _ParsedOverlay(label: text, x: x, y: y);
+    final canonical = _canonicalOverlayLabel(text);
+    final snapped = _snappedPositionForCanonical(canonical);
+    return _ParsedOverlay(
+      label: text,
+      canonical: canonical,
+      x: snapped?.$1 ?? x,
+      y: snapped?.$2 ?? y,
+    );
+  }
+
+  String _canonicalOverlayLabel(String raw) {
+    final s = raw.trim().toLowerCase();
+    if (s.contains('vehicle') && s.contains('fire')) return 'vehicle_fire';
+    if (s.contains('fog') || (s.contains('gpm') && s.contains('psi'))) return 'fog_flow_pressure';
+    if (s.contains('engine')) return 'engine';
+    if (s.contains('1¾') || s.contains('1 3/4') || s.contains('1.75') || s.contains("1 ¾") || s.contains("1-3/4")) {
+      return 'hose_200_1_3_4';
+    }
+    if (s.contains('200') && (s.contains("1¾") || s.contains('1 3/4') || s.contains('1.75'))) return 'hose_200_1_3_4';
+    if (s.contains('no elevation')) return 'no_elevation';
+    if (s.contains('no appliance')) return 'no_appliance';
+    return 'generic';
+  }
+
+  /// Returns a snapped (x,y) position when we want a clean, repeatable layout.
+  /// Coordinates are normalized in 0..1 space.
+  (double, double)? _snappedPositionForCanonical(String canonical) {
+    switch (canonical) {
+      case 'vehicle_fire':
+        return (0.84, 0.10); // top-right
+      case 'fog_flow_pressure':
+        return (0.78, 0.30); // upper-mid right
+      case 'engine':
+        return (0.14, 0.74); // lower-left
+      case 'hose_200_1_3_4':
+        return (0.50, 0.80); // center-lower
+      case 'no_appliance':
+        return (0.84, 0.86); // bottom-right (small)
+      case 'no_elevation':
+        return (0.84, 0.93); // bottom-right (small)
+      default:
+        return null;
+    }
   }
 
   @override
@@ -455,28 +508,41 @@ class _ScenarioImageWithOverlays extends StatelessWidget {
     final parsed = overlays.map(_parseOverlay).whereType<_ParsedOverlay>().toList(growable: false);
 
     final screenH = MediaQuery.sizeOf(context).height;
-    final targetH = height ?? (screenH * 0.52).clamp(380.0, 560.0);
+    final targetH = height ?? (screenH * 0.56).clamp(400.0, 620.0);
 
     return SizedBox(
       width: double.infinity,
       height: targetH,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(AppRadius.xl),
-          border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.85)),
-          color: FirePumpSimColors.charcoal,
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(AppRadius.xl),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              if (assetPath.trim().isEmpty)
-                Center(
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Container(color: FirePumpSimColors.charcoal),
+          if (assetPath.trim().isEmpty)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                child: Text(
+                  'No image provided for this scenario.',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: FirePumpSimColors.textMed,
+                        height: 1.4,
+                      ),
+                ),
+              ),
+            )
+          else
+            Image.asset(
+              assetPath,
+              fit: BoxFit.contain,
+              filterQuality: FilterQuality.high,
+              errorBuilder: (context, error, stackTrace) {
+                debugPrint('Scenario image failed to load ($assetPath): $error');
+                return Center(
                   child: Padding(
                     padding: const EdgeInsets.all(AppSpacing.md),
                     child: Text(
-                      'No image provided for this scenario.',
+                      'Image not found:\n$assetPath',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: FirePumpSimColors.textMed,
@@ -484,53 +550,33 @@ class _ScenarioImageWithOverlays extends StatelessWidget {
                           ),
                     ),
                   ),
-                )
-              else
-                Image.asset(
-                  assetPath,
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) {
-                    debugPrint('Scenario image failed to load ($assetPath): $error');
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(AppSpacing.md),
-                        child: Text(
-                          'Image not found:\n$assetPath',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: FirePumpSimColors.textMed,
-                                height: 1.4,
-                              ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              if (parsed.isNotEmpty)
-                Positioned.fill(
-                  child: LayoutBuilder(
-                    builder: (context, c) {
-                      final w = c.maxWidth;
-                      final h = c.maxHeight;
-                      return Stack(
-                        children: parsed
-                            .map(
-                              (o) => _OverlayLabel(
-                                label: o.label,
-                                x: o.x,
-                                y: o.y,
-                                maxWidth: w,
-                                maxHeight: h,
-                              ),
-                            )
-                            .toList(growable: false),
-                      );
-                    },
-                  ),
-                ),
-            ],
-          ),
-        ),
+                );
+              },
+            ),
+          if (parsed.isNotEmpty)
+            Positioned.fill(
+              child: LayoutBuilder(
+                builder: (context, c) {
+                  final w = c.maxWidth;
+                  final h = c.maxHeight;
+                  return Stack(
+                    children: parsed
+                        .map(
+                          (o) => _OverlayLabel(
+                            label: o.label,
+                            canonical: o.canonical,
+                            x: o.x,
+                            y: o.y,
+                            maxWidth: w,
+                            maxHeight: h,
+                          ),
+                        )
+                        .toList(growable: false),
+                  );
+                },
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -538,8 +584,9 @@ class _ScenarioImageWithOverlays extends StatelessWidget {
 
 @immutable
 class _ParsedOverlay {
-  const _ParsedOverlay({required this.label, required this.x, required this.y});
+  const _ParsedOverlay({required this.label, required this.canonical, required this.x, required this.y});
   final String label;
+  final String canonical;
   final double x;
   final double y;
 }
@@ -547,6 +594,7 @@ class _ParsedOverlay {
 class _OverlayLabel extends StatelessWidget {
   const _OverlayLabel({
     required this.label,
+    required this.canonical,
     required this.x,
     required this.y,
     required this.maxWidth,
@@ -554,29 +602,105 @@ class _OverlayLabel extends StatelessWidget {
   });
 
   final String label;
+  final String canonical;
   final double x;
   final double y;
   final double maxWidth;
   final double maxHeight;
 
+  _OverlayPriority _priorityForCanonical(String c) {
+    switch (c) {
+      case 'hose_200_1_3_4':
+      case 'fog_flow_pressure':
+        return _OverlayPriority.high;
+      case 'vehicle_fire':
+      case 'engine':
+        return _OverlayPriority.medium;
+      case 'no_elevation':
+      case 'no_appliance':
+        return _OverlayPriority.low;
+      default:
+        return _OverlayPriority.medium;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+
+    final priority = _priorityForCanonical(canonical);
 
     final safeX = x.clamp(0.02, 0.98);
     final safeY = y.clamp(0.02, 0.98);
     final anchorX = safeX * maxWidth;
     final anchorY = safeY * maxHeight;
 
-    const labelMaxW = 180.0;
-    const labelPad = 10.0;
-    const dotR = 3.6;
-    const offset = 10.0;
+    final labelMaxW = switch (priority) {
+      _OverlayPriority.high => 190.0,
+      _OverlayPriority.medium => 170.0,
+      _OverlayPriority.low => 150.0,
+    };
+    const labelPad = 8.0;
+    final dotR = switch (priority) {
+      _OverlayPriority.high => 3.6,
+      _OverlayPriority.medium => 3.2,
+      _OverlayPriority.low => 2.8,
+    };
 
-    final preferredLeft = anchorX + offset;
-    final preferredTop = anchorY - 18;
+    final offset = switch (priority) {
+      _OverlayPriority.high => 10.0,
+      _OverlayPriority.medium => 9.0,
+      _OverlayPriority.low => 8.0,
+    };
+
+    final toLeftSide = safeX >= 0.62;
+    final preferredLeft = toLeftSide ? (anchorX - offset - labelMaxW) : (anchorX + offset);
+    final preferredTop = anchorY - switch (priority) {
+      _OverlayPriority.high => 18.0,
+      _OverlayPriority.medium => 16.0,
+      _OverlayPriority.low => 14.0,
+    };
+
+    final labelH = switch (priority) {
+      _OverlayPriority.high => 44.0,
+      _OverlayPriority.medium => 42.0,
+      _OverlayPriority.low => 38.0,
+    };
+
     final clampedLeft = math.max(labelPad, math.min(preferredLeft, maxWidth - labelMaxW - labelPad));
-    final clampedTop = math.max(labelPad, math.min(preferredTop, maxHeight - 44 - labelPad));
+    final clampedTop = math.max(labelPad, math.min(preferredTop, maxHeight - labelH - labelPad));
+
+    final bgAlpha = switch (priority) {
+      _OverlayPriority.high => 0.86,
+      _OverlayPriority.medium => 0.82,
+      _OverlayPriority.low => 0.72,
+    };
+
+    final borderAlpha = switch (priority) {
+      _OverlayPriority.high => 0.70,
+      _OverlayPriority.medium => 0.60,
+      _OverlayPriority.low => 0.45,
+    };
+
+    final padV = switch (priority) {
+      _OverlayPriority.high => 7.5,
+      _OverlayPriority.medium => 7.0,
+      _OverlayPriority.low => 6.0,
+    };
+
+    final padH = switch (priority) {
+      _OverlayPriority.high => 10.0,
+      _OverlayPriority.medium => 9.0,
+      _OverlayPriority.low => 8.0,
+    };
+
+    final style = switch (priority) {
+      _OverlayPriority.high => textTheme.labelMedium,
+      _OverlayPriority.medium => textTheme.labelSmall,
+      _OverlayPriority.low => textTheme.labelSmall,
+    };
+
+    final textColor = priority == _OverlayPriority.low ? FirePumpSimColors.textMed : FirePumpSimColors.textHigh;
 
     return Stack(
       children: [
@@ -597,23 +721,19 @@ class _OverlayLabel extends StatelessWidget {
           left: clampedLeft,
           top: clampedTop,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: labelMaxW),
+            constraints: BoxConstraints(maxWidth: labelMaxW),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              padding: EdgeInsets.symmetric(horizontal: padH, vertical: padV),
               decoration: BoxDecoration(
-                color: FirePumpSimColors.charcoal2.withValues(alpha: 0.88),
+                color: FirePumpSimColors.charcoal2.withValues(alpha: bgAlpha),
                 borderRadius: BorderRadius.circular(999),
-                border: Border.all(color: FirePumpSimColors.red.withValues(alpha: 0.7), width: 1),
+                border: Border.all(color: FirePumpSimColors.red.withValues(alpha: borderAlpha), width: 1),
               ),
               child: Text(
                 label,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: textTheme.labelSmall?.copyWith(
-                  color: FirePumpSimColors.textHigh,
-                  fontWeight: FontWeight.w900,
-                  height: 1.2,
-                ),
+                style: style?.copyWith(color: textColor, fontWeight: FontWeight.w900, height: 1.15),
               ),
             ),
           ),
@@ -622,6 +742,8 @@ class _OverlayLabel extends StatelessWidget {
     );
   }
 }
+
+enum _OverlayPriority { high, medium, low }
 
 class _ProblemView extends StatelessWidget {
   const _ProblemView({required this.problem});

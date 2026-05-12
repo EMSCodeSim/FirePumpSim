@@ -18,6 +18,40 @@ class ScenarioRepository {
   List<PracticeScenario>? _cachedScenarios;
   List<PlayableScenarioProblem>? _cachedPlayable;
 
+  static String normalize(String input) => input.toLowerCase().trim().replaceAll(RegExp(r'[_\-\s]+'), ' ');
+
+  static bool _matchesFilter(String value, String filter) {
+    final v = normalize(value);
+    final f = normalize(filter);
+    if (f.isEmpty) return true;
+    return v == f;
+  }
+
+  static bool matchesSearch({required String searchText, required List<String> fields}) {
+    final q = normalize(searchText);
+    if (q.isEmpty) return true;
+
+    final tokens = q.split(RegExp(r'\s+')).where((t) => t.trim().isNotEmpty).toList(growable: false);
+    if (tokens.isEmpty) return true;
+
+    final haystack = normalize(fields.where((f) => f.trim().isNotEmpty).join(' '));
+    // For multi-token searches, require each token to appear somewhere.
+    return tokens.every(haystack.contains);
+  }
+
+  static int difficultyRank(String difficulty) {
+    switch (normalize(difficulty)) {
+      case 'beginner':
+        return 0;
+      case 'intermediate':
+        return 1;
+      case 'advanced':
+        return 2;
+      default:
+        return 1; // default to Intermediate
+    }
+  }
+
   Future<List<PracticeScenario>> loadScenarios() async {
     if (_cachedScenarios != null) return _cachedScenarios!;
 
@@ -125,17 +159,85 @@ class ScenarioRepository {
 
   /// Returns scenarios for browsing (base scenarios only).
   /// Variations are shown only as counts, and are playable from the player.
-  Future<List<PracticeScenario>> queryScenarios({
+  Future<List<PracticeScenario>> queryScenarios({required String typeFilter, required String difficultyFilter}) async {
+    // Backwards compatible wrapper.
+    return queryScenariosAdvanced(
+      searchText: '',
+      typeFilter: typeFilter == 'All' ? 'All Types' : typeFilter,
+      levelFilter: difficultyFilter == 'All' ? 'All Levels' : difficultyFilter,
+      modeFilter: 'All Modes',
+      sortMode: 'Recommended',
+    );
+  }
+
+  /// Advanced scenario query used by the modern picker.
+  ///
+  /// Filters are human-readable UI labels:
+  /// - typeFilter: "All Types" or a scenario type
+  /// - levelFilter: "All Levels" / Beginner / Intermediate / Advanced
+  /// - modeFilter: "All Modes" / Timed Available / Untimed
+  /// - sortMode: Recommended / A-Z / Beginner First / Advanced First
+  Future<List<PracticeScenario>> queryScenariosAdvanced({
+    required String searchText,
     required String typeFilter,
-    required String difficultyFilter,
+    required String levelFilter,
+    required String modeFilter,
+    required String sortMode,
   }) async {
     final scenarios = await loadScenarios();
-    return scenarios.where((s) {
+
+    bool typeOk(PracticeScenario s) {
+      if (normalize(typeFilter) == normalize('All Types') || typeFilter.trim().isEmpty) return true;
+      // Compare safely even if JSON uses lowercase/underscore variations.
+      return normalize(s.type) == normalize(typeFilter);
+    }
+
+    bool levelOk(PracticeScenario s) {
+      if (normalize(levelFilter) == normalize('All Levels') || levelFilter.trim().isEmpty) return true;
+      final d = (s.difficulty ?? 'Intermediate').trim();
+      return _matchesFilter(d.isEmpty ? 'Intermediate' : d, levelFilter);
+    }
+
+    bool modeOk(PracticeScenario s) {
+      final timed = s.timedModeAvailable ?? false;
+      if (normalize(modeFilter) == normalize('All Modes') || modeFilter.trim().isEmpty) return true;
+      if (normalize(modeFilter) == normalize('Timed Available')) return timed;
+      if (normalize(modeFilter) == normalize('Untimed')) return !timed;
+      return true;
+    }
+
+    final filtered = scenarios.where((s) {
       final difficulty = (s.difficulty ?? 'Intermediate').trim();
-      final typeOk = typeFilter == 'All' || s.type == typeFilter;
-      final diffOk = difficultyFilter == 'All' || difficulty == difficultyFilter;
-      return typeOk && diffOk;
-    }).toList(growable: false);
+      final safeDifficulty = difficulty.isEmpty ? 'Intermediate' : difficulty;
+      final matches = matchesSearch(
+        searchText: searchText,
+        fields: [s.title, s.type, s.chip, safeDifficulty, s.studentQuestion],
+      );
+      return matches && typeOk(s) && levelOk(s) && modeOk(s);
+    }).toList(growable: true);
+
+    final sm = normalize(sortMode);
+    if (sm == normalize('A-Z')) {
+      filtered.sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+    } else if (sm == normalize('Beginner First')) {
+      filtered.sort((a, b) {
+        final ar = difficultyRank((a.difficulty ?? 'Intermediate').trim());
+        final br = difficultyRank((b.difficulty ?? 'Intermediate').trim());
+        final diff = ar.compareTo(br);
+        return diff != 0 ? diff : a.title.toLowerCase().compareTo(b.title.toLowerCase());
+      });
+    } else if (sm == normalize('Advanced First')) {
+      filtered.sort((a, b) {
+        final ar = difficultyRank((a.difficulty ?? 'Intermediate').trim());
+        final br = difficultyRank((b.difficulty ?? 'Intermediate').trim());
+        final diff = br.compareTo(ar);
+        return diff != 0 ? diff : a.title.toLowerCase().compareTo(b.title.toLowerCase());
+      });
+    } else {
+      // Recommended = original manifest order.
+    }
+
+    return filtered.toList(growable: false);
   }
 
   Future<PlayableScenarioProblem?> findPlayableByProblemId(String problemId) async {
@@ -151,12 +253,51 @@ class ScenarioRepository {
     required String typeFilter,
     required String difficultyFilter,
   }) async {
+    // Backwards compatible wrapper.
+    return randomPlayableAdvanced(
+      searchText: '',
+      typeFilter: typeFilter == 'All' ? 'All Types' : typeFilter,
+      levelFilter: difficultyFilter == 'All' ? 'All Levels' : difficultyFilter,
+      modeFilter: 'All Modes',
+    );
+  }
+
+  /// Random playable from *filtered* playable problems (includes variations).
+  Future<PlayableScenarioProblem?> randomPlayableAdvanced({
+    required String searchText,
+    required String typeFilter,
+    required String levelFilter,
+    required String modeFilter,
+  }) async {
     final playable = await loadPlayableProblems();
+
+    bool typeOk(PlayableScenarioProblem p) {
+      if (normalize(typeFilter) == normalize('All Types') || typeFilter.trim().isEmpty) return true;
+      return normalize(p.type) == normalize(typeFilter);
+    }
+
+    bool levelOk(PlayableScenarioProblem p) {
+      if (normalize(levelFilter) == normalize('All Levels') || levelFilter.trim().isEmpty) return true;
+      final d = (p.difficulty).trim().isEmpty ? 'Intermediate' : p.difficulty.trim();
+      return _matchesFilter(d, levelFilter);
+    }
+
+    bool modeOk(PlayableScenarioProblem p) {
+      final timed = p.timedModeAvailable;
+      if (normalize(modeFilter) == normalize('All Modes') || modeFilter.trim().isEmpty) return true;
+      if (normalize(modeFilter) == normalize('Timed Available')) return timed;
+      if (normalize(modeFilter) == normalize('Untimed')) return !timed;
+      return true;
+    }
+
     final filtered = playable.where((p) {
-      final typeOk = typeFilter == 'All' || p.type == typeFilter;
-      final diffOk = difficultyFilter == 'All' || p.difficulty == difficultyFilter;
-      return typeOk && diffOk;
+      final matches = matchesSearch(
+        searchText: searchText,
+        fields: [p.problemTitle, p.scenarioTitle, p.type, p.chip, p.difficulty, p.studentQuestion],
+      );
+      return matches && typeOk(p) && levelOk(p) && modeOk(p);
     }).toList(growable: false);
+
     if (filtered.isEmpty) return null;
     return filtered[_random.nextInt(filtered.length)];
   }
