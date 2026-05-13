@@ -10,7 +10,7 @@ import 'package:firepumpsim/screens/printable_scenarios_screen.dart';
 import 'package:firepumpsim/screens/pump_card_screen.dart';
 import 'package:firepumpsim/screens/scenario_player_screen.dart';
 import 'package:firepumpsim/screens/daily_challenge_screen.dart';
-import 'package:firepumpsim/screens/scenario_packs_coming_soon_screen.dart';
+import 'package:firepumpsim/screens/scenario_library_screen.dart';
 import 'package:firepumpsim/theme.dart';
 
 class AppRouter {
@@ -143,7 +143,7 @@ class AppRouter {
             pageBuilder: (context, state) {
               return CustomTransitionPage(
                 key: state.pageKey,
-                child: const ScenarioPacksComingSoonScreen(),
+                child: const ScenarioLibraryScreen(),
                 transitionsBuilder: (context, animation, secondaryAnimation, child) {
                   final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
                   return FadeTransition(

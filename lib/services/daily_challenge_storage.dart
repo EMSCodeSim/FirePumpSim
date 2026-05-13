@@ -33,9 +33,11 @@ class DailyChallengeStorage {
     try {
       final prefs = await SharedPreferences.getInstance();
       final raw = prefs.getString(_historyKey);
-      if (raw == null || raw.trim().isEmpty) return const [];
+      // IMPORTANT: return a *modifiable* list. A `const []` is unmodifiable and
+      // will throw at runtime if callers try to `add`/`sort` (e.g., upsertResult).
+      if (raw == null || raw.trim().isEmpty) return <DailyChallengeResult>[];
       final decoded = jsonDecode(raw);
-      if (decoded is! List) return const [];
+      if (decoded is! List) return <DailyChallengeResult>[];
       final results = <DailyChallengeResult>[];
       for (final item in decoded) {
         if (item is Map) {
@@ -52,7 +54,7 @@ class DailyChallengeStorage {
       return results;
     } catch (e) {
       debugPrint('DailyChallengeStorage.loadHistory failed: $e');
-      return const [];
+      return <DailyChallengeResult>[];
     }
   }
 

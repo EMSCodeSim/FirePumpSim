@@ -78,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     _MainMenuCard(
                       height: cardHeight,
                       title: 'Practice Scenarios',
-                      description: 'Start pump training',
+                      description: 'Free Starter Pack + unlocked packs',
                       icon: Icons.safety_check,
                       onTap: () => context.go(AppRoutes.practiceScenarios),
                     ),
@@ -87,7 +87,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: cardHeight,
                       title: 'Daily Challenge',
                       description: _dailyLoaded
-                          ? (_dailyStats.currentStreak > 0 ? 'New challenge today • Streak ${_dailyStats.currentStreak}d' : 'New challenge today')
+                          ? (_dailyStats.currentStreak > 0
+                              ? 'One question per day • Streak ${_dailyStats.currentStreak}d'
+                              : 'One question per day (all bundled scenarios)')
                           : 'Loading…',
                       icon: Icons.calendar_today,
                       indicator: const _TodayPill(),
@@ -97,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     _MainMenuCard(
                       height: cardHeight,
                       title: 'Scenario Library',
-                      description: 'Browse scenario packs',
+                      description: 'Unlock more practice packs',
                       icon: Icons.auto_stories,
                       onTap: () => context.go(AppRoutes.scenarioLibrary),
                     ),

@@ -1,5 +1,10 @@
+import 'dart:math';
+
 import 'package:firepumpsim/models/scenario_models.dart';
+import 'package:firepumpsim/models/scenario_pack.dart';
 import 'package:firepumpsim/nav.dart';
+import 'package:firepumpsim/services/scenario_pack_repository.dart';
+import 'package:firepumpsim/services/scenario_pack_storage.dart';
 import 'package:firepumpsim/services/scenario_repository.dart';
 import 'package:firepumpsim/theme.dart';
 import 'package:flutter/foundation.dart';
@@ -15,10 +20,13 @@ class PracticeScenariosScreen extends StatefulWidget {
 
 class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
   final ScenarioRepository _repo = ScenarioRepository();
+  final ScenarioPackStorage _packStorage = ScenarioPackStorage();
 
   final TextEditingController _searchController = TextEditingController();
 
   List<PracticeScenario> _allScenarios = const [];
+  List<ScenarioPack> _unlockedPacks = const [];
+  Map<String, List<PracticeScenario>> _scenariosByPackId = const {};
   bool _loading = true;
 
   /// Prevents rapid double-taps from pushing the same route twice.
@@ -49,9 +57,23 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
   Future<void> _load() async {
     setState(() => _loading = true);
     try {
-      final scenarios = await _repo.loadScenarios();
+      final packsRepo = ScenarioPackRepository(storage: _packStorage);
+      final unlocked = await packsRepo.loadUnlockedPacks();
+
+      final byPack = <String, List<PracticeScenario>>{};
+      final all = <PracticeScenario>[];
+      for (final p in unlocked) {
+        final scenarios = await _repo.loadScenariosFromFiles(p.scenarioFiles);
+        byPack[p.packId] = scenarios;
+        all.addAll(scenarios);
+      }
+
       if (!mounted) return;
-      setState(() => _allScenarios = scenarios);
+      setState(() {
+        _unlockedPacks = unlocked;
+        _scenariosByPackId = byPack;
+        _allScenarios = all;
+      });
     } catch (e) {
       debugPrint('Failed to load scenarios: $e');
     } finally {
@@ -78,6 +100,7 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
 
     final typeOptions = _buildTypeOptions(_allScenarios);
     final filtered = _filterLocal(_allScenarios);
+    final grouped = _groupFilteredByPack(filtered);
 
     return Scaffold(
       body: SafeArea(
@@ -134,27 +157,11 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
             else
               SliverPadding(
                 padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.lg),
-                sliver: SliverList.separated(
-                  itemCount: filtered.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: AppSpacing.sm),
-                  itemBuilder: (context, index) {
-                    final s = filtered[index];
-                    final difficulty = (s.difficulty ?? 'Intermediate').trim().isEmpty ? 'Intermediate' : (s.difficulty ?? 'Intermediate').trim();
-                    final timed = s.timedModeAvailable ?? false;
-
-                    return _ScenarioListCard(
-                      title: s.title,
-                      type: s.type,
-                      chip: s.chip,
-                      difficulty: difficulty,
-                      timedModeAvailable: timed,
-                      variations: s.variations.length,
-                      questionPreview: s.studentQuestion,
-                      imageAssetPath: s.image,
-                      onPreview: () => _openPreview(s),
-                      onStart: () => _startBaseScenario(s),
-                    );
-                  },
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) => grouped[index],
+                    childCount: grouped.length,
+                  ),
                 ),
               ),
             const SliverToBoxAdapter(child: SizedBox(height: 90)),
@@ -162,6 +169,63 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
         ),
       ),
     );
+  }
+
+  List<Widget> _groupFilteredByPack(List<PracticeScenario> filtered) {
+    if (_unlockedPacks.isEmpty) return const <Widget>[];
+
+    final byId = <String, List<PracticeScenario>>{};
+    for (final p in _unlockedPacks) {
+      byId[p.packId] = const <PracticeScenario>[];
+    }
+
+    // Create fast lookup: scenarioId -> packId based on original pack loading.
+    final scenarioToPack = <String, String>{};
+    for (final entry in _scenariosByPackId.entries) {
+      for (final s in entry.value) {
+        if (s.id.trim().isNotEmpty) scenarioToPack[s.id] = entry.key;
+      }
+    }
+
+    for (final s in filtered) {
+      final pid = scenarioToPack[s.id] ?? _unlockedPacks.first.packId;
+      final existing = byId[pid] ?? const <PracticeScenario>[];
+      byId[pid] = [...existing, s];
+    }
+
+    final out = <Widget>[];
+    var firstSection = true;
+    for (final pack in _unlockedPacks) {
+      final items = byId[pack.packId] ?? const <PracticeScenario>[];
+      if (items.isEmpty) continue;
+      if (!firstSection) out.add(const SizedBox(height: AppSpacing.md));
+      firstSection = false;
+
+      out.add(_PackHeader(pack: pack, scenarioCount: items.length));
+      out.add(const SizedBox(height: AppSpacing.sm));
+
+      for (var i = 0; i < items.length; i++) {
+        final s = items[i];
+        final difficulty = (s.difficulty ?? 'Intermediate').trim().isEmpty ? 'Intermediate' : (s.difficulty ?? 'Intermediate').trim();
+        final timed = s.timedModeAvailable ?? false;
+        out.add(
+          _ScenarioListCard(
+            title: s.title,
+            type: s.type,
+            chip: s.chip,
+            difficulty: difficulty,
+            timedModeAvailable: timed,
+            variations: s.variations.length,
+            questionPreview: s.studentQuestion,
+            imageAssetPath: s.image,
+            onPreview: () => _openPreview(s),
+            onStart: () => _startBaseScenario(s),
+          ),
+        );
+        if (i != items.length - 1) out.add(const SizedBox(height: AppSpacing.sm));
+      }
+    }
+    return out;
   }
 
   List<String> _buildTypeOptions(List<PracticeScenario> scenarios) {
@@ -234,13 +298,38 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
   }
 
   Future<void> _startRandomFromCurrentFilters() async {
-    // Prefer picking a truly playable problem (base + variations) but constrained by current filters/search.
-    final playable = await _repo.randomPlayableAdvanced(
-      searchText: _searchController.text,
-      typeFilter: _selectedType == 'All Categories' ? 'All Types' : _selectedType,
-      levelFilter: _selectedLevel,
-      modeFilter: _selectedMode,
-    );
+    // Random should only come from the currently unlocked packs.
+    final unlockedFiles = _unlockedPacks.expand((p) => p.scenarioFiles).toList(growable: false);
+    final playablePool = await _repo.loadPlayableProblemsFromScenarioFiles(unlockedFiles);
+
+    bool typeOk(PlayableScenarioProblem p) {
+      if (_selectedType == 'All Categories' || _selectedType == 'All Types') return true;
+      return ScenarioRepository.normalize(p.type) == ScenarioRepository.normalize(_selectedType);
+    }
+
+    bool levelOk(PlayableScenarioProblem p) {
+      if (_selectedLevel == 'All Levels') return true;
+      final d = p.difficulty.trim().isEmpty ? 'Intermediate' : p.difficulty.trim();
+      return ScenarioRepository.normalize(d) == ScenarioRepository.normalize(_selectedLevel);
+    }
+
+    bool modeOk(PlayableScenarioProblem p) {
+      if (_selectedMode == 'All Modes') return true;
+      if (_selectedMode == 'Timed Available') return p.timedModeAvailable;
+      if (_selectedMode == 'Untimed') return !p.timedModeAvailable;
+      return true;
+    }
+
+    final q = _searchController.text.trim();
+    final filtered = playablePool.where((p) {
+      final matches = ScenarioRepository.matchesSearch(
+        searchText: q,
+        fields: [p.problemTitle, p.scenarioTitle, p.type, p.chip, p.difficulty, p.studentQuestion],
+      );
+      return matches && typeOk(p) && levelOk(p) && modeOk(p);
+    }).toList(growable: false);
+
+    final playable = filtered.isEmpty ? null : filtered[Random().nextInt(filtered.length)];
 
     if (!mounted) return;
 
@@ -1254,6 +1343,62 @@ class _LoadingState extends StatelessWidget {
             Text('Loading scenarios…', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed)),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _PackHeader extends StatelessWidget {
+  const _PackHeader({required this.pack, required this.scenarioCount});
+
+  final ScenarioPack pack;
+  final int scenarioCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final subtitle = pack.description.trim().isNotEmpty ? pack.description : '${pack.difficulty} • $scenarioCount scenarios';
+    return Container(
+      padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.md),
+      decoration: BoxDecoration(
+        color: FirePumpSimColors.charcoal2,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.85)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            height: 42,
+            width: 42,
+            decoration: BoxDecoration(
+              color: FirePumpSimColors.red.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: FirePumpSimColors.red.withValues(alpha: 0.35)),
+            ),
+            child: const Center(child: Icon(Icons.auto_stories, color: FirePumpSimColors.red, size: 20)),
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(pack.title, style: textTheme.titleMedium?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
+                const SizedBox(height: 4),
+                Text(subtitle, maxLines: 2, overflow: TextOverflow.ellipsis, style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed, height: 1.35)),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+            decoration: BoxDecoration(
+              color: FirePumpSimColors.charcoal3,
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.65)),
+            ),
+            child: Text('$scenarioCount', style: textTheme.labelLarge?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
+          ),
+        ],
       ),
     );
   }

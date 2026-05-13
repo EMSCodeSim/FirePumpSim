@@ -1,0 +1,8 @@
+{
+  "packId": "free_starter_pack",
+  "title": "Free Starter Pack",
+  "description": "Starter pump operator scenarios included with FirePumpSim.",
+  "isFree": true,
+  "isPurchased": true,
+  "scenarios": []
+}

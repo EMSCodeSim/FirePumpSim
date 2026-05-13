@@ -1,4 +1,6 @@
 import 'dart:math';
+import 'dart:async';
+import 'dart:convert';
 
 import 'package:firepumpsim/models/daily_challenge_models.dart';
 import 'package:firepumpsim/models/scenario_models.dart';
@@ -9,6 +11,7 @@ import 'package:firepumpsim/services/scenario_repository.dart';
 import 'package:firepumpsim/theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 class DailyChallengeScreen extends StatefulWidget {
@@ -23,6 +26,12 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
   final _storage = DailyChallengeStorage();
   final _answerCtrl = TextEditingController();
   final _scrollCtrl = ScrollController();
+
+  static const Duration _challengeDuration = Duration(minutes: 2);
+  Timer? _countdownTimer;
+  DateTime? _challengeEndsAt;
+  Duration _timeRemaining = _challengeDuration;
+  bool _timeExpired = false;
 
   bool _loading = true;
   String? _loadError;
@@ -52,6 +61,7 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
 
   @override
   void dispose() {
+    _countdownTimer?.cancel();
     _answerCtrl.dispose();
     _scrollCtrl.dispose();
     super.dispose();
@@ -68,8 +78,8 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
       final todayKey = _yyyyMmDd(today);
       final stats = await _storage.loadStats();
       final history = await _storage.loadHistory();
-      // Daily Challenge uses the *official* manifest ordering only.
-      final playable = await _repo.loadPlayableProblems(manifestOnly: true);
+      final indexFiles = await _loadDailyChallengeIndexFiles();
+      final playable = await _repo.loadPlayableProblemsFromScenarioFiles(indexFiles);
 
       if (playable.isEmpty) {
         setState(() {
@@ -102,6 +112,14 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
         }
       }
 
+      // Timer behavior: 2 minutes per day while the user is on this screen.
+      // - If the day changes, reset.
+      // - If the user already completed today correctly, stop the timer.
+      final isNewDay = _todayDate.isNotEmpty && _todayDate != todayKey;
+      if (_challengeEndsAt == null || isNewDay) {
+        _challengeEndsAt = DateTime.now().add(_challengeDuration);
+      }
+
       setState(() {
         _loading = false;
         _stats = stats;
@@ -111,6 +129,8 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
         _todayResult = todayResult;
         _practiceRetryEnabled = false;
       });
+
+      _startOrStopTimerIfNeeded();
     } catch (e) {
       debugPrint('DailyChallenge bootstrap failed: $e');
       setState(() {
@@ -118,6 +138,51 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
         _loadError = 'Today\'s challenge could not be loaded.';
       });
     }
+  }
+
+  Future<List<String>> _loadDailyChallengeIndexFiles() async {
+    try {
+      final raw = await rootBundle.loadString('assets/scenarios/daily-challenge-index.json');
+      final decoded = jsonDecode(raw);
+      if (decoded is! Map) return const <String>[];
+      final list = decoded['dailyChallengeFiles'];
+      if (list is! List) return const <String>[];
+      return list.map((e) => e.toString().trim()).where((e) => e.isNotEmpty).toList(growable: false);
+    } catch (e) {
+      debugPrint('Failed to load daily challenge index: $e');
+      return const <String>[];
+    }
+  }
+
+  void _startOrStopTimerIfNeeded() {
+    _countdownTimer?.cancel();
+
+    // If completed correctly, no need to run countdown.
+    if (_todayResult?.isCorrect == true) {
+      setState(() {
+        _timeRemaining = Duration.zero;
+        _timeExpired = false;
+      });
+      return;
+    }
+
+    final endsAt = _challengeEndsAt;
+    if (endsAt == null) return;
+
+    void tick() {
+      final remaining = endsAt.difference(DateTime.now());
+      final next = remaining.isNegative ? Duration.zero : remaining;
+      final expired = next == Duration.zero;
+      if (!mounted) return;
+      setState(() {
+        _timeRemaining = next;
+        _timeExpired = expired;
+      });
+      if (expired) _countdownTimer?.cancel();
+    }
+
+    tick();
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (_) => tick());
   }
 
   static String _yyyyMmDd(DateTime dt) {
@@ -159,21 +224,7 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
     return (_todayResult?.isCorrect == true) && !_practiceRetryEnabled;
   }
 
-  Future<void> _pickAnotherChallenge() async {
-    await _bootstrap();
-  }
-
-  Future<void> _tryAnotherRandomScenario() async {
-    final p = await _repo.randomPlayableAdvanced(searchText: '', typeFilter: 'All Types', levelFilter: 'All Levels', modeFilter: 'All Modes');
-    if (!mounted) return;
-    if (p == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: const Text('No scenarios available.'), backgroundColor: FirePumpSimColors.charcoal3, behavior: SnackBarBehavior.floating),
-      );
-      return;
-    }
-    context.go('${AppRoutes.scenarioPlayer}?problemId=${Uri.encodeComponent(p.problemId)}');
-  }
+  Future<void> _pickAnotherChallenge() async => _bootstrap();
 
   void _showSnackBar(String message) {
     if (!mounted) return;
@@ -184,12 +235,6 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
         behavior: SnackBarBehavior.floating,
       ),
     );
-  }
-
-  void _openFullScenario() {
-    final p = _today;
-    if (p == null) return;
-    context.go('${AppRoutes.scenarioPlayer}?problemId=${Uri.encodeComponent(p.problemId)}');
   }
 
   void _reviewFormula() => showFormulasOverlay(context);
@@ -267,23 +312,7 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
                       _DetailsCard(details: problem.details),
                     ],
                     const SizedBox(height: AppSpacing.lg),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 52,
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          context.pop();
-                          context.go('${AppRoutes.scenarioPlayer}?problemId=${Uri.encodeComponent(problem.problemId)}');
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: FirePumpSimColors.printGreen,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        ).copyWith(overlayColor: const WidgetStatePropertyAll(Colors.transparent)),
-                        icon: const Icon(Icons.play_arrow, color: Colors.white),
-                        label: Text('Open Full Scenario', style: textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w900)),
-                      ),
-                    ),
+                    // Daily Challenge is intentionally one self-contained question per day.
                   ],
                 ),
               ),
@@ -296,6 +325,11 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
 
   Future<void> _submitAnswer() async {
     if (_isOfficialLocked || _submitting) return;
+
+    if (_timeExpired) {
+      _showSnackBar('Time is up for today\'s Daily Challenge. Come back tomorrow.');
+      return;
+    }
 
     FocusScope.of(context).unfocus();
 
@@ -422,6 +456,8 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
         _practiceRetryEnabled = false;
       });
 
+      _startOrStopTimerIfNeeded();
+
       await Future<void>.delayed(const Duration(milliseconds: 40));
       if (!mounted) return;
       if (_scrollCtrl.hasClients) {
@@ -505,6 +541,8 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
                             date: _todayDate,
                             problem: _today!,
                             locked: _isOfficialLocked,
+                            timeRemaining: _timeRemaining,
+                            timeExpired: _timeExpired,
                             answerCtrl: _answerCtrl,
                             unit: _CorrectAnswerInfo.fromProblem(_today!).unit,
                             answerLabel: _CorrectAnswerInfo.fromProblem(_today!).label,
@@ -523,8 +561,6 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
                               explanation: _buildExplanation(_today!),
                               formulaBreakdown: _today!.formulaBreakdown,
                               onReviewFormula: _reviewFormula,
-                              onTryAnother: _tryAnotherRandomScenario,
-                              onOpenFullScenario: _openFullScenario,
                               onRetryPractice: () => setState(() {
                                 _practiceRetryEnabled = true;
                                 _todayResult = _todayResult; // keep record
@@ -636,6 +672,8 @@ class _TodayChallengeCard extends StatelessWidget {
     required this.date,
     required this.problem,
     required this.locked,
+    required this.timeRemaining,
+    required this.timeExpired,
     required this.answerCtrl,
     required this.unit,
     required this.answerLabel,
@@ -647,12 +685,21 @@ class _TodayChallengeCard extends StatelessWidget {
   final String date;
   final PlayableScenarioProblem problem;
   final bool locked;
+  final Duration timeRemaining;
+  final bool timeExpired;
   final TextEditingController answerCtrl;
   final String unit;
   final String answerLabel;
   final bool submitting;
   final Future<void> Function() onSubmit;
   final VoidCallback onPreview;
+
+  static String _formatMmSs(Duration d) {
+    final total = d.inSeconds.clamp(0, 24 * 3600);
+    final mm = (total ~/ 60).toString().padLeft(2, '0');
+    final ss = (total % 60).toString().padLeft(2, '0');
+    return '$mm:$ss';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -663,6 +710,14 @@ class _TodayChallengeCard extends StatelessWidget {
     final timed = problem.timedModeAvailable;
     final qType = _CorrectAnswerInfo.fromProblem(problem).questionType;
     final image = _pickImage(problem);
+
+    final showTimer = !locked;
+    final timerText = _formatMmSs(timeRemaining);
+    final lowTime = timeRemaining.inSeconds <= 30;
+    final timerColor = timeExpired
+        ? FirePumpSimColors.redSoft
+        : (lowTime ? Colors.orange : FirePumpSimColors.challengeBlue);
+    final submitEnabled = !locked && !submitting && !timeExpired;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
@@ -682,6 +737,23 @@ class _TodayChallengeCard extends StatelessWidget {
                   style: textTheme.labelLarge?.copyWith(color: FirePumpSimColors.textMed, fontWeight: FontWeight.w800),
                 ),
               ),
+              if (showTimer)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: timerColor.withValues(alpha: 0.14),
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(color: timerColor.withValues(alpha: 0.7)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(timeExpired ? Icons.timer_off : Icons.timer, size: 16, color: timerColor),
+                      const SizedBox(width: 6),
+                      Text(timerText, style: textTheme.labelSmall?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
+                    ],
+                  ),
+                ),
               if (locked)
                 _Badge(
                   label: 'COMPLETED',
@@ -711,21 +783,25 @@ class _TodayChallengeCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(problem.studentQuestion, style: textTheme.bodyMedium?.copyWith(color: FirePumpSimColors.textHigh, height: 1.4)),
           const SizedBox(height: 12),
-          _AnswerRow(answerCtrl: answerCtrl, unit: unit, label: answerLabel, enabled: !locked && !submitting),
+          _AnswerRow(answerCtrl: answerCtrl, unit: unit, label: answerLabel, enabled: !locked && !submitting && !timeExpired),
           const SizedBox(height: 12),
           SizedBox(
             height: 52,
             child: ElevatedButton.icon(
-              onPressed: (locked || submitting) ? null : () { onSubmit(); },
+              onPressed: submitEnabled ? () => onSubmit() : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: FirePumpSimColors.red,
                 disabledBackgroundColor: FirePumpSimColors.red.withValues(alpha: 0.25),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
-              icon: Icon(Icons.check_circle_outline, color: locked ? FirePumpSimColors.textMed : Colors.white),
+              icon: Icon(Icons.check_circle_outline, color: (locked || timeExpired) ? FirePumpSimColors.textMed : Colors.white),
               label: Text(
-                locked ? 'Challenge Completed' : (submitting ? 'Checking Answer...' : 'Submit Answer'),
-                style: textTheme.titleMedium?.copyWith(color: locked ? FirePumpSimColors.textMed : Colors.white, fontWeight: FontWeight.w900),
+                locked
+                    ? 'Challenge Completed'
+                    : (timeExpired
+                        ? 'Time\'s Up — Come Back Tomorrow'
+                        : (submitting ? 'Checking Answer...' : 'Submit Answer')),
+                style: textTheme.titleMedium?.copyWith(color: (locked || timeExpired) ? FirePumpSimColors.textMed : Colors.white, fontWeight: FontWeight.w900),
               ),
             ),
           ),
@@ -1154,8 +1230,6 @@ class _ResultCard extends StatelessWidget {
     required this.explanation,
     required this.formulaBreakdown,
     required this.onReviewFormula,
-    required this.onTryAnother,
-    required this.onOpenFullScenario,
     required this.onRetryPractice,
   });
 
@@ -1167,8 +1241,6 @@ class _ResultCard extends StatelessWidget {
   final String explanation;
   final List<dynamic> formulaBreakdown;
   final VoidCallback onReviewFormula;
-  final Future<void> Function() onTryAnother;
-  final VoidCallback onOpenFullScenario;
   final VoidCallback onRetryPractice;
 
   @override
@@ -1215,8 +1287,6 @@ class _ResultCard extends StatelessWidget {
             runSpacing: 10,
             children: [
               _ActionButton(label: 'Review Formula', icon: Icons.functions_outlined, color: FirePumpSimColors.red, onTap: onReviewFormula),
-              _ActionButton(label: 'Try Another Random Scenario', icon: Icons.shuffle, color: FirePumpSimColors.challengeBlue, onTapAsync: onTryAnother),
-              _ActionButton(label: 'Open Full Scenario', icon: Icons.play_circle_outline, color: FirePumpSimColors.printGreen, onTap: onOpenFullScenario),
               _ActionButton(label: 'Retry for Practice', icon: Icons.refresh, color: FirePumpSimColors.steel, onTap: onRetryPractice),
             ],
           ),
@@ -1634,7 +1704,7 @@ class _CorrectAnswerInfo {
 
   static _CorrectAnswerInfo fromProblem(PlayableScenarioProblem p) {
     final qt = _inferQuestionType(p);
-    final correct = _extractCorrectAnswer(p) ?? (p.correctPP is num ? (p.correctPP as num).toDouble() : null);
+    final correct = _extractCorrectAnswer(p);
 
     final jsonTol = p.tolerance is num ? (p.tolerance as num).toDouble() : double.tryParse('${p.tolerance}') ?? 0;
     final baseTol = jsonTol > 0 ? jsonTol : _defaultTolerance(qt);
@@ -1684,38 +1754,24 @@ class _CorrectAnswerInfo {
   }
 
   static double? _extractCorrectAnswer(PlayableScenarioProblem p) {
-    // Common top-level numeric fields.
-    final direct = <dynamic>[
-      // Newer scenario JSONs often use `answerValue` for non-PP questions
-      // while leaving `correctPP` / `pumpPressure` at 0 as placeholders.
-      p.answers['answerValue'],
-      p.answers['correctAnswer'],
-      p.answers['answer'],
-      p.answers['value'],
-      p.answers['nozzleReaction'],
-      p.answers['solidBoreFlow'],
-      p.answers['flow'],
-      p.answers['gpm'],
-      p.answers['pumpPressure'],
-      p.answers['correctPP'],
-      p.correctPP,
-    ];
-    for (final v in direct) {
-      final d = _asDouble(v);
-      if (d != null) return d;
-    }
-
+    // Answer checking priority (per FirePumpSim spec):
+    // 1) answers.answerValue
+    // 2) correctPP (top-level correctPP or answers.correctPP)
+    // 3) answers.pumpPressure
     final a = p.answers;
-    // Nested objects like answers.correct, answers.correctAnswer, answers.nozzleReaction, etc.
-    final nestedCandidates = <dynamic>[
-      a['correct'],
-      a['answers'],
-      a['answerValue'],
-      a['correctAnswer'],
-      a['nozzleReaction'],
-      a['pumpPressure'],
-    ];
 
+    final answerValue = _asDouble(a['answerValue']);
+    if (answerValue != null) return answerValue;
+
+    final correctPp = _asDouble(p.correctPP) ?? _asDouble(a['correctPP']);
+    if (correctPp != null) return correctPp;
+
+    final pumpPressure = _asDouble(a['pumpPressure']);
+    if (pumpPressure != null) return pumpPressure;
+
+    // Backward-compat search for older/odder JSON shapes.
+    // We still keep answerValue/correctPP/pumpPressure priority by checking those first.
+    final nestedCandidates = <dynamic>[a['correct'], a['answers'], a['correctAnswer'], a['answer'], a['value']];
     for (final n in nestedCandidates) {
       final d = _searchForNumericAnswer(n);
       if (d != null) return d;

@@ -19,6 +19,8 @@ class ScenarioRepository {
   List<PlayableScenarioProblem>? _cachedPlayable;
   _ScenarioAssetResolver? _assetResolver;
 
+  static const String scenariosDir = 'assets/scenarios/';
+
   static String normalize(String input) => input.toLowerCase().trim().replaceAll(RegExp(r'[_\-\s]+'), ' ');
 
   static bool _matchesFilter(String value, String filter) {
@@ -93,83 +95,109 @@ class ScenarioRepository {
     }
   }
 
-  Future<List<String>> _loadScenarioFileList({required bool manifestOnly}) async {
-    // 1) Try explicit manifest first.
+  /// Loads scenarios from an explicit list of filenames or asset paths.
+  ///
+  /// Accepted inputs:
+  /// - "foo.json" (assumes `assets/scenarios/foo.json`)
+  /// - "assets/scenarios/foo.json" (used as-is)
+  Future<List<PracticeScenario>> loadScenariosFromFiles(List<String> files) async {
     try {
-      final manifestStr = await rootBundle.loadString('assets/scenarios/scenario_manifest.json');
-      final decoded = jsonDecode(manifestStr);
-      final files = (decoded is Map && decoded['files'] is List) ? List<String>.from(decoded['files'] as List) : <String>[];
-      final cleaned = files.map((e) => e.toString().trim()).where((e) => e.isNotEmpty).toList(growable: false);
+      _assetResolver ??= await _ScenarioAssetResolver.create();
+      final assetPaths = files
+          .map((f) => f.toString().trim())
+          .where((f) => f.isNotEmpty)
+          .map(_toScenarioAssetPath)
+          .toList(growable: false);
 
-      // When a caller explicitly requests manifest-only loading, respect it.
-      if (manifestOnly && cleaned.isNotEmpty) return cleaned;
-
-      // If a manifest exists, keep its ordering as "Recommended", but also
-      // include any additional scenario JSON files that are bundled but not
-      // listed yet. This prevents the common "only the manifest scenarios load"
-      // issue when new packs are added.
-      if (cleaned.isNotEmpty) {
-        final extra = await _enumerateAllScenarioJsonAssets();
-        if (extra.isEmpty) return cleaned;
-
-        final cleanedSet = cleaned.toSet();
-        final missing = extra.where((p) => !cleanedSet.contains(p)).toList(growable: false);
-        if (missing.isEmpty) return cleaned;
-
-        // Stable append ordering for anything not in the manifest.
-        final sortedMissing = [...missing]..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
-        return [...cleaned, ...sortedMissing];
+      final scenarios = <PracticeScenario>[];
+      for (final assetPath in assetPaths) {
+        try {
+          final jsonStr = await rootBundle.loadString(assetPath);
+          final obj = jsonDecode(jsonStr);
+          if (obj is Map) {
+            final map = Map<String, dynamic>.from(obj);
+            final expanded = _expandScenarioContainer(map, containerAssetPath: assetPath);
+            scenarios.addAll(expanded);
+          }
+        } catch (e) {
+          debugPrint('Failed to load scenario file $assetPath: $e');
+        }
       }
+      return scenarios;
     } catch (e) {
-      // Ignore and fall back to AssetManifest.
-      debugPrint('Scenario manifest not usable; falling back to AssetManifest: $e');
+      debugPrint('Failed to load scenarios from explicit file list: $e');
+      return const <PracticeScenario>[];
     }
+  }
 
-    if (manifestOnly) {
-      // Manifest-only requested but we couldn't load a usable manifest.
-      // Return empty so callers can show the correct error state.
-      return const [];
-    }
-
-    // 2) Enumerate all scenario JSON files included in the Flutter asset bundle.
+  /// Supports both:
+  /// 1) A normal scenario JSON that maps directly to [PracticeScenario].
+  /// 2) A "pack JSON" that contains `scenarios: []` where each entry is a
+  ///    scenario object.
+  ///
+  /// This enables packs like:
+  /// `assets/scenarios/packs/free_starter_pack.json`
+  /// without requiring each scenario to live in its own JSON file.
+  List<PracticeScenario> _expandScenarioContainer(Map<String, dynamic> json, {required String containerAssetPath}) {
     try {
-      final scenarioJsons = await _enumerateAllScenarioJsonAssets();
-      final sorted = [...scenarioJsons]..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
-      return sorted;
+      final rawScenarios = json['scenarios'];
+      if (rawScenarios is List) {
+        final packId = (json['packId'] ?? '').toString().trim();
+        final idPrefix = packId.isNotEmpty ? packId : _basenameNoExt(containerAssetPath);
+        final seenIds = <String>{};
+
+        final out = <PracticeScenario>[];
+        for (var i = 0; i < rawScenarios.length; i++) {
+          final raw = rawScenarios[i];
+          if (raw is! Map) continue;
+
+          final child = Map<String, dynamic>.from(raw);
+          // Ensure each embedded scenario has a stable, non-empty ID.
+          final existingId = (child['id'] ?? child['scenarioId'] ?? '').toString().trim();
+          var id = existingId;
+          if (id.isEmpty) id = '${idPrefix}__s$i';
+          if (seenIds.contains(id)) id = '${idPrefix}__s${i}_${seenIds.length}';
+          seenIds.add(id);
+          child['id'] = id;
+
+          _assetResolver?.rewriteScenarioImageFields(child, scenarioJsonAssetPath: containerAssetPath);
+          final scenario = PracticeScenario.fromJson(child);
+          if (scenario.id.trim().isNotEmpty && scenario.title.trim().isNotEmpty) out.add(scenario);
+        }
+        return out;
+      }
+
+      // Normal single-scenario file.
+      _assetResolver?.rewriteScenarioImageFields(json, scenarioJsonAssetPath: containerAssetPath);
+      final scenario = PracticeScenario.fromJson(json);
+      if (scenario.id.trim().isNotEmpty && scenario.title.trim().isNotEmpty) return <PracticeScenario>[scenario];
+      return const <PracticeScenario>[];
     } catch (e) {
-      debugPrint('Failed to enumerate scenario assets via AssetManifest: $e');
-      return const [];
+      debugPrint('Failed to parse scenario container $containerAssetPath: $e');
+      return const <PracticeScenario>[];
     }
   }
 
-  Future<List<String>> _enumerateAllScenarioJsonAssets() async {
-    final assetManifestStr = await rootBundle.loadString('AssetManifest.json');
-    final decoded = jsonDecode(assetManifestStr);
-    if (decoded is! Map) return const [];
-
-    final keys = decoded.keys.map((e) => e.toString()).toList(growable: false);
-    final scenarioJsons = keys
-        .where((k) => k.startsWith('assets/scenarios/'))
-        .where((k) => k.toLowerCase().endsWith('.json'))
-        .where((k) => !k.toLowerCase().endsWith('/scenario_manifest.json'))
-        .toList(growable: false);
-    return scenarioJsons;
+  static String _basenameNoExt(String path) {
+    final trimmed = path.trim();
+    if (trimmed.isEmpty) return '';
+    final i = trimmed.lastIndexOf('/');
+    final base = i >= 0 ? trimmed.substring(i + 1) : trimmed;
+    final dot = base.toLowerCase().lastIndexOf('.json');
+    return dot > 0 ? base.substring(0, dot) : base;
   }
 
-  Future<List<PlayableScenarioProblem>> loadPlayableProblems({bool manifestOnly = false}) async {
-    if (!manifestOnly && _cachedPlayable != null) return _cachedPlayable!;
-    final scenarios = await loadScenarios(manifestOnly: manifestOnly);
+  Future<List<PlayableScenarioProblem>> loadPlayableProblemsFromScenarioFiles(List<String> files) async {
+    final scenarios = await loadScenariosFromFiles(files);
+    return _flattenPlayableFromScenarios(scenarios);
+  }
 
+  List<PlayableScenarioProblem> _flattenPlayableFromScenarios(List<PracticeScenario> scenarios) {
     final playable = <PlayableScenarioProblem>[];
     for (final s in scenarios) {
       final baseDifficulty = (s.difficulty ?? 'Intermediate').trim();
       final baseTimed = s.timedModeAvailable ?? false;
 
-      // Important: Newer FirePumpSim packs put every real standalone question
-      // inside `problems[]` / `variations[]`. Do NOT create an extra empty base
-      // playable for those packs, because it opens with missing overlays,
-      // question text, and info. Only create a base playable when there are no
-      // child problems.
       if (s.variations.isEmpty) {
         playable.add(
           PlayableScenarioProblem(
@@ -239,7 +267,83 @@ class ScenarioRepository {
         );
       }
     }
+    return playable;
+  }
 
+  static String _toScenarioAssetPath(String fileOrPath) {
+    final f = fileOrPath.trim();
+    if (f.toLowerCase().startsWith('assets/')) return f;
+    return '$scenariosDir$f';
+  }
+
+  Future<List<String>> _loadScenarioFileList({required bool manifestOnly}) async {
+    // 1) Try explicit manifest first.
+    try {
+      final manifestStr = await rootBundle.loadString('assets/scenarios/scenario_manifest.json');
+      final decoded = jsonDecode(manifestStr);
+      final files = (decoded is Map && decoded['files'] is List) ? List<String>.from(decoded['files'] as List) : <String>[];
+      final cleaned = files.map((e) => e.toString().trim()).where((e) => e.isNotEmpty).toList(growable: false);
+
+      // When a caller explicitly requests manifest-only loading, respect it.
+      if (manifestOnly && cleaned.isNotEmpty) return cleaned;
+
+      // If a manifest exists, keep its ordering as "Recommended", but also
+      // include any additional scenario JSON files that are bundled but not
+      // listed yet. This prevents the common "only the manifest scenarios load"
+      // issue when new packs are added.
+      if (cleaned.isNotEmpty) {
+        final extra = await _enumerateAllScenarioJsonAssets();
+        if (extra.isEmpty) return cleaned;
+
+        final cleanedSet = cleaned.toSet();
+        final missing = extra.where((p) => !cleanedSet.contains(p)).toList(growable: false);
+        if (missing.isEmpty) return cleaned;
+
+        // Stable append ordering for anything not in the manifest.
+        final sortedMissing = [...missing]..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+        return [...cleaned, ...sortedMissing];
+      }
+    } catch (e) {
+      // Ignore and fall back to AssetManifest.
+      debugPrint('Scenario manifest not usable; falling back to AssetManifest: $e');
+    }
+
+    if (manifestOnly) {
+      // Manifest-only requested but we couldn't load a usable manifest.
+      // Return empty so callers can show the correct error state.
+      return const [];
+    }
+
+    // 2) Enumerate all scenario JSON files included in the Flutter asset bundle.
+    try {
+      final scenarioJsons = await _enumerateAllScenarioJsonAssets();
+      final sorted = [...scenarioJsons]..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+      return sorted;
+    } catch (e) {
+      debugPrint('Failed to enumerate scenario assets via AssetManifest: $e');
+      return const [];
+    }
+  }
+
+  Future<List<String>> _enumerateAllScenarioJsonAssets() async {
+    final assetManifestStr = await rootBundle.loadString('AssetManifest.json');
+    final decoded = jsonDecode(assetManifestStr);
+    if (decoded is! Map) return const [];
+
+    final keys = decoded.keys.map((e) => e.toString()).toList(growable: false);
+    final scenarioJsons = keys
+        .where((k) => k.startsWith('assets/scenarios/'))
+        .where((k) => k.toLowerCase().endsWith('.json'))
+        .where((k) => !k.toLowerCase().endsWith('/scenario_manifest.json'))
+        .toList(growable: false);
+    return scenarioJsons;
+  }
+
+  Future<List<PlayableScenarioProblem>> loadPlayableProblems({bool manifestOnly = false}) async {
+    if (!manifestOnly && _cachedPlayable != null) return _cachedPlayable!;
+    final scenarios = await loadScenarios(manifestOnly: manifestOnly);
+
+    final playable = _flattenPlayableFromScenarios(scenarios);
     if (!manifestOnly) _cachedPlayable = playable;
     return playable;
   }
