@@ -62,18 +62,19 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
   }
 
   num? _expectedAnswer(PlayableScenarioProblem p) {
-    if (p.correctPP is num) return p.correctPP;
-
-    // Fall back to answers map if a pack uses it for numeric targets.
+    // New starter-pack and non-PP scenarios should grade answerValue first.
+    // correctPP is only a fallback for legacy pump-pressure scenarios.
     final candidates = <dynamic>[
-      p.answers['pp'],
-      p.answers['PP'],
-      p.answers['correctPP'],
-      p.answers['pumpPressure'],
+      p.answers['answerValue'],
       p.answers['correctAnswer'],
       p.answers['answer'],
       p.answers['value'],
       p.answers['target'],
+      p.correctPP,
+      p.answers['pp'],
+      p.answers['PP'],
+      p.answers['correctPP'],
+      p.answers['pumpPressure'],
     ];
     for (final c in candidates) {
       if (c is num) return c;
@@ -100,7 +101,8 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
     if (expected == null) return false;
 
     final raw = _answerController.text.trim().replaceAll(',', '');
-    final user = num.tryParse(raw);
+    final match = RegExp(r'-?\d+(?:\.\d+)?').firstMatch(raw);
+    final user = match == null ? null : num.tryParse(match.group(0)!);
     if (user == null) return false;
 
     final tol = _tolerance(p);

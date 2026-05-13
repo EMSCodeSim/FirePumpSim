@@ -358,18 +358,34 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
   }
 
   Future<void> _startBaseScenario(PracticeScenario scenario) async {
-    final playable = await _repo.startBaseProblem(scenario.id);
+    // Practice Scenarios are loaded from unlocked pack files. Start the selected
+    // scenario from that same unlocked-pack pool instead of relying on the
+    // global scenario manifest. This prevents starter-pack scenarios from
+    // appearing in the picker but failing to open in the player.
+    final unlockedFiles = _unlockedPacks.expand((p) => p.scenarioFiles).toList(growable: false);
+    final playablePool = await _repo.loadPlayableProblemsFromScenarioFiles(unlockedFiles);
+    var matches = playablePool.where((p) => p.scenarioId == scenario.id).toList(growable: false);
+
+    // Fallback for older/current scenarios that may not be in a pack yet.
+    if (matches.isEmpty) {
+      final fallback = await _repo.startBaseProblem(scenario.id);
+      if (fallback != null) matches = <PlayableScenarioProblem>[fallback];
+    }
+
     if (!mounted) return;
-    if (playable == null) {
+    if (matches.isEmpty) {
       debugPrint('Failed to start base scenario. scenarioId=${scenario.id} title=${scenario.title}');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Unable to start this scenario. Check the scenario manifest/JSON.'),
+          content: const Text('Unable to start this scenario. Check the pack JSON and scenario-packs.json.'),
           backgroundColor: FirePumpSimColors.charcoal2,
         ),
       );
       return;
     }
+
+    // Prefer the first real problem from problems[].
+    final playable = matches.firstWhere((p) => p.isVariation, orElse: () => matches.first);
     await _goToPlayer(playable.problemId);
   }
 
