@@ -662,6 +662,16 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
                   decoration: pw.BoxDecoration(border: pw.Border.all(color: PdfColors.black, width: 0.8)),
                   child: pw.Stack(
                     children: [
+                          pw.Positioned.fill(
+                            child: pw.CustomPaint(
+                              painter: (PdfGraphics canvas, PdfPoint size) => _pdfPaintSceneBackground(
+                                canvas,
+                                size,
+                                drawFallbackTruck: truck == null,
+                                drawFallbackTarget: targets.isEmpty,
+                              ),
+                            ),
+                          ),
                       if (truck != null)
                         pw.Positioned(left: 4, bottom: 4, child: pw.SizedBox(width: 44, height: 26, child: pw.Image(truck, fit: pw.BoxFit.contain))),
                       if (targets.isNotEmpty) ..._pdfTargetPositions(targets),
@@ -672,8 +682,6 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
                             size,
                             hoseLabel: '${scenario.hoseDiameterLabel} • ${scenario.lengthFt} ft',
                             flowLabel: '${scenario.gpm} GPM',
-                            drawFallbackTruck: truck == null,
-                            drawFallbackTarget: targets.isEmpty,
                           ),
                         ),
                       ),
@@ -792,8 +800,6 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
     PdfPoint size, {
     required String hoseLabel,
     required String flowLabel,
-    required bool drawFallbackTruck,
-    required bool drawFallbackTarget,
   }) {
     final w = size.x;
     final h = size.y;
@@ -801,18 +807,13 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
     final stroke = PdfColor.fromInt(0xFF000000);
     final faint = PdfColor.fromInt(0xFFEEEEEE);
 
-    canvas
-      ..setColor(stroke)
-      ..setLineWidth(1.0)
-      ..moveTo(6, h - 10)
-      ..lineTo(w - 6, h - 10)
-      ..strokePath();
-
     // Hose path.
     final truckAnchor = PdfPoint(50, h - 26);
     final targetAnchor = PdfPoint(w - 44, 28);
     final control = PdfPoint(w * 0.58, h * 0.55);
     canvas
+      ..setColor(stroke)
+      ..setLineWidth(1.0)
       ..moveTo(truckAnchor.x, truckAnchor.y)
       ..lineTo(control.x, control.y)
       ..lineTo(targetAnchor.x, targetAnchor.y)
@@ -823,6 +824,29 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
       ..drawRect(targetAnchor.x - 4, targetAnchor.y - 2, 8, 4)
       ..strokePath();
 
+  }
+
+  void _pdfPaintSceneBackground(
+    PdfGraphics canvas,
+    PdfPoint size, {
+    required bool drawFallbackTruck,
+    required bool drawFallbackTarget,
+  }) {
+    final w = size.x;
+    final h = size.y;
+
+    final stroke = PdfColor.fromInt(0xFF000000);
+    final faint = PdfColor.fromInt(0xFFEEEEEE);
+
+    // Background / groundline.
+    canvas
+      ..setColor(stroke)
+      ..setLineWidth(1.0)
+      ..moveTo(6, h - 10)
+      ..lineTo(w - 6, h - 10)
+      ..strokePath();
+
+    // Fallback shapes if assets are missing.
     if (drawFallbackTruck) {
       canvas
         ..setColor(faint)
@@ -861,7 +885,7 @@ class PrintableSceneWidget extends StatefulWidget {
 
 class _PrintableSceneWidgetState extends State<PrintableSceneWidget> {
   bool _truckOk = true;
-  bool _targetOk = true;
+  final Map<String, bool> _targetOkByAsset = <String, bool>{};
 
   @override
   void didChangeDependencies() {
@@ -888,25 +912,35 @@ class _PrintableSceneWidgetState extends State<PrintableSceneWidget> {
 
     final targets = PrintableScenarioAssetPack.targetAssetsFor(widget.targetArtwork);
     final okTruck = await cache(PrintableScenarioAssetPack.truck);
-    bool okTargets = true;
+    final okMap = <String, bool>{};
     for (final t in targets) {
-      final ok = await cache(t);
-      okTargets = okTargets && ok;
+      okMap[t] = await cache(t);
     }
 
     if (!mounted) return;
     setState(() {
       _truckOk = okTruck;
-      _targetOk = okTargets;
+      _targetOkByAsset
+        ..clear()
+        ..addAll(okMap);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final targets = PrintableScenarioAssetPack.targetAssetsFor(widget.targetArtwork);
+    final anyTargetOk = targets.any((t) => _targetOkByAsset[t] == true);
     return Stack(
       fit: StackFit.expand,
       children: [
+        Positioned.fill(
+          child: CustomPaint(
+            painter: _PrintableSceneBackgroundPainter(
+              drawFallbackTruck: !_truckOk,
+              drawFallbackTarget: !anyTargetOk,
+            ),
+          ),
+        ),
         if (_truckOk)
           Positioned(
             left: 4,
@@ -915,14 +949,12 @@ class _PrintableSceneWidgetState extends State<PrintableSceneWidget> {
             height: 26,
             child: Image.asset(PrintableScenarioAssetPack.truck, fit: BoxFit.contain, color: Colors.black, colorBlendMode: BlendMode.srcIn),
           ),
-        if (_targetOk) ..._targetWidgets(targets),
+        ..._targetWidgets(targets),
         Positioned.fill(
           child: CustomPaint(
             painter: _PrintableHosePainter(
               hoseLabel: widget.hoseLabel,
               flowLabel: widget.flowLabel,
-              drawFallbackTruck: !_truckOk,
-              drawFallbackTarget: !_targetOk,
             ),
           ),
         ),
@@ -932,6 +964,7 @@ class _PrintableSceneWidgetState extends State<PrintableSceneWidget> {
 
   List<Widget> _targetWidgets(List<String> targets) {
     Widget img(String path, {double? w, double? h}) {
+      if (_targetOkByAsset[path] != true) return const SizedBox();
       return Image.asset(path, fit: BoxFit.contain, color: Colors.black, colorBlendMode: BlendMode.srcIn, errorBuilder: (_, __, ___) => const SizedBox());
     }
 
@@ -945,16 +978,9 @@ class _PrintableSceneWidgetState extends State<PrintableSceneWidget> {
   }
 }
 
-class _PrintableHosePainter extends CustomPainter {
-  const _PrintableHosePainter({
-    required this.hoseLabel,
-    required this.flowLabel,
-    required this.drawFallbackTruck,
-    required this.drawFallbackTarget,
-  });
+class _PrintableSceneBackgroundPainter extends CustomPainter {
+  const _PrintableSceneBackgroundPainter({required this.drawFallbackTruck, required this.drawFallbackTarget});
 
-  final String hoseLabel;
-  final String flowLabel;
   final bool drawFallbackTruck;
   final bool drawFallbackTarget;
 
@@ -963,8 +989,10 @@ class _PrintableHosePainter extends CustomPainter {
     final stroke = Paint()..color = Colors.black..style = PaintingStyle.stroke..strokeWidth = 1;
     final fill = Paint()..color = Colors.black.withValues(alpha: 0.06)..style = PaintingStyle.fill;
 
+    // Background / groundline.
     canvas.drawLine(Offset(4, size.height - 10), Offset(size.width - 4, size.height - 10), stroke);
 
+    // Fallback shapes ONLY if the asset image(s) are missing.
     final truck = Rect.fromLTWH(10, size.height - 30, 40, 16);
     final target = Rect.fromLTWH(size.width - 50, 10, 36, 22);
 
@@ -979,6 +1007,28 @@ class _PrintableHosePainter extends CustomPainter {
       final roof = Path()..moveTo(target.left, target.top)..lineTo(target.left + target.width / 2, target.top - 8)..lineTo(target.right, target.top)..close();
       canvas.drawPath(roof, stroke);
     }
+  }
+
+  @override
+  bool shouldRepaint(covariant _PrintableSceneBackgroundPainter oldDelegate) {
+    return oldDelegate.drawFallbackTruck != drawFallbackTruck || oldDelegate.drawFallbackTarget != drawFallbackTarget;
+  }
+}
+
+class _PrintableHosePainter extends CustomPainter {
+  const _PrintableHosePainter({
+    required this.hoseLabel,
+    required this.flowLabel,
+  });
+
+  final String hoseLabel;
+  final String flowLabel;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final stroke = Paint()..color = Colors.black..style = PaintingStyle.stroke..strokeWidth = 1;
+    final truck = Rect.fromLTWH(10, size.height - 30, 40, 16);
+    final target = Rect.fromLTWH(size.width - 50, 10, 36, 22);
 
     final p0 = Offset(truck.right, truck.top);
     final p2 = Offset(target.left, target.bottom);
@@ -1000,7 +1050,7 @@ class _PrintableHosePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _PrintableHosePainter oldDelegate) {
-    return oldDelegate.hoseLabel != hoseLabel || oldDelegate.flowLabel != flowLabel || oldDelegate.drawFallbackTruck != drawFallbackTruck || oldDelegate.drawFallbackTarget != drawFallbackTarget;
+    return oldDelegate.hoseLabel != hoseLabel || oldDelegate.flowLabel != flowLabel;
   }
 }
 

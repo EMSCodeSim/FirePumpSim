@@ -1,4 +1,6 @@
 import 'package:firepumpsim/nav.dart';
+import 'package:firepumpsim/models/daily_challenge_models.dart';
+import 'package:firepumpsim/services/daily_challenge_storage.dart';
 import 'package:firepumpsim/theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +14,31 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final _dailyStorage = DailyChallengeStorage();
+  DailyChallengeStats _dailyStats = DailyChallengeStats.empty;
+  bool _dailyLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDaily();
+  }
+
+  Future<void> _loadDaily() async {
+    try {
+      final s = await _dailyStorage.loadStats();
+      if (!mounted) return;
+      setState(() {
+        _dailyStats = s;
+        _dailyLoaded = true;
+      });
+    } catch (e) {
+      debugPrint('Home daily stats load failed: $e');
+      if (!mounted) return;
+      setState(() => _dailyLoaded = true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.sizeOf(context).height;
@@ -59,10 +86,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     _MainMenuCard(
                       height: cardHeight,
                       title: 'Daily Challenge',
-                      description: 'One new problem daily',
+                      description: _dailyLoaded
+                          ? (_dailyStats.currentStreak > 0 ? 'New challenge today • Streak ${_dailyStats.currentStreak}d' : 'New challenge today')
+                          : 'Loading…',
                       icon: Icons.calendar_today,
                       indicator: const _TodayPill(),
-                      onTap: () => _comingSoon(context, 'Daily Challenge'),
+                      onTap: () => context.go(AppRoutes.dailyChallenge),
                     ),
                     const SizedBox(height: gap),
                     _MainMenuCard(
@@ -70,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       title: 'Scenario Library',
                       description: 'Browse scenario packs',
                       icon: Icons.auto_stories,
-                      onTap: () => _comingSoon(context, 'Scenario Library'),
+                      onTap: () => context.go(AppRoutes.scenarioLibrary),
                     ),
                     const SizedBox(height: 10),
                     const _SectionLabel('TOOLS'),
@@ -100,16 +129,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _comingSoon(BuildContext context, String label) {
-    debugPrint('$label tapped (coming soon)');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$label is coming soon.'),
-        backgroundColor: FirePumpSimColors.charcoal3,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
+  // Intentionally left without a "coming soon" snackbar: the Scenario Library
+  // now navigates to a dedicated page.
 }
 
 class _HeroHeader extends StatelessWidget {

@@ -17,6 +17,7 @@ class ScenarioRepository {
 
   List<PracticeScenario>? _cachedScenarios;
   List<PlayableScenarioProblem>? _cachedPlayable;
+  _ScenarioAssetResolver? _assetResolver;
 
   static String normalize(String input) => input.toLowerCase().trim().replaceAll(RegExp(r'[_\-\s]+'), ' ');
 
@@ -52,13 +53,19 @@ class ScenarioRepository {
     }
   }
 
-  Future<List<PracticeScenario>> loadScenarios() async {
-    if (_cachedScenarios != null) return _cachedScenarios!;
+  Future<List<PracticeScenario>> loadScenarios({bool manifestOnly = false}) async {
+    // Only cache the default (non-manifestOnly) load to avoid confusing callers
+    // that need different source sets.
+    if (!manifestOnly && _cachedScenarios != null) return _cachedScenarios!;
 
     try {
-      final manifestStr = await rootBundle.loadString('assets/scenarios/scenario_manifest.json');
-      final decoded = jsonDecode(manifestStr);
-      final files = (decoded is Map && decoded['files'] is List) ? List<String>.from(decoded['files'] as List) : <String>[];
+      _assetResolver ??= await _ScenarioAssetResolver.create();
+
+      // Prefer our explicit scenario manifest (keeps a stable recommended order),
+      // but gracefully fall back to enumerating bundled assets via AssetManifest.
+      // This prevents regressions when new scenario packs are added without
+      // updating scenario_manifest.json.
+      final files = await _loadScenarioFileList(manifestOnly: manifestOnly);
 
       final scenarios = <PracticeScenario>[];
       for (final file in files) {
@@ -66,6 +73,9 @@ class ScenarioRepository {
           final jsonStr = await rootBundle.loadString(file);
           final obj = jsonDecode(jsonStr);
           if (obj is Map<String, dynamic>) {
+            // Some scenario packs provide only a filename (e.g. "foo.png") for
+            // images. Resolve those to real Flutter asset keys.
+            _assetResolver?.rewriteScenarioImageFields(obj, scenarioJsonAssetPath: file);
             final scenario = PracticeScenario.fromJson(obj);
             if (scenario.id.trim().isNotEmpty && scenario.title.trim().isNotEmpty) scenarios.add(scenario);
           }
@@ -74,18 +84,81 @@ class ScenarioRepository {
         }
       }
 
-      _cachedScenarios = scenarios;
+      if (!manifestOnly) _cachedScenarios = scenarios;
       return scenarios;
     } catch (e) {
-      debugPrint('Failed to load scenario manifest: $e');
-      _cachedScenarios = const [];
+      debugPrint('Failed to load scenarios: $e');
+      if (!manifestOnly) _cachedScenarios = const [];
       return const [];
     }
   }
 
-  Future<List<PlayableScenarioProblem>> loadPlayableProblems() async {
-    if (_cachedPlayable != null) return _cachedPlayable!;
-    final scenarios = await loadScenarios();
+  Future<List<String>> _loadScenarioFileList({required bool manifestOnly}) async {
+    // 1) Try explicit manifest first.
+    try {
+      final manifestStr = await rootBundle.loadString('assets/scenarios/scenario_manifest.json');
+      final decoded = jsonDecode(manifestStr);
+      final files = (decoded is Map && decoded['files'] is List) ? List<String>.from(decoded['files'] as List) : <String>[];
+      final cleaned = files.map((e) => e.toString().trim()).where((e) => e.isNotEmpty).toList(growable: false);
+
+      // When a caller explicitly requests manifest-only loading, respect it.
+      if (manifestOnly && cleaned.isNotEmpty) return cleaned;
+
+      // If a manifest exists, keep its ordering as "Recommended", but also
+      // include any additional scenario JSON files that are bundled but not
+      // listed yet. This prevents the common "only the manifest scenarios load"
+      // issue when new packs are added.
+      if (cleaned.isNotEmpty) {
+        final extra = await _enumerateAllScenarioJsonAssets();
+        if (extra.isEmpty) return cleaned;
+
+        final cleanedSet = cleaned.toSet();
+        final missing = extra.where((p) => !cleanedSet.contains(p)).toList(growable: false);
+        if (missing.isEmpty) return cleaned;
+
+        // Stable append ordering for anything not in the manifest.
+        final sortedMissing = [...missing]..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+        return [...cleaned, ...sortedMissing];
+      }
+    } catch (e) {
+      // Ignore and fall back to AssetManifest.
+      debugPrint('Scenario manifest not usable; falling back to AssetManifest: $e');
+    }
+
+    if (manifestOnly) {
+      // Manifest-only requested but we couldn't load a usable manifest.
+      // Return empty so callers can show the correct error state.
+      return const [];
+    }
+
+    // 2) Enumerate all scenario JSON files included in the Flutter asset bundle.
+    try {
+      final scenarioJsons = await _enumerateAllScenarioJsonAssets();
+      final sorted = [...scenarioJsons]..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+      return sorted;
+    } catch (e) {
+      debugPrint('Failed to enumerate scenario assets via AssetManifest: $e');
+      return const [];
+    }
+  }
+
+  Future<List<String>> _enumerateAllScenarioJsonAssets() async {
+    final assetManifestStr = await rootBundle.loadString('AssetManifest.json');
+    final decoded = jsonDecode(assetManifestStr);
+    if (decoded is! Map) return const [];
+
+    final keys = decoded.keys.map((e) => e.toString()).toList(growable: false);
+    final scenarioJsons = keys
+        .where((k) => k.startsWith('assets/scenarios/'))
+        .where((k) => k.toLowerCase().endsWith('.json'))
+        .where((k) => !k.toLowerCase().endsWith('/scenario_manifest.json'))
+        .toList(growable: false);
+    return scenarioJsons;
+  }
+
+  Future<List<PlayableScenarioProblem>> loadPlayableProblems({bool manifestOnly = false}) async {
+    if (!manifestOnly && _cachedPlayable != null) return _cachedPlayable!;
+    final scenarios = await loadScenarios(manifestOnly: manifestOnly);
 
     final playable = <PlayableScenarioProblem>[];
     for (final s in scenarios) {
@@ -159,7 +232,7 @@ class ScenarioRepository {
       }
     }
 
-    _cachedPlayable = playable;
+    if (!manifestOnly) _cachedPlayable = playable;
     return playable;
   }
 
@@ -322,5 +395,88 @@ class ScenarioRepository {
     final variations = playable.where((p) => p.scenarioId == scenarioId && p.isVariation).toList(growable: false);
     if (variations.isEmpty) return null;
     return variations[_random.nextInt(variations.length)];
+  }
+}
+
+/// Resolves scenario JSON image references to actual Flutter asset keys.
+///
+/// Why: Scenario packs often store only the image filename (or a relative path)
+/// in the JSON (e.g. "car_fire.png"). Our UI widgets expect a valid
+/// `assets/...` path for `Image.asset()`.
+class _ScenarioAssetResolver {
+  _ScenarioAssetResolver._(this._assetsByBasenameLower);
+
+  final Map<String, String> _assetsByBasenameLower;
+
+  static Future<_ScenarioAssetResolver> create() async {
+    try {
+      final manifestStr = await rootBundle.loadString('AssetManifest.json');
+      final decoded = jsonDecode(manifestStr);
+      if (decoded is! Map) return _ScenarioAssetResolver._(const {});
+
+      final keys = decoded.keys.map((e) => e.toString()).toList(growable: false);
+
+      // Prefer `assets/images/` first because that’s where scenarios currently live.
+      int score(String p) {
+        final lower = p.toLowerCase();
+        if (lower.startsWith('assets/images/')) return 0;
+        if (lower.startsWith('assets/scenarios/')) return 1;
+        if (lower.startsWith('assets/')) return 2;
+        return 3;
+      }
+
+      final byBase = <String, String>{};
+      for (final k in keys) {
+        final base = _basename(k).toLowerCase();
+        if (base.isEmpty) continue;
+        final existing = byBase[base];
+        if (existing == null || score(k) < score(existing)) byBase[base] = k;
+      }
+      return _ScenarioAssetResolver._(byBase);
+    } catch (e) {
+      debugPrint('Failed to build AssetManifest resolver: $e');
+      return _ScenarioAssetResolver._(const {});
+    }
+  }
+
+  static String _basename(String p) {
+    final s = p.trim();
+    if (s.isEmpty) return '';
+    final i = s.lastIndexOf('/');
+    return i >= 0 ? s.substring(i + 1) : s;
+  }
+
+  static bool _hasImageExt(String s) {
+    final lower = s.toLowerCase();
+    return lower.endsWith('.png') || lower.endsWith('.jpg') || lower.endsWith('.jpeg') || lower.endsWith('.webp') || lower.endsWith('.gif');
+  }
+
+  String _resolve(String raw) {
+    final trimmed = raw.trim();
+    if (trimmed.isEmpty) return '';
+    if (trimmed.toLowerCase().startsWith('assets/')) return trimmed;
+    if (!_hasImageExt(trimmed)) return trimmed;
+
+    final baseLower = _basename(trimmed).toLowerCase();
+    final fromManifest = _assetsByBasenameLower[baseLower];
+    if (fromManifest != null) return fromManifest;
+
+    // Fallback for packs that assume assets/images.
+    return 'assets/images/$trimmed';
+  }
+
+  void rewriteScenarioImageFields(Map<String, dynamic> json, {required String scenarioJsonAssetPath}) {
+    void rewriteKey(String key) {
+      final v = json[key];
+      if (v is! String) return;
+      final resolved = _resolve(v);
+      if (resolved != v) json[key] = resolved;
+      if (resolved.isEmpty) {
+        debugPrint('Scenario image not resolved ($key) for $scenarioJsonAssetPath: "$v"');
+      }
+    }
+
+    rewriteKey('image');
+    rewriteKey('scene');
   }
 }

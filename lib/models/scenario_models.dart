@@ -59,26 +59,10 @@ class PracticeScenario {
     final trimmed = raw.trim();
     if (trimmed.isEmpty) return '';
 
-    // Some packs may include spaces in filenames while the actual bundled
-    // asset uses underscores (common when generated or renamed for web).
-    // We apply a conservative normalization on the final path segment.
-    final uri = Uri.tryParse(trimmed);
-    final path = (uri != null && uri.scheme.isNotEmpty) ? uri.path : trimmed;
-    final parts = path.split('/');
-    if (parts.isEmpty) return trimmed;
-    final file = parts.removeLast();
-    final normalizedFile = file.replaceAll(' ', '_');
-    final rebuilt = [...parts, normalizedFile].join('/');
-
-    // Preserve any original query/fragment if it exists (rare for assets).
-    if (uri != null && (uri.hasQuery || uri.hasFragment)) {
-      return Uri(
-        path: rebuilt,
-        query: uri.hasQuery ? uri.query : null,
-        fragment: uri.hasFragment ? uri.fragment : null,
-      ).toString();
-    }
-    return rebuilt;
+    // Keep asset paths as-authored.
+    // Some existing FirePumpSim assets intentionally include spaces in filenames
+    // (and Flutter can load them fine), so we must not rewrite them here.
+    return trimmed;
   }
 
   static bool _looksLikeAssetPath(String v) {
