@@ -240,6 +240,7 @@ class ScenarioVariation {
     required this.tolerance,
     required this.formulaBreakdown,
     required this.instructorExplanation,
+    required this.explainMistake,
     this.difficulty,
     this.timedModeAvailable,
   });
@@ -256,6 +257,7 @@ class ScenarioVariation {
   final num? tolerance;
   final List<dynamic> formulaBreakdown;
   final String instructorExplanation;
+  final String explainMistake;
 
   final String? difficulty;
   final bool? timedModeAvailable;
@@ -274,6 +276,7 @@ class ScenarioVariation {
       tolerance: PracticeScenario._numFromAny(json['tolerance'] ?? answers['tolerance']),
       formulaBreakdown: PracticeScenario._listFromAny(json['formulaBreakdown'] ?? json['formula'] ?? json['math'] ?? json['steps']),
       instructorExplanation: PracticeScenario._firstText(json, const ['instructorExplanation', 'explanation', 'teachingPoint', 'teachingFeedback']),
+      explainMistake: PracticeScenario._firstText(json, const ['explainMistake', 'commonMistake', 'mistakeExplanation']),
       difficulty: difficulty.isEmpty ? null : difficulty,
       timedModeAvailable: json['timedModeAvailable'] is bool
           ? json['timedModeAvailable'] as bool
