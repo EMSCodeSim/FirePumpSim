@@ -1,0 +1,857 @@
+{
+  "packId": "free_starter_pack",
+  "title": "Free Starter Pack",
+  "description": "15 beginner and intermediate pump operator scenarios included with FirePumpSim.",
+  "isFree": true,
+  "isPurchased": true,
+  "imageRatio": "4:7",
+  "recommendedImageSize": "1080x1890",
+  "scenarios": [
+    {
+      "id": "starter_attack_line_001",
+      "title": "Basic 1¾ Attack Line",
+      "difficulty": "beginner",
+      "category": "single_line",
+      "type": "pump",
+      "image": "starter_attack_line_001.png",
+      "sceneElements": {
+        "engine": "Engine 181",
+        "hoses": ["200′ 1¾″ attack line"],
+        "nozzles": ["ChiefXD 185 fog nozzle"],
+        "appliances": [],
+        "elevation": "Level grade"
+      },
+      "problems": [
+        {
+          "id": "starter_attack_line_001_p1",
+          "title": "Set PDP for 200′ 1¾″",
+          "question": "Engine 181 is pumping a 200′ 1¾″ attack line with a ChiefXD 185 nozzle flowing 185 GPM at 50 PSI. What pump pressure should the driver/operator set?",
+          "answerLabel": "Pump Pressure",
+          "answerUnit": "psi",
+          "inputLabel": "Enter PDP",
+          "inputPlaceholder": "psi",
+          "answerValue": 155,
+          "correctPP": 155,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 106,
+            "nozzlePressure": 50,
+            "elevation": 0,
+            "applianceLoss": 0,
+            "totalGpm": 185,
+            "pumpPressure": 155,
+            "tolerance": 5
+          },
+          "overlays": [
+            { "text": "Engine 181", "x": 18, "y": 70 },
+            { "text": "200′ 1¾″", "x": 42, "y": 58 },
+            { "text": "185 GPM @ 50 PSI", "x": 70, "y": 42 }
+          ],
+          "formulaBreakdown": [
+            "FL = C × (GPM / 100)^2 × hose length in hundreds",
+            "FL = 15.5 × 1.85^2 × 2",
+            "FL = 106 PSI",
+            "PP = FL + NP",
+            "PP = 106 + 50 = 156 PSI",
+            "Rounded PDP = 155 PSI"
+          ],
+          "instructorExplanation": "For a basic level-grade attack line, calculate friction loss in the hose and add the nozzle pressure. The 200′ 1¾″ line flowing 185 GPM has about 106 PSI of friction loss. Add the 50 PSI nozzle pressure for 156 PSI, then round to 155 PSI.",
+          "explainMistake": "If you answered low, you may have used only the 50 PSI nozzle pressure. The pump must overcome both nozzle pressure and friction loss in the 200′ hose stretch."
+        }
+      ],
+      "tags": ["starter_pack", "free", "engine_181", "attack_line", "chiefxd_185", "beginner"]
+    },
+    {
+      "id": "starter_long_attack_line_002",
+      "title": "Extended 1¾ Attack Line",
+      "difficulty": "intermediate",
+      "category": "single_line",
+      "type": "pump",
+      "image": "starter_long_attack_line_002.png",
+      "sceneElements": {
+        "engine": "Engine 181",
+        "hoses": ["300′ 1¾″ attack line"],
+        "nozzles": ["ChiefXD 185 fog nozzle"],
+        "appliances": [],
+        "elevation": "Level grade"
+      },
+      "problems": [
+        {
+          "id": "starter_long_attack_line_002_p1",
+          "title": "Set PDP for 300′ 1¾″",
+          "question": "Engine 181 is pumping a 300′ 1¾″ extended attack line with a ChiefXD 185 nozzle flowing 185 GPM at 50 PSI. What pump pressure should the driver/operator set?",
+          "answerLabel": "Pump Pressure",
+          "answerUnit": "psi",
+          "inputLabel": "Enter PDP",
+          "inputPlaceholder": "psi",
+          "answerValue": 210,
+          "correctPP": 210,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 159,
+            "nozzlePressure": 50,
+            "elevation": 0,
+            "applianceLoss": 0,
+            "totalGpm": 185,
+            "pumpPressure": 210,
+            "tolerance": 5
+          },
+          "overlays": [
+            { "text": "Engine 181", "x": 18, "y": 72 },
+            { "text": "300′ 1¾″", "x": 44, "y": 60 },
+            { "text": "185 GPM @ 50 PSI", "x": 72, "y": 38 }
+          ],
+          "formulaBreakdown": [
+            "FL = C × (GPM / 100)^2 × hose length in hundreds",
+            "FL = 15.5 × 1.85^2 × 3",
+            "FL = 159 PSI",
+            "PP = FL + NP",
+            "PP = 159 + 50 = 209 PSI",
+            "Rounded PDP = 210 PSI"
+          ],
+          "instructorExplanation": "This is an extended 1¾″ stretch. Friction loss increases with both flow and hose length. At 185 GPM through 300′ of 1¾″ hose, friction loss is about 159 PSI. Add the 50 PSI nozzle pressure and round to 210 PSI.",
+          "explainMistake": "If you answered around 155 PSI, you likely calculated a 200′ line instead of the full 300′ stretch. The extra 100′ of 1¾″ hose must be included."
+        }
+      ],
+      "tags": ["starter_pack", "free", "engine_181", "extended_attack", "chiefxd_185", "intermediate"]
+    },
+    {
+      "id": "starter_two_inch_line_003",
+      "title": "2-Inch Attack Line",
+      "difficulty": "intermediate",
+      "category": "single_line",
+      "type": "pump",
+      "image": "starter_two_inch_line_003.png",
+      "sceneElements": {
+        "engine": "Engine 181",
+        "hoses": ["200′ 2″ attack line"],
+        "nozzles": ["ChiefXD 265 fog nozzle"],
+        "appliances": [],
+        "elevation": "Level grade"
+      },
+      "problems": [
+        {
+          "id": "starter_two_inch_line_003_p1",
+          "title": "Set PDP for 200′ 2″",
+          "question": "Engine 181 is pumping a 200′ 2″ attack line with a ChiefXD 265 nozzle flowing 265 GPM at 50 PSI. What pump pressure should the driver/operator set?",
+          "answerLabel": "Pump Pressure",
+          "answerUnit": "psi",
+          "inputLabel": "Enter PDP",
+          "inputPlaceholder": "psi",
+          "answerValue": 160,
+          "correctPP": 160,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 112,
+            "nozzlePressure": 50,
+            "elevation": 0,
+            "applianceLoss": 0,
+            "totalGpm": 265,
+            "pumpPressure": 160,
+            "tolerance": 5
+          },
+          "overlays": [
+            { "text": "Engine 181", "x": 18, "y": 72 },
+            { "text": "200′ 2″", "x": 44, "y": 58 },
+            { "text": "265 GPM @ 50 PSI", "x": 72, "y": 40 }
+          ],
+          "formulaBreakdown": [
+            "FL = C × (GPM / 100)^2 × hose length in hundreds",
+            "FL = 8 × 2.65^2 × 2",
+            "FL = 112 PSI",
+            "PP = FL + NP",
+            "PP = 112 + 50 = 162 PSI",
+            "Rounded PDP = 160 PSI"
+          ],
+          "instructorExplanation": "Use the 2″ hose coefficient of 8. At 265 GPM through 200′ of 2″ hose, friction loss is about 112 PSI. Add the 50 PSI nozzle pressure for 162 PSI, then round to 160 PSI.",
+          "explainMistake": "If your answer was much higher, you may have used the 1¾″ coefficient. For this problem, the hose is 2″, so C = 8."
+        }
+      ],
+      "tags": ["starter_pack", "free", "engine_181", "two_inch", "chiefxd_265", "intermediate"]
+    },
+    {
+      "id": "starter_smooth_bore_handline_004",
+      "title": "2½ Smooth Bore Handline",
+      "difficulty": "beginner",
+      "category": "single_line",
+      "type": "pump",
+      "image": "starter_smooth_bore_handline_004.png",
+      "sceneElements": {
+        "engine": "Engine 181",
+        "hoses": ["200′ 2½″ handline"],
+        "nozzles": ["1⅛″ smooth bore nozzle"],
+        "appliances": [],
+        "elevation": "Level grade"
+      },
+      "problems": [
+        {
+          "id": "starter_smooth_bore_handline_004_p1",
+          "title": "Set PDP for 2½ Smooth Bore",
+          "question": "Engine 181 is pumping a 200′ 2½″ handline with a 1⅛″ smooth bore nozzle flowing 265 GPM at 50 PSI. What pump pressure should the driver/operator set?",
+          "answerLabel": "Pump Pressure",
+          "answerUnit": "psi",
+          "inputLabel": "Enter PDP",
+          "inputPlaceholder": "psi",
+          "answerValue": 80,
+          "correctPP": 80,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 28,
+            "nozzlePressure": 50,
+            "elevation": 0,
+            "applianceLoss": 0,
+            "totalGpm": 265,
+            "pumpPressure": 80,
+            "tolerance": 5
+          },
+          "overlays": [
+            { "text": "Engine 181", "x": 18, "y": 72 },
+            { "text": "200′ 2½″", "x": 43, "y": 58 },
+            { "text": "SB 1⅛″", "x": 70, "y": 42 },
+            { "text": "265 GPM @ 50 PSI", "x": 70, "y": 48 }
+          ],
+          "formulaBreakdown": [
+            "FL = C × (GPM / 100)^2 × hose length in hundreds",
+            "FL = 2 × 2.65^2 × 2",
+            "FL = 28 PSI",
+            "PP = FL + NP",
+            "PP = 28 + 50 = 78 PSI",
+            "Rounded PDP = 80 PSI"
+          ],
+          "instructorExplanation": "A 2½″ handline has a much lower friction loss coefficient than smaller attack lines. At 265 GPM through 200′ of 2½″ hose, friction loss is about 28 PSI. Add the 50 PSI smooth bore nozzle pressure and round to 80 PSI.",
+          "explainMistake": "If you added 10 or 25 PSI for an appliance, that would be extra pressure not shown in this layout. This scenario has no wye, FDC, or monitor appliance."
+        }
+      ],
+      "tags": ["starter_pack", "free", "engine_181", "smooth_bore", "two_and_half", "beginner"]
+    },
+    {
+      "id": "starter_elevation_line_005",
+      "title": "Attack Line with Elevation",
+      "difficulty": "intermediate",
+      "category": "single_line",
+      "type": "pump",
+      "image": "starter_elevation_line_005.png",
+      "sceneElements": {
+        "engine": "Engine 181",
+        "hoses": ["200′ 1¾″ attack line"],
+        "nozzles": ["ChiefXD 185 fog nozzle"],
+        "appliances": [],
+        "elevation": "3rd floor = 20′ = +10 PSI"
+      },
+      "problems": [
+        {
+          "id": "starter_elevation_line_005_p1",
+          "title": "Set PDP for 3rd Floor Line",
+          "question": "Engine 181 is pumping a 200′ 1¾″ attack line with a ChiefXD 185 nozzle to the 3rd floor. The nozzle flows 185 GPM at 50 PSI. Using 3rd floor = 20′ elevation, what pump pressure should the driver/operator set?",
+          "answerLabel": "Pump Pressure",
+          "answerUnit": "psi",
+          "inputLabel": "Enter PDP",
+          "inputPlaceholder": "psi",
+          "answerValue": 165,
+          "correctPP": 165,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 106,
+            "nozzlePressure": 50,
+            "elevation": 10,
+            "applianceLoss": 0,
+            "totalGpm": 185,
+            "pumpPressure": 165,
+            "tolerance": 5
+          },
+          "overlays": [
+            { "text": "Engine 181", "x": 18, "y": 74 },
+            { "text": "200′ 1¾″", "x": 43, "y": 60 },
+            { "text": "185 GPM @ 50 PSI", "x": 70, "y": 36 },
+            { "text": "3rd floor", "x": 72, "y": 27 },
+            { "text": "+10 PSI elevation", "x": 58, "y": 46 }
+          ],
+          "formulaBreakdown": [
+            "3rd floor = 20′ elevation",
+            "Elevation = 20 × 0.5 = 10 PSI",
+            "FL = 15.5 × 1.85^2 × 2",
+            "FL = 106 PSI",
+            "PP = FL + NP + elevation",
+            "PP = 106 + 50 + 10 = 166 PSI",
+            "Rounded PDP = 165 PSI"
+          ],
+          "instructorExplanation": "This problem adds elevation to a standard 200′ 1¾″ attack line. With the FirePumpSim floor rule, the 3rd floor is 20′ above the pump, which equals 10 PSI. Add hose friction loss, nozzle pressure, and elevation for a rounded PDP of 165 PSI.",
+          "explainMistake": "If you added 15 PSI for the 3rd floor, you likely counted three full floors above grade. In this rule set, the 1st floor is 0′, so the 3rd floor is 20′ and adds 10 PSI."
+        }
+      ],
+      "tags": ["starter_pack", "free", "engine_181", "elevation", "third_floor", "chiefxd_185", "intermediate"]
+    },
+    {
+      "id": "starter_wye_operation_006",
+      "title": "Wye Split Attack",
+      "difficulty": "intermediate",
+      "category": "wye",
+      "type": "pump",
+      "image": "starter_wye_operation_006.png",
+      "sceneElements": {
+        "engine": "Engine 181",
+        "hoses": [
+          "200′ 2½″ supply to wye",
+          "Branch A: 150′ 1¾″ attack line",
+          "Branch B: 200′ 1¾″ attack line"
+        ],
+        "nozzles": [
+          "Branch A ChiefXD 185 fog nozzle",
+          "Branch B ChiefXD 185 fog nozzle"
+        ],
+        "appliances": ["Wye +10 PSI"],
+        "elevation": "Level grade"
+      },
+      "problems": [
+        {
+          "id": "starter_wye_operation_006_p1",
+          "title": "Set PDP for Wye Operation",
+          "question": "Engine 181 is pumping 200′ of 2½″ hose to a wye. Branch A is 150′ of 1¾″ with a ChiefXD 185. Branch B is 200′ of 1¾″ with a ChiefXD 185. Both nozzles flow 185 GPM at 50 PSI. What pump pressure should the driver/operator set?",
+          "answerLabel": "Pump Pressure",
+          "answerUnit": "psi",
+          "inputLabel": "Enter PDP",
+          "inputPlaceholder": "psi",
+          "answerValue": 220,
+          "correctPP": 220,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 161,
+            "nozzlePressure": 50,
+            "elevation": 0,
+            "applianceLoss": 10,
+            "totalGpm": 370,
+            "pumpPressure": 220,
+            "tolerance": 5
+          },
+          "overlays": [
+            { "text": "Engine 181", "x": 17, "y": 72 },
+            { "text": "200′ 2½″", "x": 38, "y": 59 },
+            { "text": "Wye +10", "x": 55, "y": 50 },
+            { "text": "A: 150′ 1¾″", "x": 70, "y": 41 },
+            { "text": "B: 200′ 1¾″", "x": 72, "y": 58 },
+            { "text": "185 @ 50 each", "x": 71, "y": 34 }
+          ],
+          "formulaBreakdown": [
+            "Supply flow = 185 + 185 = 370 GPM",
+            "Supply FL = 2 × 3.70^2 × 2 = 55 PSI",
+            "Branch A FL = 15.5 × 1.85^2 × 1.5 = 80 PSI",
+            "Branch B FL = 15.5 × 1.85^2 × 2 = 106 PSI",
+            "Branch B governs because it has the higher branch pressure",
+            "PP = supply FL + branch B FL + wye loss + NP",
+            "PP = 55 + 106 + 10 + 50 = 221 PSI",
+            "Rounded PDP = 220 PSI"
+          ],
+          "instructorExplanation": "For a wye, calculate the supply line carrying total flow, then calculate each branch. The highest pressure branch governs. Branch B has more hose than Branch A, so Branch B controls the pump pressure. Add supply friction loss, Branch B friction loss, wye loss, and nozzle pressure.",
+          "explainMistake": "If you used Branch A, your PDP will be too low for the longer Branch B line. In a wye operation, the highest pressure branch governs."
+        }
+      ],
+      "tags": ["starter_pack", "free", "engine_181", "wye", "split_attack", "intermediate"]
+    },
+    {
+      "id": "starter_siamese_supply_007",
+      "title": "Siamese Supply to Master Stream",
+      "difficulty": "intermediate",
+      "category": "master_stream",
+      "type": "pump",
+      "image": "starter_siamese_supply_007.png",
+      "sceneElements": {
+        "engine": "Engine 181",
+        "hoses": ["Two 200′ 2½″ supply lines"],
+        "nozzles": ["Master stream nozzle flowing 500 GPM at 80 PSI"],
+        "appliances": ["Siamese +10 PSI"],
+        "elevation": "Level grade"
+      },
+      "problems": [
+        {
+          "id": "starter_siamese_supply_007_p1",
+          "title": "Set PDP for Siamese Supply",
+          "question": "Engine 181 is supplying a siamese appliance with two 200′ 2½″ lines. The appliance feeds a master stream flowing 500 GPM at 80 PSI. Split the flow evenly between the two lines and add 10 PSI for the siamese. What pump pressure should the driver/operator set?",
+          "answerLabel": "Pump Pressure",
+          "answerUnit": "psi",
+          "inputLabel": "Enter PDP",
+          "inputPlaceholder": "psi",
+          "answerValue": 115,
+          "correctPP": 115,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 25,
+            "nozzlePressure": 80,
+            "elevation": 0,
+            "applianceLoss": 10,
+            "totalGpm": 500,
+            "pumpPressure": 115,
+            "tolerance": 5
+          },
+          "overlays": [
+            { "text": "Engine 181", "x": 18, "y": 74 },
+            { "text": "2 × 200′ 2½″", "x": 42, "y": 60 },
+            { "text": "250 GPM each", "x": 43, "y": 66 },
+            { "text": "Siamese +10", "x": 62, "y": 50 },
+            { "text": "500 GPM @ 80 PSI", "x": 72, "y": 39 }
+          ],
+          "formulaBreakdown": [
+            "Total flow = 500 GPM",
+            "Split flow = 500 ÷ 2 = 250 GPM per line",
+            "FL per line = 2 × 2.50^2 × 2",
+            "FL per line = 25 PSI",
+            "PP = FL + master stream NP + siamese loss",
+            "PP = 25 + 80 + 10 = 115 PSI",
+            "Rounded PDP = 115 PSI"
+          ],
+          "instructorExplanation": "When two equal supply lines feed one appliance, split the total flow between the lines. Each 2½″ line carries 250 GPM, so each line has 25 PSI of friction loss. Add the 80 PSI master stream nozzle pressure and 10 PSI siamese loss.",
+          "explainMistake": "If you calculated friction loss using the full 500 GPM in each line, the answer will be too high. With two equal lines, each line carries half the total flow."
+        }
+      ],
+      "tags": ["starter_pack", "free", "engine_181", "siamese", "master_stream", "intermediate"]
+    },
+    {
+      "id": "starter_portable_master_stream_008",
+      "title": "Portable Master Stream",
+      "difficulty": "intermediate",
+      "category": "master_stream",
+      "type": "pump",
+      "image": "starter_portable_master_stream_008.png",
+      "sceneElements": {
+        "engine": "Engine 181",
+        "hoses": ["Two 200′ 2½″ supply lines to portable monitor"],
+        "nozzles": ["Portable monitor flowing 500 GPM at 80 PSI"],
+        "appliances": ["Portable monitor"],
+        "elevation": "Level grade"
+      },
+      "problems": [
+        {
+          "id": "starter_portable_master_stream_008_p1",
+          "title": "Set PDP for Portable Monitor",
+          "question": "Engine 181 is supplying a portable monitor with two 200′ 2½″ lines. The monitor flows 500 GPM at 80 PSI. Split the flow evenly between the two lines. What pump pressure should the driver/operator set?",
+          "answerLabel": "Pump Pressure",
+          "answerUnit": "psi",
+          "inputLabel": "Enter PDP",
+          "inputPlaceholder": "psi",
+          "answerValue": 105,
+          "correctPP": 105,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 25,
+            "nozzlePressure": 80,
+            "elevation": 0,
+            "applianceLoss": 0,
+            "totalGpm": 500,
+            "pumpPressure": 105,
+            "tolerance": 5
+          },
+          "overlays": [
+            { "text": "Engine 181", "x": 18, "y": 73 },
+            { "text": "2 × 200′ 2½″", "x": 41, "y": 60 },
+            { "text": "250 GPM each", "x": 41, "y": 66 },
+            { "text": "Portable monitor", "x": 66, "y": 48 },
+            { "text": "500 GPM @ 80 PSI", "x": 72, "y": 38 }
+          ],
+          "formulaBreakdown": [
+            "Total flow = 500 GPM",
+            "Split flow = 500 ÷ 2 = 250 GPM per line",
+            "FL per line = 2 × 2.50^2 × 2",
+            "FL per line = 25 PSI",
+            "PP = FL + master stream NP",
+            "PP = 25 + 80 = 105 PSI",
+            "Rounded PDP = 105 PSI"
+          ],
+          "instructorExplanation": "For this portable master stream, the two equal supply lines split the 500 GPM flow. Each 2½″ line carries 250 GPM and has about 25 PSI friction loss. Add the 80 PSI master stream nozzle pressure for 105 PSI.",
+          "explainMistake": "A common mistake is adding the friction loss from both supply lines together. Parallel lines do not add their friction loss together; calculate one line at its share of the flow."
+        }
+      ],
+      "tags": ["starter_pack", "free", "engine_181", "portable_monitor", "master_stream", "intermediate"]
+    },
+    {
+      "id": "starter_standpipe_floor_009",
+      "title": "3rd Floor Standpipe Line",
+      "difficulty": "intermediate",
+      "category": "standpipe",
+      "type": "pump",
+      "image": "starter_standpipe_floor_009.png",
+      "sceneElements": {
+        "engine": "Engine 181",
+        "hoses": ["150′ 2½″ standpipe attack line"],
+        "nozzles": ["1⅛″ smooth bore nozzle"],
+        "appliances": ["Standpipe/FDC loss +25 PSI"],
+        "elevation": "3rd floor = 20′ = +10 PSI"
+      },
+      "problems": [
+        {
+          "id": "starter_standpipe_floor_009_p1",
+          "title": "Set PDP for 3rd Floor Standpipe",
+          "question": "Engine 181 is supplying a standpipe attack on the 3rd floor. The crew has 150′ of 2½″ hose from the outlet to a 1⅛″ smooth bore flowing 265 GPM at 50 PSI. Use 3rd floor = 20′ elevation and add 25 PSI standpipe loss. What pump pressure should the driver/operator set?",
+          "answerLabel": "Pump Pressure",
+          "answerUnit": "psi",
+          "inputLabel": "Enter PDP",
+          "inputPlaceholder": "psi",
+          "answerValue": 105,
+          "correctPP": 105,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 21,
+            "nozzlePressure": 50,
+            "elevation": 10,
+            "applianceLoss": 25,
+            "totalGpm": 265,
+            "pumpPressure": 105,
+            "tolerance": 5
+          },
+          "overlays": [
+            { "text": "Engine 181", "x": 17, "y": 76 },
+            { "text": "FDC +25", "x": 39, "y": 66 },
+            { "text": "3rd floor", "x": 70, "y": 30 },
+            { "text": "+10 PSI elevation", "x": 60, "y": 42 },
+            { "text": "150′ 2½″", "x": 69, "y": 49 },
+            { "text": "SB 1⅛″ @ 50", "x": 72, "y": 37 }
+          ],
+          "formulaBreakdown": [
+            "3rd floor = 20′ elevation",
+            "Elevation = 20 × 0.5 = 10 PSI",
+            "FL = 2 × 2.65^2 × 1.5",
+            "FL = 21 PSI",
+            "PP = FL + NP + elevation + standpipe loss",
+            "PP = 21 + 50 + 10 + 25 = 106 PSI",
+            "Rounded PDP = 105 PSI"
+          ],
+          "instructorExplanation": "This standpipe problem includes hose friction loss, smooth bore nozzle pressure, floor elevation, and standpipe/FDC system loss. The 3rd floor is 20′ above the pump by the FirePumpSim floor rule, so elevation adds 10 PSI.",
+          "explainMistake": "If you missed the 25 PSI standpipe loss, your answer will be too low. If you added 15 PSI for the 3rd floor, you counted elevation incorrectly for this rule set."
+        }
+      ],
+      "tags": ["starter_pack", "free", "engine_181", "standpipe", "third_floor", "intermediate"]
+    },
+    {
+      "id": "starter_fdc_standpipe_010",
+      "title": "FDC Standpipe Support",
+      "difficulty": "intermediate",
+      "category": "standpipe",
+      "type": "pump",
+      "image": "starter_fdc_standpipe_010.png",
+      "sceneElements": {
+        "engine": "Engine 181",
+        "hoses": ["200′ 2½″ standpipe attack line"],
+        "nozzles": ["1⅛″ smooth bore nozzle"],
+        "appliances": ["FDC/standpipe loss +25 PSI"],
+        "elevation": "4th floor = 30′ = +15 PSI"
+      },
+      "problems": [
+        {
+          "id": "starter_fdc_standpipe_010_p1",
+          "title": "Set PDP for FDC Standpipe",
+          "question": "Engine 181 is pumping the FDC for a 4th floor standpipe attack. The crew has 200′ of 2½″ hose from the outlet to a 1⅛″ smooth bore flowing 265 GPM at 50 PSI. Use 4th floor = 30′ elevation and add 25 PSI FDC/standpipe loss. What pump pressure should the driver/operator set?",
+          "answerLabel": "Pump Pressure",
+          "answerUnit": "psi",
+          "inputLabel": "Enter PDP",
+          "inputPlaceholder": "psi",
+          "answerValue": 120,
+          "correctPP": 120,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 28,
+            "nozzlePressure": 50,
+            "elevation": 15,
+            "applianceLoss": 25,
+            "totalGpm": 265,
+            "pumpPressure": 120,
+            "tolerance": 5
+          },
+          "overlays": [
+            { "text": "Engine 181", "x": 17, "y": 76 },
+            { "text": "FDC +25", "x": 38, "y": 66 },
+            { "text": "4th floor", "x": 70, "y": 24 },
+            { "text": "+15 PSI elevation", "x": 60, "y": 39 },
+            { "text": "200′ 2½″", "x": 68, "y": 47 },
+            { "text": "SB 1⅛″ @ 50", "x": 72, "y": 32 }
+          ],
+          "formulaBreakdown": [
+            "4th floor = 30′ elevation",
+            "Elevation = 30 × 0.5 = 15 PSI",
+            "FL = 2 × 2.65^2 × 2",
+            "FL = 28 PSI",
+            "PP = FL + NP + elevation + FDC loss",
+            "PP = 28 + 50 + 15 + 25 = 118 PSI",
+            "Rounded PDP = 120 PSI"
+          ],
+          "instructorExplanation": "For an FDC/standpipe operation, include the attack-line friction loss, nozzle pressure, elevation, and the 25 PSI FDC/standpipe system loss. The 4th floor is 30′ above the pump by the floor rule, so elevation adds 15 PSI.",
+          "explainMistake": "If your answer is close to 95 PSI, you likely left out the 25 PSI FDC/standpipe loss. That system loss must be added to the pump pressure."
+        }
+      ],
+      "tags": ["starter_pack", "free", "engine_181", "fdc", "standpipe", "fourth_floor", "intermediate"]
+    },
+    {
+      "id": "starter_sprinkler_support_011",
+      "title": "Sprinkler FDC Support",
+      "difficulty": "intermediate",
+      "category": "water_supply",
+      "type": "pump",
+      "image": "starter_sprinkler_support_011.png",
+      "sceneElements": {
+        "engine": "Engine 181",
+        "hoses": ["100′ 3″ line to sprinkler FDC"],
+        "nozzles": [],
+        "appliances": ["FDC +25 PSI"],
+        "elevation": "Level grade"
+      },
+      "problems": [
+        {
+          "id": "starter_sprinkler_support_011_p1",
+          "title": "Set PDP for Sprinkler Support",
+          "question": "Engine 181 is supporting a sprinkler FDC with 100′ of 3″ hose flowing 500 GPM. The target sprinkler pressure is 150 PSI and the FDC loss is 25 PSI. What pump pressure should the driver/operator set?",
+          "answerLabel": "Pump Pressure",
+          "answerUnit": "psi",
+          "inputLabel": "Enter PDP",
+          "inputPlaceholder": "psi",
+          "answerValue": 195,
+          "correctPP": 195,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 20,
+            "nozzlePressure": 150,
+            "elevation": 0,
+            "applianceLoss": 25,
+            "totalGpm": 500,
+            "pumpPressure": 195,
+            "tolerance": 5
+          },
+          "overlays": [
+            { "text": "Engine 181", "x": 18, "y": 74 },
+            { "text": "100′ 3″", "x": 43, "y": 62 },
+            { "text": "500 GPM", "x": 44, "y": 68 },
+            { "text": "FDC +25", "x": 66, "y": 51 },
+            { "text": "Sprinkler 150 PSI", "x": 72, "y": 40 }
+          ],
+          "formulaBreakdown": [
+            "FL = C × (GPM / 100)^2 × hose length in hundreds",
+            "FL = 0.8 × 5.00^2 × 1",
+            "FL = 20 PSI",
+            "PP = FL + target sprinkler pressure + FDC loss",
+            "PP = 20 + 150 + 25 = 195 PSI",
+            "Rounded PDP = 195 PSI"
+          ],
+          "instructorExplanation": "For basic sprinkler support, pump to the target sprinkler pressure while accounting for hose friction loss and the FDC loss. The 100′ of 3″ hose flowing 500 GPM has 20 PSI friction loss. Add the 150 PSI target and 25 PSI FDC loss.",
+          "explainMistake": "If you entered 150 PSI, you only used the target sprinkler pressure. The pump also needs to overcome hose friction loss and FDC loss."
+        }
+      ],
+      "tags": ["starter_pack", "free", "engine_181", "sprinkler", "fdc", "water_supply", "intermediate"]
+    },
+    {
+      "id": "starter_relay_pumping_012",
+      "title": "Basic Relay Pumping",
+      "difficulty": "intermediate",
+      "category": "relay",
+      "type": "pump",
+      "image": "starter_relay_pumping_012.png",
+      "sceneElements": {
+        "engine": "Engine 181",
+        "hoses": ["800′ 5″ LDH relay supply line"],
+        "nozzles": [],
+        "appliances": ["Receiving engine intake target 20 PSI"],
+        "elevation": "Level grade"
+      },
+      "problems": [
+        {
+          "id": "starter_relay_pumping_012_p1",
+          "title": "Set PDP for Relay Supply",
+          "question": "Engine 181 is the relay supply engine pumping 800′ of 5″ LDH to a receiving engine. The relay flow is 1000 GPM and the receiving engine needs 20 PSI intake pressure. What pump pressure should Engine 181 set?",
+          "answerLabel": "Relay PDP",
+          "answerUnit": "psi",
+          "inputLabel": "Enter relay PDP",
+          "inputPlaceholder": "psi",
+          "answerValue": 85,
+          "correctPP": 85,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 64,
+            "nozzlePressure": 0,
+            "elevation": 0,
+            "applianceLoss": 20,
+            "totalGpm": 1000,
+            "pumpPressure": 85,
+            "tolerance": 5
+          },
+          "overlays": [
+            { "text": "Engine 181", "x": 16, "y": 74 },
+            { "text": "800′ 5″ LDH", "x": 45, "y": 58 },
+            { "text": "1000 GPM", "x": 46, "y": 64 },
+            { "text": "Receiving engine", "x": 74, "y": 42 },
+            { "text": "Intake target 20 PSI", "x": 72, "y": 49 }
+          ],
+          "formulaBreakdown": [
+            "Relay PDP = relay hose FL + elevation + desired intake pressure",
+            "FL = 0.08 × 10.00^2 × 8",
+            "FL = 64 PSI",
+            "Elevation = 0 PSI",
+            "Desired receiving-engine intake = 20 PSI",
+            "Relay PDP = 64 + 0 + 20 = 84 PSI",
+            "Rounded relay PDP = 85 PSI"
+          ],
+          "instructorExplanation": "Relay pumping focuses on overcoming friction loss in the long supply line while still delivering the desired intake pressure to the receiving engine. The 800′ 5″ LDH relay at 1000 GPM has 64 PSI friction loss, plus a 20 PSI intake target, for a rounded relay PDP of 85 PSI.",
+          "explainMistake": "If your answer was 65 PSI, you calculated the hose friction loss but forgot to leave the receiving engine with 20 PSI intake pressure."
+        }
+      ],
+      "tags": ["starter_pack", "free", "engine_181", "relay", "ldh", "water_supply", "intermediate"]
+    },
+    {
+      "id": "starter_hydrant_flow_013",
+      "title": "Hydrant Pressure Drop",
+      "difficulty": "beginner",
+      "category": "hydrant_drop",
+      "type": "hydrant_pressure_drop",
+      "image": "starter_hydrant_flow_013.png",
+      "sceneElements": {
+        "engine": "Engine 181",
+        "hoses": ["Hydrant supply line to Engine 181"],
+        "nozzles": [],
+        "appliances": ["Hydrant"],
+        "elevation": "Level grade"
+      },
+      "problems": [
+        {
+          "id": "starter_hydrant_flow_013_p1",
+          "title": "Find Hydrant Pressure Drop",
+          "question": "Engine 181 is flowing 1000 GPM from a hydrant. Static pressure was 70 PSI and residual pressure is 50 PSI while flowing. What is the hydrant pressure drop?",
+          "answerLabel": "Pressure Drop",
+          "answerUnit": "psi",
+          "inputLabel": "Enter pressure drop",
+          "inputPlaceholder": "psi",
+          "answerValue": 20,
+          "correctPP": 0,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 0,
+            "nozzlePressure": 0,
+            "elevation": 0,
+            "applianceLoss": 0,
+            "totalGpm": 1000,
+            "pumpPressure": 0,
+            "tolerance": 5
+          },
+          "overlays": [
+            { "text": "Hydrant", "x": 18, "y": 58 },
+            { "text": "Engine 181", "x": 43, "y": 72 },
+            { "text": "1000 GPM", "x": 48, "y": 61 },
+            { "text": "Static 70 PSI", "x": 68, "y": 42 },
+            { "text": "Residual 50 PSI", "x": 69, "y": 49 }
+          ],
+          "formulaBreakdown": [
+            "Pressure drop = static pressure - residual pressure",
+            "Pressure drop = 70 - 50",
+            "Pressure drop = 20 PSI"
+          ],
+          "instructorExplanation": "Hydrant pressure drop is the difference between static pressure and residual pressure while water is flowing. Subtract the residual pressure from the static pressure: 70 minus 50 equals 20 PSI.",
+          "explainMistake": "If you used the flow number in the subtraction, you overcomplicated the problem. This question only asks for pressure drop: static pressure minus residual pressure."
+        }
+      ],
+      "tags": ["starter_pack", "free", "engine_181", "hydrant", "pressure_drop", "beginner"]
+    },
+    {
+      "id": "starter_nozzle_reaction_014",
+      "title": "Smooth Bore Nozzle Reaction",
+      "difficulty": "intermediate",
+      "category": "nozzle_reaction",
+      "type": "nozzle_reaction",
+      "image": "starter_nozzle_reaction_014.png",
+      "sceneElements": {
+        "engine": "Engine 181",
+        "hoses": ["2½″ handline"],
+        "nozzles": ["1⅛″ smooth bore nozzle at 50 PSI"],
+        "appliances": [],
+        "elevation": "Level grade"
+      },
+      "problems": [
+        {
+          "id": "starter_nozzle_reaction_014_p1",
+          "title": "Calculate Nozzle Reaction",
+          "question": "A crew is operating a 1⅛″ smooth bore handline at 50 PSI nozzle pressure. What is the approximate nozzle reaction in pounds?",
+          "answerLabel": "Nozzle Reaction",
+          "answerUnit": "lbs",
+          "inputLabel": "Enter nozzle reaction",
+          "inputPlaceholder": "lbs",
+          "answerValue": 100,
+          "correctPP": 0,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 0,
+            "nozzlePressure": 50,
+            "elevation": 0,
+            "applianceLoss": 0,
+            "totalGpm": 265,
+            "pumpPressure": 0,
+            "tolerance": 5
+          },
+          "overlays": [
+            { "text": "Engine 181", "x": 18, "y": 74 },
+            { "text": "2½″ handline", "x": 44, "y": 61 },
+            { "text": "SB 1⅛″", "x": 70, "y": 41 },
+            { "text": "NP 50 PSI", "x": 70, "y": 48 },
+            { "text": "Find NR", "x": 72, "y": 35 }
+          ],
+          "formulaBreakdown": [
+            "Smooth bore NR = 1.57 × diameter^2 × NP",
+            "NR = 1.57 × 1.125^2 × 50",
+            "NR = 1.57 × 1.266 × 50",
+            "NR = 99 lbs",
+            "Rounded nozzle reaction = 100 lbs"
+          ],
+          "instructorExplanation": "For smooth bore nozzle reaction, use NR = 1.57 × d² × NP. A 1⅛″ tip has a diameter of 1.125 inches. At 50 PSI nozzle pressure, the reaction is about 99 pounds, rounded to 100 lbs.",
+          "explainMistake": "If your answer is much lower, you may have forgotten to square the nozzle diameter. Smooth bore nozzle reaction uses diameter squared."
+        }
+      ],
+      "tags": ["starter_pack", "free", "engine_181", "nozzle_reaction", "smooth_bore", "intermediate"]
+    },
+    {
+      "id": "starter_deck_gun_flow_015",
+      "title": "Deck Gun Smooth Bore Flow",
+      "difficulty": "intermediate",
+      "category": "deck_gun",
+      "type": "flow",
+      "image": "starter_deck_gun_flow_015.png",
+      "sceneElements": {
+        "engine": "Engine 181",
+        "hoses": [],
+        "nozzles": ["Deck gun 1½″ smooth bore tip at 80 PSI"],
+        "appliances": ["Deck gun"],
+        "elevation": "Level grade"
+      },
+      "problems": [
+        {
+          "id": "starter_deck_gun_flow_015_p1",
+          "title": "Calculate Deck Gun Flow",
+          "question": "Engine 181 is using the deck gun with a 1½″ smooth bore tip at 80 PSI nozzle pressure. What is the approximate flow in GPM?",
+          "answerLabel": "Flow",
+          "answerUnit": "gpm",
+          "inputLabel": "Enter flow",
+          "inputPlaceholder": "gpm",
+          "answerValue": 600,
+          "correctPP": 0,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 0,
+            "nozzlePressure": 80,
+            "elevation": 0,
+            "applianceLoss": 0,
+            "totalGpm": 600,
+            "pumpPressure": 0,
+            "tolerance": 5
+          },
+          "overlays": [
+            { "text": "Engine 181", "x": 20, "y": 72 },
+            { "text": "Deck Gun", "x": 44, "y": 55 },
+            { "text": "SB 1½″", "x": 62, "y": 44 },
+            { "text": "NP 80 PSI", "x": 63, "y": 51 },
+            { "text": "Find GPM", "x": 72, "y": 37 }
+          ],
+          "formulaBreakdown": [
+            "Smooth bore flow = 29.7 × diameter^2 × √NP",
+            "Flow = 29.7 × 1.5^2 × √80",
+            "Flow = 29.7 × 2.25 × 8.94",
+            "Flow = 598 GPM",
+            "Rounded flow = 600 GPM"
+          ],
+          "instructorExplanation": "This is a flow problem, not a pump-pressure problem. Use the smooth bore flow formula: 29.7 × d² × square root of nozzle pressure. A 1½″ tip at 80 PSI flows about 598 GPM, rounded to 600 GPM.",
+          "explainMistake": "If you entered 80, you used the nozzle pressure instead of calculating flow. The question asks for GPM from the deck gun tip."
+        }
+      ],
+      "tags": ["starter_pack", "free", "engine_181", "deck_gun", "smooth_bore", "flow", "intermediate"]
+    }
+  ]
+}
