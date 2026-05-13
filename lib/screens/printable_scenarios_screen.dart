@@ -680,6 +680,7 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
                           painter: (PdfGraphics canvas, PdfPoint size) => _pdfPaintScene(
                             canvas,
                             size,
+                            targetArtwork: scenario.targetArtwork,
                             hoseLabel: '${scenario.hoseDiameterLabel} • ${scenario.lengthFt} ft',
                             flowLabel: '${scenario.gpm} GPM',
                           ),
@@ -798,6 +799,7 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
   void _pdfPaintScene(
     PdfGraphics canvas,
     PdfPoint size, {
+    required PrintableTargetArtwork targetArtwork,
     required String hoseLabel,
     required String flowLabel,
   }) {
@@ -805,25 +807,44 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
     final h = size.y;
 
     final stroke = PdfColor.fromInt(0xFF000000);
-    final faint = PdfColor.fromInt(0xFFEEEEEE);
+    final shadow = PdfColor.fromInt(0xFFFFFFFF);
 
-    // Hose path.
-    final truckAnchor = PdfPoint(50, h - 26);
-    final targetAnchor = PdfPoint(w - 44, 28);
-    final control = PdfPoint(w * 0.58, h * 0.55);
+    // Match the exact artwork placement used in the preview/PDF Stack:
+    // truck image = left 4, bottom 4, width 44, height 26
+    // primary target image = right 4, top 4, width 40, height 30
+    // This keeps the drawn hose physically connected to the engine and scene target.
+    final start = PdfPoint(48, h - 17); // engine discharge / pump panel
+    final c1 = PdfPoint(w * 0.35, h * 0.78);
+    final c2 = PdfPoint(w * 0.63, h * 0.43);
+    final end = PdfPoint(w - 44, 24); // fire/target side of artwork
+
+    // Draw a light underlay first so the hose remains visible over dark artwork.
+    canvas
+      ..setColor(shadow)
+      ..setLineWidth(2.2)
+      ..moveTo(start.x, start.y)
+      ..lineTo(c1.x, c1.y)
+      ..lineTo(c2.x, c2.y)
+      ..lineTo(end.x, end.y)
+      ..strokePath();
+
     canvas
       ..setColor(stroke)
-      ..setLineWidth(1.0)
-      ..moveTo(truckAnchor.x, truckAnchor.y)
-      ..lineTo(control.x, control.y)
-      ..lineTo(targetAnchor.x, targetAnchor.y)
+      ..setLineWidth(1.1)
+      ..moveTo(start.x, start.y)
+      ..lineTo(c1.x, c1.y)
+      ..lineTo(c2.x, c2.y)
+      ..lineTo(end.x, end.y)
       ..strokePath();
 
-    // Nozzle at the end of the line.
+    // Engine coupling and nozzle/target marker.
     canvas
-      ..drawRect(targetAnchor.x - 4, targetAnchor.y - 2, 8, 4)
+      ..setColor(stroke)
+      ..drawRect(start.x - 2.5, start.y - 2.5, 5, 5)
       ..strokePath();
-
+    canvas
+      ..drawRect(end.x - 4, end.y - 2, 8, 4)
+      ..strokePath();
   }
 
   void _pdfPaintSceneBackground(
@@ -953,6 +974,7 @@ class _PrintableSceneWidgetState extends State<PrintableSceneWidget> {
         Positioned.fill(
           child: CustomPaint(
             painter: _PrintableHosePainter(
+              targetArtwork: widget.targetArtwork,
               hoseLabel: widget.hoseLabel,
               flowLabel: widget.flowLabel,
             ),
@@ -1017,26 +1039,53 @@ class _PrintableSceneBackgroundPainter extends CustomPainter {
 
 class _PrintableHosePainter extends CustomPainter {
   const _PrintableHosePainter({
+    required this.targetArtwork,
     required this.hoseLabel,
     required this.flowLabel,
   });
 
+  final PrintableTargetArtwork targetArtwork;
   final String hoseLabel;
   final String flowLabel;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final stroke = Paint()..color = Colors.black..style = PaintingStyle.stroke..strokeWidth = 1;
-    final truck = Rect.fromLTWH(10, size.height - 30, 40, 16);
-    final target = Rect.fromLTWH(size.width - 50, 10, 36, 22);
+    final hoseUnderlay = Paint()
+      ..color = Colors.white.withValues(alpha: 0.82)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3.0
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+    final hoseStroke = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.6
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+    final marker = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
 
-    final p0 = Offset(truck.right, truck.top);
-    final p2 = Offset(target.left, target.bottom);
-    final c1 = Offset(size.width * 0.55, size.height * 0.55);
-    final hose = Path()..moveTo(p0.dx, p0.dy)..quadraticBezierTo(c1.dx, c1.dy, p2.dx, p2.dy);
-    canvas.drawPath(hose, stroke);
+    // Match the actual asset placement used by PrintableSceneWidget:
+    // truck image = left 4, bottom 4, width 42, height 26
+    // primary fire/target image = right 6, top 4, width 40, height 30
+    // The old hose used fallback-box coordinates, so it could float away from the engine.
+    final start = Offset(46, size.height - 17); // engine discharge / pump panel
+    final end = Offset(size.width - 45, 25); // target/fire side of the scene
+    final c1 = Offset(size.width * 0.34, size.height * 0.80);
+    final c2 = Offset(size.width * 0.63, size.height * 0.42);
 
-    canvas.drawRect(Rect.fromCenter(center: p2, width: 8, height: 4), stroke);
+    final hose = Path()
+      ..moveTo(start.dx, start.dy)
+      ..cubicTo(c1.dx, c1.dy, c2.dx, c2.dy, end.dx, end.dy);
+
+    canvas.drawPath(hose, hoseUnderlay);
+    canvas.drawPath(hose, hoseStroke);
+
+    // Small coupling/nozzle markers make the connection points obvious on phone and print preview.
+    canvas.drawCircle(start, 2.6, marker);
+    canvas.drawRect(Rect.fromCenter(center: end, width: 8, height: 4), marker);
 
     final textPainter = TextPainter(textDirection: TextDirection.ltr);
     textPainter.text = TextSpan(text: hoseLabel, style: const TextStyle(color: Colors.black, fontSize: 7, fontWeight: FontWeight.w700));
@@ -1050,7 +1099,7 @@ class _PrintableHosePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _PrintableHosePainter oldDelegate) {
-    return oldDelegate.hoseLabel != hoseLabel || oldDelegate.flowLabel != flowLabel;
+    return oldDelegate.targetArtwork != targetArtwork || oldDelegate.hoseLabel != hoseLabel || oldDelegate.flowLabel != flowLabel;
   }
 }
 
