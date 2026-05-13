@@ -314,7 +314,36 @@ class ScenarioRepository {
       final manifestStr = await rootBundle.loadString('assets/scenarios/scenario_manifest.json');
       final decoded = jsonDecode(manifestStr);
       final files = (decoded is Map && decoded['files'] is List) ? List<String>.from(decoded['files'] as List) : <String>[];
+<<<<<<< Updated upstream
       addUnique(files);
+=======
+      final cleaned = files
+          .map((e) => e.toString())
+          .map(_sanitizeAssetKey)
+          .map((e) => e.trim())
+          .where((e) => e.isNotEmpty)
+          .toList(growable: false);
+
+      // When a caller explicitly requests manifest-only loading, respect it.
+      if (manifestOnly && cleaned.isNotEmpty) return cleaned;
+
+      // If a manifest exists, keep its ordering as "Recommended", but also
+      // include any additional scenario JSON files that are bundled but not
+      // listed yet. This prevents the common "only the manifest scenarios load"
+      // issue when new packs are added.
+      if (cleaned.isNotEmpty) {
+        final extra = await _enumerateAllScenarioJsonAssets();
+        if (extra.isEmpty) return cleaned;
+
+        final cleanedSet = cleaned.toSet();
+        final missing = extra.where((p) => !cleanedSet.contains(p)).toList(growable: false);
+        if (missing.isEmpty) return cleaned;
+
+        // Stable append ordering for anything not in the manifest.
+        final sortedMissing = [...missing]..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+        return [...cleaned, ...sortedMissing];
+      }
+>>>>>>> Stashed changes
     } catch (e) {
       // Ignore and fall back to pack index / AssetManifest.
       debugPrint('Scenario manifest not usable; trying pack index / AssetManifest: $e');
