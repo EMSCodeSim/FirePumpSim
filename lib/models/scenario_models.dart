@@ -119,6 +119,8 @@ class PracticeScenario {
           .map((e) => <String, dynamic>{'label': e.key.toString(), 'value': e.value.toString()})
           .toList(growable: false);
     }
+    final s = (raw ?? '').toString().trim();
+    if (s.isNotEmpty && s.toLowerCase() != 'null') return <dynamic>[s];
     return const [];
   }
 
@@ -128,6 +130,7 @@ class PracticeScenario {
 
     final topLevelAliases = <String>[
       'answer',
+      'answerValue',
       'correctAnswer',
       'correctPP',
       'pumpPressure',
@@ -146,8 +149,9 @@ class PracticeScenario {
     }
 
     // Common aliases used by the player and daily challenge helpers.
-    final answerValue = answers['pumpPressure'] ?? answers['correctPP'] ?? answers['correctAnswer'] ?? answers['answer'] ?? answers['value'];
+    final answerValue = answers['answerValue'] ?? answers['correctAnswer'] ?? answers['answer'] ?? answers['value'] ?? answers['pumpPressure'] ?? answers['correctPP'];
     if (answerValue != null) {
+      answers['answerValue'] ??= answerValue;
       answers['correctAnswer'] ??= answerValue;
       answers['value'] ??= answerValue;
       answers['pp'] ??= answerValue;
@@ -167,6 +171,13 @@ class PracticeScenario {
 
   static PracticeScenario fromJson(Map<String, dynamic> json) {
     final variationsRaw = json['variations'] ?? json['problems'];
+    final variations = (variationsRaw is List)
+        ? variationsRaw
+            .whereType<Map>()
+            .map((e) => ScenarioVariation.fromJson(Map<String, dynamic>.from(e)))
+            .toList(growable: false)
+        : const <ScenarioVariation>[];
+
     final rawImage = json['image'] ?? json['thumbnail'];
     final rawScene = json['scene'] ?? json['sceneImage'] ?? json['image'];
     final bestImage = _pickBestImagePath(rawImage, rawScene);
@@ -178,6 +189,19 @@ class PracticeScenario {
     final chip = _humanizeLabel(_firstText(json, const ['chip', 'category', 'type', 'scenarioType']));
     final difficulty = _humanizeLabel(_firstText(json, const ['difficulty', 'level']));
 
+    final topQuestion = _firstText(json, const ['studentQuestion', 'question', 'problem', 'prompt']);
+    final topDetails = _listFromAny(json['details'] ?? json['info'] ?? json['facts']);
+    final topOverlays = _listFromAny(json['overlays'] ?? json['labels'] ?? json['callouts']);
+    final firstChildWithQuestion = variations.where((v) => v.studentQuestion.trim().isNotEmpty).isNotEmpty
+        ? variations.firstWhere((v) => v.studentQuestion.trim().isNotEmpty)
+        : null;
+    final firstChildWithDetails = variations.where((v) => v.details.isNotEmpty).isNotEmpty
+        ? variations.firstWhere((v) => v.details.isNotEmpty)
+        : null;
+    final firstChildWithOverlays = variations.where((v) => v.overlays.isNotEmpty).isNotEmpty
+        ? variations.firstWhere((v) => v.overlays.isNotEmpty)
+        : null;
+
     return PracticeScenario(
       id: _firstText(json, const ['id', 'scenarioId']),
       title: title,
@@ -185,21 +209,16 @@ class PracticeScenario {
       chip: chip.isEmpty ? 'Practice' : chip,
       image: bestImage,
       scene: bestScene,
-      studentQuestion: _firstText(json, const ['studentQuestion', 'question', 'problem', 'prompt']),
-      details: _listFromAny(json['details'] ?? json['info'] ?? json['facts']),
-      overlays: _listFromAny(json['overlays'] ?? json['labels'] ?? json['callouts']),
+      studentQuestion: topQuestion.isNotEmpty ? topQuestion : (firstChildWithQuestion?.studentQuestion ?? ''),
+      details: topDetails.isNotEmpty ? topDetails : (firstChildWithDetails?.details ?? const []),
+      overlays: topOverlays.isNotEmpty ? topOverlays : (firstChildWithOverlays?.overlays ?? const []),
       answers: answers,
       formulaBreakdown: _listFromAny(json['formulaBreakdown'] ?? json['formula'] ?? json['math'] ?? json['steps']),
-      correctPP: _numFromAny(json['correctPP'] ?? json['pumpPressure'] ?? answers['pumpPressure'] ?? answers['correctAnswer'] ?? answers['value'] ?? answers['pp']),
+      correctPP: _numFromAny(json['answerValue'] ?? json['correctAnswer'] ?? json['answer'] ?? json['correctPP'] ?? json['pumpPressure'] ?? answers['answerValue'] ?? answers['correctAnswer'] ?? answers['value'] ?? answers['pp'] ?? answers['pumpPressure']),
       tolerance: _numFromAny(json['tolerance'] ?? answers['tolerance']),
       instructorExplanation: _firstText(json, const ['instructorExplanation', 'explanation', 'teachingPoint', 'teachingFeedback']),
       explainMistake: _firstText(json, const ['explainMistake', 'commonMistake', 'mistakeExplanation']),
-      variations: (variationsRaw is List)
-          ? variationsRaw
-              .whereType<Map>()
-              .map((e) => ScenarioVariation.fromJson(Map<String, dynamic>.from(e)))
-              .toList(growable: false)
-          : const [],
+      variations: variations,
       difficulty: difficulty.isEmpty ? null : difficulty,
       timedModeAvailable: json['timedModeAvailable'] is bool
           ? json['timedModeAvailable'] as bool
@@ -251,7 +270,7 @@ class ScenarioVariation {
       details: PracticeScenario._listFromAny(json['details'] ?? json['info'] ?? json['facts']),
       overlays: PracticeScenario._listFromAny(json['overlays'] ?? json['labels'] ?? json['callouts']),
       answers: answers,
-      correctPP: PracticeScenario._numFromAny(json['correctPP'] ?? json['pumpPressure'] ?? answers['pumpPressure'] ?? answers['correctAnswer'] ?? answers['value'] ?? answers['pp']),
+      correctPP: PracticeScenario._numFromAny(json['answerValue'] ?? json['correctAnswer'] ?? json['answer'] ?? json['correctPP'] ?? json['pumpPressure'] ?? answers['answerValue'] ?? answers['correctAnswer'] ?? answers['value'] ?? answers['pp'] ?? answers['pumpPressure']),
       tolerance: PracticeScenario._numFromAny(json['tolerance'] ?? answers['tolerance']),
       formulaBreakdown: PracticeScenario._listFromAny(json['formulaBreakdown'] ?? json['formula'] ?? json['math'] ?? json['steps']),
       instructorExplanation: PracticeScenario._firstText(json, const ['instructorExplanation', 'explanation', 'teachingPoint', 'teachingFeedback']),
