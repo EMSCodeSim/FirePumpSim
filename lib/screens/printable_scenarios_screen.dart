@@ -947,7 +947,7 @@ class _PrintableSceneWidgetState extends State<PrintableSceneWidget> {
             bottom: 4,
             width: 42,
             height: 26,
-            child: Image.asset(PrintableScenarioAssetPack.truck, fit: BoxFit.contain, color: Colors.black, colorBlendMode: BlendMode.srcIn),
+            child: Image.asset(PrintableScenarioAssetPack.truck, fit: BoxFit.contain, errorBuilder: (_, __, ___) => const SizedBox()),
           ),
         ..._targetWidgets(targets),
         Positioned.fill(
@@ -965,7 +965,7 @@ class _PrintableSceneWidgetState extends State<PrintableSceneWidget> {
   List<Widget> _targetWidgets(List<String> targets) {
     Widget img(String path, {double? w, double? h}) {
       if (_targetOkByAsset[path] != true) return const SizedBox();
-      return Image.asset(path, fit: BoxFit.contain, color: Colors.black, colorBlendMode: BlendMode.srcIn, errorBuilder: (_, __, ___) => const SizedBox());
+      return Image.asset(path, fit: BoxFit.contain, errorBuilder: (_, __, ___) => const SizedBox());
     }
 
     if (targets.length == 1) {
