@@ -857,7 +857,7 @@ class _AnswerCard extends StatelessWidget {
                   style: textTheme.titleMedium?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900),
                   decoration: InputDecoration(
                     isDense: true,
-                    hintText: 'Enter PSI',
+                    hintText: 'Enter $unit',
                     hintStyle: textTheme.bodyMedium?.copyWith(color: FirePumpSimColors.textMed.withValues(alpha: 0.85)),
                     filled: true,
                     fillColor: FirePumpSimColors.charcoal3.withValues(alpha: 0.75),
@@ -988,25 +988,118 @@ class _InfoView extends StatelessWidget {
     for (final d in details) {
       if (d is Map) {
         final m = Map<String, dynamic>.from(d);
-        final label = (m['label'] ?? m['title'] ?? m['name'] ?? '').toString().trim();
-        final value = (m['value'] ?? m['text'] ?? m['display'] ?? '').toString().trim();
+        final label = (m['label'] ?? m['title'] ?? m['name'] ?? m['key'] ?? '').toString().trim();
+        final value = (m['value'] ?? m['text'] ?? m['display'] ?? m['description'] ?? '').toString().trim();
         if (label.isNotEmpty && value.isNotEmpty) rows.add(_InfoRow(label: label, value: value));
       } else if (d is List && d.length >= 2) {
         final label = d[0].toString().trim();
         final value = d[1].toString().trim();
         if (label.isNotEmpty && value.isNotEmpty) rows.add(_InfoRow(label: label, value: value));
+      } else {
+        final text = d.toString().trim();
+        if (text.isEmpty || text.toLowerCase() == 'null') continue;
+        final colon = text.indexOf(':');
+        if (colon > 0 && colon < 32 && colon < text.length - 1) {
+          rows.add(_InfoRow(label: text.substring(0, colon).trim(), value: text.substring(colon + 1).trim()));
+        } else {
+          rows.add(_InfoRow(label: 'Info ${rows.length + 1}', value: text));
+        }
       }
     }
     return rows;
   }
 
+  List<_InfoRow> _parseOverlays(List<dynamic> overlays) {
+    final rows = <_InfoRow>[];
+    for (final o in overlays) {
+      if (o is! Map) continue;
+      final m = Map<String, dynamic>.from(o);
+      final label = (m['label'] ?? m['title'] ?? m['name'] ?? m['type'] ?? '').toString().trim();
+      final value = (m['text'] ?? m['value'] ?? m['display'] ?? '').toString().trim();
+      if (label.isNotEmpty && value.isNotEmpty) {
+        rows.add(_InfoRow(label: label, value: value));
+      } else if (value.isNotEmpty) {
+        rows.add(_InfoRow(label: 'Label ${rows.length + 1}', value: value));
+      }
+    }
+    return rows;
+  }
+
+  String _prettyAnswerLabel(String key) {
+    switch (key) {
+      case 'totalGpm':
+        return 'Total GPM';
+      case 'pumpPressure':
+        return 'Pump Pressure';
+      case 'nozzlePressure':
+        return 'Nozzle Pressure';
+      case 'frictionLoss':
+        return 'Friction Loss';
+      case 'elevation':
+      case 'elevationPressure':
+        return 'Elevation';
+      case 'applianceLoss':
+        return 'Appliance Loss';
+      case 'answerLabel':
+        return 'Answer Type';
+      default:
+        return key
+            .replaceAllMapped(RegExp(r'([a-z])([A-Z])'), (m) => '${m.group(1)} ${m.group(2)}')
+            .replaceAll('_', ' ');
+    }
+  }
+
+  List<_InfoRow> _parseAnswerFacts(Map<String, dynamic> answers) {
+    const preferred = <String>[
+      'answerLabel',
+      'totalGpm',
+      'nozzlePressure',
+      'frictionLoss',
+      'elevation',
+      'elevationPressure',
+      'applianceLoss',
+      'pumpPressure',
+    ];
+
+    final rows = <_InfoRow>[];
+    for (final key in preferred) {
+      if (!answers.containsKey(key)) continue;
+      final value = (answers[key] ?? '').toString().trim();
+      if (value.isEmpty || value.toLowerCase() == 'null') continue;
+      rows.add(_InfoRow(label: _prettyAnswerLabel(key), value: value));
+    }
+    return rows;
+  }
+
+  void _addUnique(List<_InfoRow> rows, _InfoRow row) {
+    final key = '${row.label.toLowerCase().trim()}::${row.value.toLowerCase().trim()}';
+    final exists = rows.any((r) => '${r.label.toLowerCase().trim()}::${r.value.toLowerCase().trim()}' == key);
+    if (!exists) rows.add(row);
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final rows = _parseDetails(problem.details);
+    final effective = <_InfoRow>[];
 
-    final effective = <_InfoRow>[...rows];
-    if (!rows.any((r) => r.label.toLowerCase().contains('unit'))) {
+    for (final row in _parseDetails(problem.details)) {
+      _addUnique(effective, row);
+    }
+
+    // Many scenario files do not have a separate `details/info` field. When that
+    // happens, use the overlay labels and answer facts so the Info tab is still useful.
+    if (effective.isEmpty) {
+      for (final row in _parseOverlays(problem.overlays)) {
+        _addUnique(effective, row);
+      }
+    }
+    if (effective.isEmpty) {
+      _addUnique(effective, _InfoRow(label: 'Question', value: problem.studentQuestion));
+    }
+    for (final row in _parseAnswerFacts(problem.answers)) {
+      _addUnique(effective, row);
+    }
+    if (!effective.any((r) => r.label.toLowerCase().contains('unit'))) {
       effective.add(_InfoRow(label: 'Expected Answer Unit', value: unit));
     }
 

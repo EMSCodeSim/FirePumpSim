@@ -363,7 +363,7 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
                         _MetaChip(label: scenario.type, icon: Icons.category),
                         _MetaChip(label: difficulty, icon: Icons.trending_up),
                         _MetaChip(
-                          label: '${1 + scenario.variations.length} problem${scenario.variations.length == 0 ? '' : 's'}',
+                          label: '${scenario.variations.isEmpty ? 1 : scenario.variations.length} problem${(scenario.variations.isEmpty ? 1 : scenario.variations.length) == 1 ? '' : 's'}',
                           icon: Icons.dashboard,
                         ),
                       ],
@@ -379,7 +379,7 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
                         Expanded(
                           child: _PrimaryActionButton(
                             icon: Icons.play_arrow,
-                            label: 'Start Base Scenario',
+                            label: scenario.variations.isEmpty ? 'Start Scenario' : 'Start First Problem',
                             onPressed: () async {
                               final playable = await _repo.startBaseProblem(scenario.id);
                               if (!context.mounted) return;
@@ -406,8 +406,8 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
                         Expanded(
                           child: _SecondaryActionButton(
                             icon: Icons.shuffle,
-                            label: 'Start Random Variation',
-                            enabled: scenario.variations.isNotEmpty,
+                            label: 'Start Random Problem',
+                            enabled: scenario.variations.length > 1,
                             onPressed: () async {
                               final playable = await _repo.startRandomVariation(scenario.id);
                               if (!context.mounted) return;
@@ -415,7 +415,7 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
                                 debugPrint('Failed to start random variation from preview. scenarioId=${scenario.id}');
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: const Text('No variations available for this scenario.'),
+                                    content: const Text('No additional problems available for this scenario.'),
                                     backgroundColor: FirePumpSimColors.charcoal2,
                                   ),
                                 );
