@@ -29,15 +29,29 @@ class ScenarioRepository {
   ///
   /// Normalize those inputs back to the real asset key.
   static String _sanitizeAssetKey(String input) {
-    final trimmed = input.trim();
-    if (trimmed.isEmpty) return trimmed;
+    var s = input.trim();
+    if (s.isEmpty) return s;
+
     // Only attempt decode when it looks encoded.
-    if (!trimmed.contains('%')) return trimmed;
-    try {
-      return Uri.decodeFull(trimmed);
-    } catch (_) {
-      return trimmed;
+    if (!s.contains('%')) return s;
+
+    // Flutter Web asset fetching will URL-encode the provided key.
+    // If the key itself already contains encoded sequences (e.g. "%20"),
+    // the browser fetch can encode again ("%2520"), causing 404s.
+    //
+    // Some inputs can even be double-encoded already. Decode a few times until
+    // stable (or decoding fails).
+    for (var i = 0; i < 3; i++) {
+      if (!s.contains('%')) break;
+      try {
+        final decoded = Uri.decodeFull(s);
+        if (decoded == s) break;
+        s = decoded;
+      } catch (_) {
+        break;
+      }
     }
+    return s;
   }
 
   static String normalize(String input) => input.toLowerCase().trim().replaceAll(RegExp(r'[_\-\s]+'), ' ');
@@ -314,36 +328,26 @@ class ScenarioRepository {
       final manifestStr = await rootBundle.loadString('assets/scenarios/scenario_manifest.json');
       final decoded = jsonDecode(manifestStr);
       final files = (decoded is Map && decoded['files'] is List) ? List<String>.from(decoded['files'] as List) : <String>[];
-<<<<<<< Updated upstream
       addUnique(files);
-=======
-      final cleaned = files
-          .map((e) => e.toString())
-          .map(_sanitizeAssetKey)
-          .map((e) => e.trim())
-          .where((e) => e.isNotEmpty)
-          .toList(growable: false);
 
-      // When a caller explicitly requests manifest-only loading, respect it.
-      if (manifestOnly && cleaned.isNotEmpty) return cleaned;
+      // If a caller explicitly requests manifest-only loading, respect it.
+      if (manifestOnly && ordered.isNotEmpty) return ordered;
 
       // If a manifest exists, keep its ordering as "Recommended", but also
       // include any additional scenario JSON files that are bundled but not
       // listed yet. This prevents the common "only the manifest scenarios load"
       // issue when new packs are added.
-      if (cleaned.isNotEmpty) {
+      if (!manifestOnly && ordered.isNotEmpty) {
         final extra = await _enumerateAllScenarioJsonAssets();
-        if (extra.isEmpty) return cleaned;
-
-        final cleanedSet = cleaned.toSet();
-        final missing = extra.where((p) => !cleanedSet.contains(p)).toList(growable: false);
-        if (missing.isEmpty) return cleaned;
-
-        // Stable append ordering for anything not in the manifest.
-        final sortedMissing = [...missing]..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
-        return [...cleaned, ...sortedMissing];
+        if (extra.isNotEmpty) {
+          final orderedSet = ordered.toSet();
+          final missing = extra.where((p) => !orderedSet.contains(p)).toList(growable: false);
+          if (missing.isNotEmpty) {
+            final sortedMissing = [...missing]..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+            addUnique(sortedMissing);
+          }
+        }
       }
->>>>>>> Stashed changes
     } catch (e) {
       // Ignore and fall back to pack index / AssetManifest.
       debugPrint('Scenario manifest not usable; trying pack index / AssetManifest: $e');
@@ -652,7 +656,7 @@ class _ScenarioAssetResolver {
   }
 
   String _resolve(String raw) {
-    final trimmed = raw.trim();
+    final trimmed = ScenarioRepository._sanitizeAssetKey(raw).trim();
     if (trimmed.isEmpty) return '';
     if (trimmed.toLowerCase().startsWith('assets/')) return trimmed;
     if (!_hasImageExt(trimmed)) return trimmed;
