@@ -1,5 +1,22 @@
 {
   "files": [
-    "assets/scenarios/engine_181_car_fire_attack_line.json"
+    "assets/scenarios/free_starter_pack.json",
+    "assets/scenarios/engine_181_car_fire_attack_line.json",
+    "assets/scenarios/advanced_portable_monitor_dual_supply.json",
+    "assets/scenarios/advanced_standpipe_floor5.json",
+    "assets/scenarios/car-fire-engine181-001.json",
+    "assets/scenarios/deck_gun_solid_bore_gpm_001.json",
+    "assets/scenarios/hydrant_drop_add_lines_001.json",
+    "assets/scenarios/masterstream_181_001.json",
+    "assets/scenarios/nozzle_reaction_engine181_001.json",
+    "assets/scenarios/relay_ldh_supply_001.json",
+    "assets/scenarios/single_line_extended_002.json",
+    "assets/scenarios/single_line_heavy_003.json",
+    "assets/scenarios/single_line_preconnect_001.json",
+    "assets/scenarios/standpipe_engine181_multi.json",
+    "assets/scenarios/tender_shuttle_single_tender_001.json",
+    "assets/scenarios/Wildland Structure Engine181 001.json",
+    "assets/scenarios/wildland-structure-engine181-001.json",
+    "assets/scenarios/wye_residential_split_001.json"
   ]
 }
