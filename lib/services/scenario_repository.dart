@@ -164,39 +164,47 @@ class ScenarioRepository {
     for (final s in scenarios) {
       final baseDifficulty = (s.difficulty ?? 'Intermediate').trim();
       final baseTimed = s.timedModeAvailable ?? false;
-      playable.add(
-        PlayableScenarioProblem(
-          scenarioId: s.id,
-          scenarioTitle: s.title,
-          type: s.type,
-          chip: s.chip,
-          image: s.image,
-          scene: s.scene,
-          studentQuestion: s.studentQuestion,
-          details: s.details,
-          overlays: s.overlays,
-          answers: s.answers,
-          formulaBreakdown: s.formulaBreakdown,
-          correctPP: s.correctPP,
-          tolerance: s.tolerance,
-          instructorExplanation: s.instructorExplanation,
-          explainMistake: s.explainMistake,
-          problemId: s.id,
-          problemTitle: s.title,
-          isVariation: false,
-          variationIndex: null,
-          difficulty: baseDifficulty.isEmpty ? 'Intermediate' : baseDifficulty,
-          timedModeAvailable: baseTimed,
-          variationCount: s.variations.length,
-        ),
-      );
+
+      // Important: Newer FirePumpSim packs put every real standalone question
+      // inside `problems[]` / `variations[]`. Do NOT create an extra empty base
+      // playable for those packs, because it opens with missing overlays,
+      // question text, and info. Only create a base playable when there are no
+      // child problems.
+      if (s.variations.isEmpty) {
+        playable.add(
+          PlayableScenarioProblem(
+            scenarioId: s.id,
+            scenarioTitle: s.title,
+            type: s.type,
+            chip: s.chip,
+            image: s.image,
+            scene: s.scene,
+            studentQuestion: s.studentQuestion,
+            details: s.details,
+            overlays: s.overlays,
+            answers: s.answers,
+            formulaBreakdown: s.formulaBreakdown,
+            correctPP: s.correctPP,
+            tolerance: s.tolerance,
+            instructorExplanation: s.instructorExplanation,
+            explainMistake: s.explainMistake,
+            problemId: s.id,
+            problemTitle: s.title,
+            isVariation: false,
+            variationIndex: null,
+            difficulty: baseDifficulty.isEmpty ? 'Intermediate' : baseDifficulty,
+            timedModeAvailable: baseTimed,
+            variationCount: 1,
+          ),
+        );
+      }
 
       for (var i = 0; i < s.variations.length; i++) {
         final v = s.variations[i];
         final variationDifficulty = (v.difficulty ?? s.difficulty ?? 'Intermediate').trim();
         final variationTimed = v.timedModeAvailable ?? s.timedModeAvailable ?? false;
         final variationId = v.id.trim().isNotEmpty ? v.id.trim() : '${s.id}__v$i';
-        final variationTitle = v.title.trim().isNotEmpty ? v.title.trim() : '${s.title} (Variation ${i + 1})';
+        final variationTitle = v.title.trim().isNotEmpty ? v.title.trim() : '${s.title} (Problem ${i + 1})';
         final variationQuestion = v.studentQuestion.trim().isNotEmpty ? v.studentQuestion : s.studentQuestion;
         final variationDetails = v.details.isNotEmpty ? v.details : s.details;
         final variationOverlays = v.overlays.isNotEmpty ? v.overlays : s.overlays;
@@ -383,11 +391,15 @@ class ScenarioRepository {
 
   Future<PlayableScenarioProblem?> startBaseProblem(String scenarioId) async {
     final playable = await loadPlayableProblems();
-    try {
-      return playable.firstWhere((p) => p.scenarioId == scenarioId && !p.isVariation);
-    } catch (_) {
-      return null;
+    final matches = playable.where((p) => p.scenarioId == scenarioId).toList(growable: false);
+    if (matches.isEmpty) return null;
+
+    // Prefer a true base problem for legacy one-problem packs, otherwise open
+    // the first real standalone problem from `problems[]` / `variations[]`.
+    for (final p in matches) {
+      if (!p.isVariation) return p;
     }
+    return matches.first;
   }
 
   Future<PlayableScenarioProblem?> startRandomVariation(String scenarioId) async {
