@@ -68,11 +68,12 @@ class _HomeScreenState extends State<HomeScreen> {
             _HeroHeader(height: heroHeight, topInset: heroTopInset),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, 0),
+                // Bring the menu cards closer to the hero banner.
+                padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.xs, AppSpacing.md, 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 2),
                     const _SectionLabel('TRAINING'),
                     const SizedBox(height: 6),
                     _MainMenuCard(

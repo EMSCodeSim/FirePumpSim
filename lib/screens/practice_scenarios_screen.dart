@@ -58,7 +58,8 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
     setState(() => _loading = true);
     try {
       final packsRepo = ScenarioPackRepository(storage: _packStorage);
-      final unlocked = await packsRepo.loadUnlockedPacks();
+      // Per app rules: Practice Scenarios should only use the Free Starter Pack.
+      final unlocked = (await packsRepo.loadUnlockedPacks()).where((p) => p.packId == 'free_starter_pack').toList(growable: false);
 
       final byPack = <String, List<PracticeScenario>>{};
       final all = <PracticeScenario>[];

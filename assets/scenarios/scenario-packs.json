@@ -9,21 +9,7 @@
       "isFree": true,
       "isPurchased": true,
       "scenarioFiles": [
-        "single_line_preconnect_001.json",
-        "single_line_extended_002.json",
-        "single_line_heavy_003.json",
-        "wye_residential_split_001.json",
-        "engine_181_car_fire_attack_line.json",
-        "car-fire-engine181-001.json",
-        "masterstream_181_001.json",
-        "deck_gun_solid_bore_gpm_001.json",
-        "relay_ldh_supply_001.json",
-        "hydrant_drop_add_lines_001.json",
-        "nozzle_reaction_engine181_001.json",
-        "standpipe_engine181_multi.json",
-        "advanced_standpipe_floor5.json",
-        "tender_shuttle_single_tender_001.json",
-        "wildland-structure-engine181-001.json"
+        "assets/scenarios/free_starter_pack.json"
       ]
     },
     {

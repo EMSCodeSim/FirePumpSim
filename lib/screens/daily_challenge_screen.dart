@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:firepumpsim/models/daily_challenge_models.dart';
 import 'package:firepumpsim/models/scenario_models.dart';
@@ -11,7 +10,6 @@ import 'package:firepumpsim/services/scenario_repository.dart';
 import 'package:firepumpsim/theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 class DailyChallengeScreen extends StatefulWidget {
@@ -141,15 +139,32 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
   }
 
   Future<List<String>> _loadDailyChallengeIndexFiles() async {
+    // Daily Challenge pool rule:
+    // - Can be ANY bundled scenario that is NOT part of the Free Starter Pack.
+    // Practice Scenarios are limited to `assets/scenarios/free_starter_pack.json`.
+    // So for Daily Challenge we load all scenario JSON assets except that pack and
+    // non-scenario index/config JSON files.
     try {
-      final raw = await rootBundle.loadString('assets/scenarios/daily-challenge-index.json');
-      final decoded = jsonDecode(raw);
-      if (decoded is! Map) return const <String>[];
-      final list = decoded['dailyChallengeFiles'];
-      if (list is! List) return const <String>[];
-      return list.map((e) => e.toString().trim()).where((e) => e.isNotEmpty).toList(growable: false);
+      final all = await _repo.enumerateScenarioJsonAssets();
+
+      bool isExcluded(String p) {
+        final lower = p.toLowerCase();
+        if (!lower.startsWith('assets/scenarios/')) return true;
+        if (!lower.endsWith('.json')) return true;
+        if (lower.endsWith('/scenario_manifest.json')) return true;
+        if (lower.endsWith('/daily-challenge-index.json')) return true;
+        if (lower.endsWith('/scenario-packs.json')) return true;
+        // Exclude practice-only starter pack containers.
+        if (lower.endsWith('/free_starter_pack.json')) return true;
+        if (lower.contains('/packs/')) return true;
+        return false;
+      }
+
+      final eligible = all.where((p) => !isExcluded(p)).toList(growable: false);
+      if (eligible.isEmpty) debugPrint('Daily Challenge pool empty after exclusions. allCount=${all.length}');
+      return eligible;
     } catch (e) {
-      debugPrint('Failed to load daily challenge index: $e');
+      debugPrint('Failed to build Daily Challenge file list: $e');
       return const <String>[];
     }
   }

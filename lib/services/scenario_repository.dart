@@ -325,6 +325,10 @@ class ScenarioRepository {
     }
   }
 
+  /// Public wrapper used by Daily Challenge and other flows that need a raw list
+  /// of scenario JSON assets included in the bundle.
+  Future<List<String>> enumerateScenarioJsonAssets() => _enumerateAllScenarioJsonAssets();
+
   Future<List<String>> _enumerateAllScenarioJsonAssets() async {
     final assetManifestStr = await rootBundle.loadString('AssetManifest.json');
     final decoded = jsonDecode(assetManifestStr);
