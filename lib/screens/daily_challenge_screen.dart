@@ -34,6 +34,7 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
   DailyChallengeResult? _todayResult;
 
   bool _practiceRetryEnabled = false;
+  bool _submitting = false;
 
   // Result UI
   bool? _lastSubmitCorrect;
@@ -294,7 +295,9 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
   }
 
   Future<void> _submitAnswer() async {
-    if (_isOfficialLocked) return;
+    if (_isOfficialLocked || _submitting) return;
+
+    FocusScope.of(context).unfocus();
 
     final p = _today;
     if (p == null) {
@@ -308,125 +311,141 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
       return;
     }
 
-    final userAnswer = double.tryParse(text);
+    final userAnswer = _parseUserAnswer(text);
     if (userAnswer == null) {
-      _showSnackBar('Enter a number.');
+      _showSnackBar('Enter a number only. Example: 120');
       return;
     }
 
-    final info = _CorrectAnswerInfo.fromProblem(p);
-    final correct = info.correctAnswer;
-    if (correct == null) {
-      _showSnackBar('This challenge is missing an answer key.');
-      return;
-    }
+    setState(() => _submitting = true);
 
-    final tol = info.tolerance;
-    final diff = (userAnswer - correct).abs();
-    final isCorrect = diff <= tol;
-
-    final now = DateTime.now();
-    final todayKey = _yyyyMmDd(now);
-    final yesterdayKey = _yyyyMmDd(now.subtract(const Duration(days: 1)));
-
-    // Load freshest copies to avoid UI races.
-    var stats = await _storage.loadStats();
-    final history = await _storage.loadHistory();
-    DailyChallengeResult? existing;
-    for (final r in history) {
-      if (r.date == todayKey) {
-        existing = r;
-        break;
+    try {
+      final info = _CorrectAnswerInfo.fromProblem(p);
+      final correct = info.correctAnswer;
+      if (correct == null) {
+        _showSnackBar('This challenge is missing an answer key.');
+        return;
       }
-    }
 
-    final isFirstCompletionToday = existing == null;
-    final previousAttempts = existing?.attempts ?? 0;
-    final attempts = previousAttempts + 1;
+      final tol = info.tolerance;
+      final diff = (userAnswer - correct).abs();
+      final isCorrect = diff <= tol;
 
-    var countsForStreak = existing?.countsForStreak ?? false;
-    var finalIsCorrect = existing?.isCorrect ?? false;
+      final now = DateTime.now();
+      final todayKey = _yyyyMmDd(now);
+      final yesterdayKey = _yyyyMmDd(now.subtract(const Duration(days: 1)));
 
-    // If the user ever gets it correct today, we treat today as a correct completion.
-    if (isCorrect) finalIsCorrect = true;
+      // Load freshest copies to avoid UI races.
+      var stats = await _storage.loadStats();
+      final history = await _storage.loadHistory();
+      DailyChallengeResult? existing;
+      for (final r in history) {
+        if (r.date == todayKey) {
+          existing = r;
+          break;
+        }
+      }
 
-    // Only credit streak once per day.
-    if (finalIsCorrect && !countsForStreak) {
-      final lastCorrect = stats.lastCorrectDate.trim();
-      final shouldIncrement = lastCorrect == yesterdayKey;
-      final isSameDay = lastCorrect == todayKey;
-      final nextStreak = isSameDay ? stats.currentStreak : (shouldIncrement ? stats.currentStreak + 1 : 1);
-      final nextBest = max(stats.bestStreak, nextStreak);
-      stats = stats.copyWith(lastCorrectDate: todayKey, currentStreak: nextStreak, bestStreak: nextBest);
-      countsForStreak = true;
-    }
+      final isFirstCompletionToday = existing == null;
+      final previousAttempts = existing?.attempts ?? 0;
+      final attempts = previousAttempts + 1;
 
-    // Completed count increments only once per day.
-    if (isFirstCompletionToday) {
-      stats = stats.copyWith(
-        lastCompletedDate: todayKey,
-        totalCompleted: stats.totalCompleted + 1,
+      var countsForStreak = existing?.countsForStreak ?? false;
+      var finalIsCorrect = existing?.isCorrect ?? false;
+
+      // If the user ever gets it correct today, treat today as a correct completion.
+      if (isCorrect) finalIsCorrect = true;
+
+      // Only credit streak once per day.
+      if (finalIsCorrect && !countsForStreak) {
+        final lastCorrect = stats.lastCorrectDate.trim();
+        final shouldIncrement = lastCorrect == yesterdayKey;
+        final isSameDay = lastCorrect == todayKey;
+        final nextStreak = isSameDay ? stats.currentStreak : (shouldIncrement ? stats.currentStreak + 1 : 1);
+        final nextBest = max(stats.bestStreak, nextStreak);
+        stats = stats.copyWith(lastCorrectDate: todayKey, currentStreak: nextStreak, bestStreak: nextBest);
+        countsForStreak = true;
+      }
+
+      // Completed count increments only once per day.
+      if (isFirstCompletionToday) {
+        stats = stats.copyWith(
+          lastCompletedDate: todayKey,
+          totalCompleted: stats.totalCompleted + 1,
+        );
+      } else {
+        stats = stats.copyWith(lastCompletedDate: todayKey);
+      }
+
+      // Attempts increment on every submit.
+      stats = stats.copyWith(totalAttempts: stats.totalAttempts + 1);
+
+      // Correct increments once per day when first becoming correct.
+      if (finalIsCorrect && (existing?.isCorrect != true)) {
+        stats = stats.copyWith(totalCorrect: stats.totalCorrect + 1);
+      }
+
+      final heuristics = _ChallengeHeuristics.fromProblem(p);
+      final result = DailyChallengeResult(
+        date: todayKey,
+        problemId: p.problemId,
+        scenarioId: p.scenarioId,
+        title: p.problemTitle,
+        category: (p.chip.trim().isNotEmpty ? p.chip : p.type).trim(),
+        difficulty: p.difficulty.trim().isEmpty ? 'Intermediate' : p.difficulty.trim(),
+        questionType: info.questionType,
+        correctAnswer: correct,
+        userAnswer: userAnswer,
+        unit: info.unit,
+        isCorrect: finalIsCorrect,
+        attempts: attempts,
+        completedAt: existing?.completedAt.isNotEmpty == true ? existing!.completedAt : now.toIso8601String(),
+        countsForStreak: countsForStreak,
+        hasElevation: heuristics.hasElevation,
+        hasApplianceLoss: heuristics.hasApplianceLoss,
       );
-    } else {
-      // Still keep lastCompletedDate at today.
-      stats = stats.copyWith(lastCompletedDate: todayKey);
+
+      await _storage.saveStats(stats);
+      await _storage.upsertResult(result);
+
+      if (!mounted) return;
+      setState(() {
+        _stats = stats;
+        _todayResult = result;
+        _history = [result, ...history.where((h) => h.date != todayKey)];
+        _lastSubmitCorrect = isCorrect;
+        _lastUserAnswer = userAnswer;
+        _lastCorrectAnswer = correct;
+        _lastDiff = diff;
+        _lastTol = tol;
+        _lastUnit = info.unit;
+        _practiceRetryEnabled = false;
+      });
+
+      await Future<void>.delayed(const Duration(milliseconds: 40));
+      if (!mounted) return;
+      if (_scrollCtrl.hasClients) {
+        await _scrollCtrl.animateTo(
+          min(_scrollCtrl.position.maxScrollExtent, _scrollCtrl.offset + 280),
+          duration: const Duration(milliseconds: 240),
+          curve: Curves.easeOutCubic,
+        );
+      }
+    } catch (e) {
+      debugPrint('DailyChallenge submit failed: $e');
+      _showSnackBar('Unable to submit answer. Check the scenario answer key.');
+    } finally {
+      if (mounted) setState(() => _submitting = false);
     }
+  }
 
-    // Attempts increment on every submit (including practice retry).
-    stats = stats.copyWith(totalAttempts: stats.totalAttempts + 1);
-
-    // Correct increments once per day (when first becoming correct).
-    if (finalIsCorrect && (existing?.isCorrect != true)) {
-      stats = stats.copyWith(totalCorrect: stats.totalCorrect + 1);
-    }
-
-    final heuristics = _ChallengeHeuristics.fromProblem(p);
-    final result = DailyChallengeResult(
-      date: todayKey,
-      problemId: p.problemId,
-      scenarioId: p.scenarioId,
-      title: p.problemTitle,
-      category: (p.chip.trim().isNotEmpty ? p.chip : p.type).trim(),
-      difficulty: p.difficulty.trim().isEmpty ? 'Intermediate' : p.difficulty.trim(),
-      questionType: info.questionType,
-      correctAnswer: correct,
-      userAnswer: userAnswer,
-      unit: info.unit,
-      isCorrect: finalIsCorrect,
-      attempts: attempts,
-      completedAt: existing?.completedAt.isNotEmpty == true ? existing!.completedAt : now.toIso8601String(),
-      countsForStreak: countsForStreak,
-      hasElevation: heuristics.hasElevation,
-      hasApplianceLoss: heuristics.hasApplianceLoss,
-    );
-
-    await _storage.saveStats(stats);
-    await _storage.upsertResult(result);
-
-    if (!mounted) return;
-    setState(() {
-      _stats = stats;
-      _todayResult = result;
-      _history = [result, ...history.where((h) => h.date != todayKey)];
-      _lastSubmitCorrect = isCorrect;
-      _lastUserAnswer = userAnswer;
-      _lastCorrectAnswer = correct;
-      _lastDiff = (userAnswer - correct).abs();
-      _lastTol = tol;
-      _lastUnit = info.unit;
-      _practiceRetryEnabled = false;
-    });
-
-    // Nudge the result into view.
-    await Future<void>.delayed(const Duration(milliseconds: 40));
-    if (!mounted) return;
-    if (_scrollCtrl.hasClients) {
-      await _scrollCtrl.animateTo(
-        min(_scrollCtrl.position.maxScrollExtent, _scrollCtrl.offset + 280),
-        duration: const Duration(milliseconds: 240),
-        curve: Curves.easeOutCubic,
-      );
-    }
+  static double? _parseUserAnswer(String raw) {
+    final cleaned = raw
+        .trim()
+        .replaceAll(',', '')
+        .replaceAll(RegExp(r'[^0-9.\-]'), '');
+    if (cleaned.isEmpty || cleaned == '-' || cleaned == '.') return null;
+    return double.tryParse(cleaned);
   }
 
   @override
@@ -489,6 +508,7 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
                             answerCtrl: _answerCtrl,
                             unit: _CorrectAnswerInfo.fromProblem(_today!).unit,
                             answerLabel: _CorrectAnswerInfo.fromProblem(_today!).label,
+                            submitting: _submitting,
                             onSubmit: _submitAnswer,
                             onPreview: () => _openPracticeStylePreview(_today!),
                           ),
@@ -619,6 +639,7 @@ class _TodayChallengeCard extends StatelessWidget {
     required this.answerCtrl,
     required this.unit,
     required this.answerLabel,
+    required this.submitting,
     required this.onSubmit,
     required this.onPreview,
   });
@@ -629,6 +650,7 @@ class _TodayChallengeCard extends StatelessWidget {
   final TextEditingController answerCtrl;
   final String unit;
   final String answerLabel;
+  final bool submitting;
   final Future<void> Function() onSubmit;
   final VoidCallback onPreview;
 
@@ -689,12 +711,12 @@ class _TodayChallengeCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(problem.studentQuestion, style: textTheme.bodyMedium?.copyWith(color: FirePumpSimColors.textHigh, height: 1.4)),
           const SizedBox(height: 12),
-          _AnswerRow(answerCtrl: answerCtrl, unit: unit, label: answerLabel, enabled: !locked),
+          _AnswerRow(answerCtrl: answerCtrl, unit: unit, label: answerLabel, enabled: !locked && !submitting),
           const SizedBox(height: 12),
           SizedBox(
             height: 52,
             child: ElevatedButton.icon(
-              onPressed: locked ? null : () => onSubmit(),
+              onPressed: (locked || submitting) ? null : () { onSubmit(); },
               style: ElevatedButton.styleFrom(
                 backgroundColor: FirePumpSimColors.red,
                 disabledBackgroundColor: FirePumpSimColors.red.withValues(alpha: 0.25),
@@ -702,7 +724,7 @@ class _TodayChallengeCard extends StatelessWidget {
               ),
               icon: Icon(Icons.check_circle_outline, color: locked ? FirePumpSimColors.textMed : Colors.white),
               label: Text(
-                locked ? 'Challenge Completed' : 'Submit Answer',
+                locked ? 'Challenge Completed' : (submitting ? 'Checking Answer...' : 'Submit Answer'),
                 style: textTheme.titleMedium?.copyWith(color: locked ? FirePumpSimColors.textMed : Colors.white, fontWeight: FontWeight.w900),
               ),
             ),
@@ -1645,7 +1667,7 @@ class _CorrectAnswerInfo {
 
     final qt = questionType.toLowerCase();
     if (qt.contains('nozzle') || qt.contains('reaction')) return 'lbs';
-    if (qt.contains('gpm') || qt.contains('flow')) return 'GPM';
+    if (qt.contains('gpm') || qt.contains('flow') || qt.contains('shuttle')) return 'GPM';
     if (qt.contains('relay') && qt.contains('distance')) return 'ft';
     if (qt.contains('distance')) return 'ft';
     if (qt.contains('elev') || qt.contains('elevation')) return 'PSI';
@@ -1655,7 +1677,7 @@ class _CorrectAnswerInfo {
   static double _defaultTolerance(String questionType) {
     final qt = questionType.toLowerCase();
     if (qt.contains('nozzle') || qt.contains('reaction')) return 5;
-    if (qt.contains('gpm') || qt.contains('flow')) return 10;
+    if (qt.contains('gpm') || qt.contains('flow') || qt.contains('shuttle')) return 10;
     if (qt.contains('relay') && qt.contains('distance')) return 50;
     if (qt.contains('distance')) return 50;
     return 5;
@@ -1664,13 +1686,19 @@ class _CorrectAnswerInfo {
   static double? _extractCorrectAnswer(PlayableScenarioProblem p) {
     // Common top-level numeric fields.
     final direct = <dynamic>[
-      p.correctPP,
-      p.answers['correctPP'],
-      p.answers['pumpPressure'],
-      p.answers['answer'],
+      // Newer scenario JSONs often use `answerValue` for non-PP questions
+      // while leaving `correctPP` / `pumpPressure` at 0 as placeholders.
+      p.answers['answerValue'],
       p.answers['correctAnswer'],
-      p.answers['nozzleReaction'],
+      p.answers['answer'],
       p.answers['value'],
+      p.answers['nozzleReaction'],
+      p.answers['solidBoreFlow'],
+      p.answers['flow'],
+      p.answers['gpm'],
+      p.answers['pumpPressure'],
+      p.answers['correctPP'],
+      p.correctPP,
     ];
     for (final v in direct) {
       final d = _asDouble(v);
@@ -1682,9 +1710,10 @@ class _CorrectAnswerInfo {
     final nestedCandidates = <dynamic>[
       a['correct'],
       a['answers'],
-      a['pumpPressure'],
-      a['nozzleReaction'],
+      a['answerValue'],
       a['correctAnswer'],
+      a['nozzleReaction'],
+      a['pumpPressure'],
     ];
 
     for (final n in nestedCandidates) {
@@ -1703,11 +1732,15 @@ class _CorrectAnswerInfo {
       final map = node;
       const preferredKeys = [
         'correct',
+        'answerValue',
         'correctAnswer',
         'answer',
         'value',
-        'pumpPressure',
         'nozzleReaction',
+        'solidBoreFlow',
+        'flow',
+        'gpm',
+        'pumpPressure',
       ];
       for (final k in preferredKeys) {
         final v = map[k];
