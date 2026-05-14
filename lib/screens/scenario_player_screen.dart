@@ -985,28 +985,107 @@ class _InfoView extends StatelessWidget {
   final PlayableScenarioProblem problem;
   final String unit;
 
+  bool _containsAny(String text, List<String> needles) {
+    final lower = text.toLowerCase();
+    return needles.any(lower.contains);
+  }
+
+  bool _shouldHideInfoRow(_InfoRow row) {
+    final label = row.label.toLowerCase().trim();
+    final value = row.value.toLowerCase().trim();
+    final combined = '$label $value';
+
+    // The Info tab should show setup information only. Do not show calculated
+    // answers or hidden values the student is expected to solve.
+    if (_containsAny(combined, const [
+      'friction loss',
+      'pump pressure',
+      'pdp',
+      'correct pp',
+      'correctpp',
+      'answer value',
+      'correct answer',
+    ])) {
+      return true;
+    }
+
+    // Do not display appliance/elevation pressure adders. The scenario should
+    // identify the appliance or elevation change, not give the PSI add-on.
+    if (_containsAny(combined, const ['appliance loss', 'system loss'])) return true;
+    if (label == 'elevation' && value.contains('psi')) return false; // sanitize, do not hide outright.
+
+    return false;
+  }
+
+  String _cleanApplianceText(String text) {
+    var cleaned = text.trim();
+    cleaned = cleaned.replaceAll(RegExp(r'\s*\+\s*\d+\s*(psi)?', caseSensitive: false), '');
+    cleaned = cleaned.replaceAll(RegExp(r'\b(loss|pressure loss)\b', caseSensitive: false), '');
+    cleaned = cleaned.replaceAll(RegExp(r'\s+'), ' ').trim();
+    return cleaned;
+  }
+
+  String _cleanElevationText(String text) {
+    var cleaned = text.trim();
+    // Keep the physical change, such as "3rd floor" or "20′", but remove the
+    // PSI answer such as "+10 PSI elevation" or "= +10 PSI".
+    cleaned = cleaned.replaceAll(RegExp(r'\s*=\s*\+?\d+(\.\d+)?\s*psi\b', caseSensitive: false), '');
+    cleaned = cleaned.replaceAll(RegExp(r'\+\s*\d+(\.\d+)?\s*psi\s*(elevation)?', caseSensitive: false), '');
+    cleaned = cleaned.replaceAll(RegExp(r'\b\d+(\.\d+)?\s*psi\b', caseSensitive: false), '');
+    cleaned = cleaned.replaceAll(RegExp(r'\s+'), ' ').trim();
+    return cleaned;
+  }
+
+  _InfoRow? _sanitizeInfoRow(_InfoRow row) {
+    var label = row.label.trim();
+    var value = row.value.trim();
+    if (label.isEmpty || value.isEmpty || value.toLowerCase() == 'null') return null;
+
+    final combined = '$label $value'.toLowerCase();
+    if (_shouldHideInfoRow(row)) return null;
+
+    if (_containsAny(combined, const ['fdc', 'standpipe', 'wye', 'siamese', 'monitor', 'deck gun'])) {
+      value = _cleanApplianceText(value);
+      label = _cleanApplianceText(label);
+    }
+
+    if (_containsAny(combined, const ['elevation', 'floor', 'story', 'storey', 'vertical'])) {
+      value = _cleanElevationText(value);
+      label = label.toLowerCase() == 'elevation' ? 'Elevation Change' : _cleanElevationText(label);
+    }
+
+    // If a row was only a pressure-adder label, sanitizing can make it empty.
+    if (label.isEmpty || value.isEmpty) return null;
+    if (value.toLowerCase() == 'psi') return null;
+
+    return _InfoRow(label: label, value: value);
+  }
+
   List<_InfoRow> _parseDetails(List<dynamic> details) {
     final rows = <_InfoRow>[];
     for (final d in details) {
+      _InfoRow? row;
       if (d is Map) {
         final m = Map<String, dynamic>.from(d);
         final label = (m['label'] ?? m['title'] ?? m['name'] ?? m['key'] ?? '').toString().trim();
         final value = (m['value'] ?? m['text'] ?? m['display'] ?? m['description'] ?? '').toString().trim();
-        if (label.isNotEmpty && value.isNotEmpty) rows.add(_InfoRow(label: label, value: value));
+        if (label.isNotEmpty && value.isNotEmpty) row = _InfoRow(label: label, value: value);
       } else if (d is List && d.length >= 2) {
         final label = d[0].toString().trim();
         final value = d[1].toString().trim();
-        if (label.isNotEmpty && value.isNotEmpty) rows.add(_InfoRow(label: label, value: value));
+        if (label.isNotEmpty && value.isNotEmpty) row = _InfoRow(label: label, value: value);
       } else {
         final text = d.toString().trim();
         if (text.isEmpty || text.toLowerCase() == 'null') continue;
         final colon = text.indexOf(':');
         if (colon > 0 && colon < 32 && colon < text.length - 1) {
-          rows.add(_InfoRow(label: text.substring(0, colon).trim(), value: text.substring(colon + 1).trim()));
+          row = _InfoRow(label: text.substring(0, colon).trim(), value: text.substring(colon + 1).trim());
         } else {
-          rows.add(_InfoRow(label: 'Info ${rows.length + 1}', value: text));
+          row = _InfoRow(label: 'Info ${rows.length + 1}', value: text);
         }
       }
+      final clean = row == null ? null : _sanitizeInfoRow(row);
+      if (clean != null) rows.add(clean);
     }
     return rows;
   }
@@ -1018,57 +1097,14 @@ class _InfoView extends StatelessWidget {
       final m = Map<String, dynamic>.from(o);
       final label = (m['label'] ?? m['title'] ?? m['name'] ?? m['type'] ?? '').toString().trim();
       final value = (m['text'] ?? m['value'] ?? m['display'] ?? '').toString().trim();
+      _InfoRow? row;
       if (label.isNotEmpty && value.isNotEmpty) {
-        rows.add(_InfoRow(label: label, value: value));
+        row = _InfoRow(label: label, value: value);
       } else if (value.isNotEmpty) {
-        rows.add(_InfoRow(label: 'Label ${rows.length + 1}', value: value));
+        row = _InfoRow(label: 'Label ${rows.length + 1}', value: value);
       }
-    }
-    return rows;
-  }
-
-  String _prettyAnswerLabel(String key) {
-    switch (key) {
-      case 'totalGpm':
-        return 'Total GPM';
-      case 'pumpPressure':
-        return 'Pump Pressure';
-      case 'nozzlePressure':
-        return 'Nozzle Pressure';
-      case 'frictionLoss':
-        return 'Friction Loss';
-      case 'elevation':
-      case 'elevationPressure':
-        return 'Elevation';
-      case 'applianceLoss':
-        return 'Appliance Loss';
-      case 'answerLabel':
-        return 'Answer Type';
-      default:
-        return key
-            .replaceAllMapped(RegExp(r'([a-z])([A-Z])'), (m) => '${m.group(1)} ${m.group(2)}')
-            .replaceAll('_', ' ');
-    }
-  }
-
-  List<_InfoRow> _parseAnswerFacts(Map<String, dynamic> answers) {
-    const preferred = <String>[
-      'answerLabel',
-      'totalGpm',
-      'nozzlePressure',
-      'frictionLoss',
-      'elevation',
-      'elevationPressure',
-      'applianceLoss',
-      'pumpPressure',
-    ];
-
-    final rows = <_InfoRow>[];
-    for (final key in preferred) {
-      if (!answers.containsKey(key)) continue;
-      final value = (answers[key] ?? '').toString().trim();
-      if (value.isEmpty || value.toLowerCase() == 'null') continue;
-      rows.add(_InfoRow(label: _prettyAnswerLabel(key), value: value));
+      final clean = row == null ? null : _sanitizeInfoRow(row);
+      if (clean != null) rows.add(clean);
     }
     return rows;
   }
@@ -1088,21 +1124,19 @@ class _InfoView extends StatelessWidget {
       _addUnique(effective, row);
     }
 
-    // Many scenario files do not have a separate `details/info` field. When that
-    // happens, use the overlay labels and answer facts so the Info tab is still useful.
+    // Scenario Info should be a setup reference, not an answer key. Prefer
+    // author-provided details, then cleaned overlay labels. Do not append
+    // calculated answer fields like friction loss, appliance PSI, or PDP.
     if (effective.isEmpty) {
       for (final row in _parseOverlays(problem.overlays)) {
         _addUnique(effective, row);
       }
     }
     if (effective.isEmpty) {
-      _addUnique(effective, _InfoRow(label: 'Question', value: problem.studentQuestion));
-    }
-    for (final row in _parseAnswerFacts(problem.answers)) {
-      _addUnique(effective, row);
+      _addUnique(effective, _InfoRow(label: 'Scenario', value: 'Use the image labels and question to determine the correct answer.'));
     }
     if (!effective.any((r) => r.label.toLowerCase().contains('unit'))) {
-      effective.add(_InfoRow(label: 'Expected Answer Unit', value: unit));
+      effective.add(_InfoRow(label: 'Answer Unit', value: unit));
     }
 
     return Container(
@@ -1119,6 +1153,11 @@ class _InfoView extends StatelessWidget {
                 fontWeight: FontWeight.w900,
                 letterSpacing: 0.6,
               ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Setup facts only — no friction-loss or pump-pressure answers.',
+              style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMuted),
             ),
             const SizedBox(height: 12),
             _InfoGrid(rows: effective),
