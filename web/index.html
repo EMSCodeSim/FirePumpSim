@@ -1,38 +1,203 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
-  <base href="$FLUTTER_BASE_HREF">
-
-  <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
-
-  <!-- iOS meta tags & icons -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="firepumpsim">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
-
-  <title>firepumpsim</title>
-  <link rel="manifest" href="manifest.json">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FirePumpSim | Fire Pump Training Scenarios & Printable Worksheets</title>
+  <meta name="description" content="FirePumpSim is a firefighter-built pump operator training project with visual pump scenarios, daily challenges, printable worksheets, formulas, and pump card references." />
+  <meta name="theme-color" content="#08111f" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#07111f;
+      --panel:#0d1a2b;
+      --panel2:#12233a;
+      --muted:#93a4bd;
+      --text:#f8fafc;
+      --line:rgba(255,255,255,.12);
+      --red:#ef4444;
+      --orange:#f97316;
+      --gold:#fbbf24;
+      --blue:#38bdf8;
+      --green:#22c55e;
+      --shadow:0 18px 50px rgba(0,0,0,.35);
+      --radius:24px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);background:radial-gradient(circle at top left,rgba(239,68,68,.18),transparent 30%),radial-gradient(circle at top right,rgba(56,189,248,.14),transparent 26%),var(--bg);line-height:1.5}
+    a{color:inherit;text-decoration:none}
+    .wrap{width:min(1120px,calc(100% - 32px));margin:0 auto}
+    .nav{position:sticky;top:0;z-index:10;background:rgba(7,17,31,.78);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.2px}
+    .brand-mark{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--red),var(--orange));display:grid;place-items:center;box-shadow:0 10px 24px rgba(239,68,68,.28);font-size:22px}
+    .nav-links{display:flex;gap:16px;align-items:center;color:#cbd5e1;font-size:14px}
+    .nav-links a:hover{color:white}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:12px 18px;font-weight:700;background:rgba(255,255,255,.06);box-shadow:none;transition:.18s ease}
+    .btn:hover{transform:translateY(-1px);background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.22)}
+    .btn.primary{background:linear-gradient(135deg,var(--red),var(--orange));border-color:transparent;color:white;box-shadow:0 14px 30px rgba(239,68,68,.25)}
+    .btn.dark{background:#0b1728}
+    .hero{padding:72px 0 48px}
+    .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:36px;align-items:center}
+    .eyebrow{display:inline-flex;gap:8px;align-items:center;color:#fed7aa;background:rgba(249,115,22,.12);border:1px solid rgba(249,115,22,.25);border-radius:999px;padding:7px 12px;font-size:13px;font-weight:700;margin-bottom:18px}
+    h1{font-size:clamp(40px,6vw,72px);line-height:.97;margin:0 0 18px;letter-spacing:-.055em}
+    .lead{font-size:clamp(18px,2.2vw,22px);color:#cbd5e1;max-width:650px;margin:0 0 28px}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:26px}
+    .mini{display:flex;flex-wrap:wrap;gap:10px;color:#cbd5e1;font-size:14px}
+    .mini span{border:1px solid var(--line);background:rgba(255,255,255,.04);border-radius:999px;padding:8px 12px}
+    .phone-card{border:1px solid var(--line);border-radius:34px;background:linear-gradient(180deg,rgba(18,35,58,.9),rgba(9,19,34,.94));box-shadow:var(--shadow);padding:16px;position:relative;overflow:hidden}
+    .phone-card:before{content:"";position:absolute;inset:-40% -20% auto auto;width:360px;height:360px;background:radial-gradient(circle,rgba(239,68,68,.22),transparent 60%)}
+    .mock-img{height:470px;border-radius:24px;background:linear-gradient(160deg,rgba(7,17,31,.3),rgba(7,17,31,.85)),url('firepumpsim_brand_banner.jpg');background-size:cover;background-position:center;position:relative;border:1px solid rgba(255,255,255,.12);overflow:hidden}
+    .mock-panel{position:absolute;left:18px;right:18px;bottom:18px;background:rgba(7,17,31,.84);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:16px}
+    .mock-panel strong{display:block;font-size:18px;margin-bottom:5px}.mock-panel p{margin:0;color:#cbd5e1;font-size:14px}
+    section{padding:54px 0}.section-title{font-size:34px;line-height:1.1;margin:0 0 12px;letter-spacing:-.035em}.section-lead{margin:0 0 26px;color:#cbd5e1;max-width:760px;font-size:17px}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{background:linear-gradient(180deg,rgba(18,35,58,.86),rgba(12,25,43,.9));border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:0 10px 32px rgba(0,0,0,.22)}
+    .icon{width:46px;height:46px;border-radius:16px;background:rgba(248,250,252,.08);display:grid;place-items:center;font-size:23px;margin-bottom:14px}.card h3{margin:0 0 8px;font-size:20px}.card p{margin:0;color:#cbd5e1}.tag{display:inline-block;margin-top:14px;color:#bfdbfe;background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.2);border-radius:999px;padding:6px 10px;font-size:12px;font-weight:700}
+    .split{display:grid;grid-template-columns:.9fr 1.1fr;gap:24px;align-items:start}.list{display:grid;gap:12px}.row{display:flex;gap:12px;align-items:flex-start;padding:16px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.04)}.check{color:var(--green);font-weight:800}.row b{display:block}.row span{color:#cbd5e1;font-size:14px}
+    .project-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.project h3{font-size:22px}.project-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.smallbtn{font-size:13px;padding:9px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.05);font-weight:700}.smallbtn:hover{background:rgba(255,255,255,.1)}
+    .cta{background:linear-gradient(135deg,rgba(239,68,68,.18),rgba(56,189,248,.12));border:1px solid var(--line);border-radius:34px;padding:34px;display:flex;justify-content:space-between;align-items:center;gap:20px;box-shadow:var(--shadow)}.cta h2{margin:0 0 8px;font-size:32px}.cta p{margin:0;color:#cbd5e1}
+    footer{border-top:1px solid var(--line);padding:30px 0;color:#94a3b8;font-size:14px}.footer-inner{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap}.footer-links{display:flex;gap:14px;flex-wrap:wrap}
+    @media (max-width:860px){.nav-links{display:none}.hero{padding:42px 0 30px}.hero-grid,.split{grid-template-columns:1fr}.cards,.project-grid{grid-template-columns:1fr}.mock-img{height:360px}.cta{display:block}.cta .hero-actions{margin-top:20px}}
+  </style>
 </head>
 <body>
-  <script src="flutter_bootstrap.js" async></script>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="#top"><span class="brand-mark">🚒</span><span>FirePumpSim</span></a>
+      <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#starter">Free Starter Pack</a>
+        <a href="#ecosystem">Other Projects</a>
+        <a href="#download">Download</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="eyebrow">Firefighter-built driver/operator training</div>
+          <h1>Visual pump scenarios for real engineer practice.</h1>
+          <p class="lead">FirePumpSim helps firefighters, engineers, instructors, and students practice pump pressure, friction loss, standpipe, master stream, relay, hydrant, and nozzle reaction problems using clear scenario images and step-by-step feedback.</p>
+          <div class="hero-actions" id="download">
+            <a class="btn primary" href="#starter">View Free Starter Pack</a>
+            <a class="btn" href="https://fireopscalc.com/" target="_blank" rel="noopener">FireOpsCalc.com</a>
+            <a class="btn" href="mailto:davidagallaher@hotmail.com?subject=FirePumpSim%20Question">Contact</a>
+          </div>
+          <div class="mini">
+            <span>Daily Challenge</span><span>Printable scenarios</span><span>Pump card charts</span><span>No login required</span>
+          </div>
+        </div>
+        <div class="phone-card" aria-label="FirePumpSim preview card">
+          <div class="mock-img">
+            <div class="mock-panel">
+              <strong>Engine 181 Scenario</strong>
+              <p>Read the scene, calculate the answer, submit, and review the explanation.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features">
+      <div class="wrap">
+        <h2 class="section-title">Built for pump operators and instructors.</h2>
+        <p class="section-lead">The goal is simple: make pump math easier to practice before the drill ground, academy test, or driver/operator practical.</p>
+        <div class="cards">
+          <article class="card"><div class="icon">📱</div><h3>Practice Scenarios</h3><p>Phone-friendly visual scenes with overlays, answer input, and feedback for common fireground pump problems.</p><span class="tag">Training mode</span></article>
+          <article class="card"><div class="icon">🔥</div><h3>Daily Challenge</h3><p>One quick pump problem each day to keep driver/operator skills fresh without needing a full training session.</p><span class="tag">Engagement</span></article>
+          <article class="card"><div class="icon">🖨️</div><h3>Printable Worksheets</h3><p>Branded printable scenario pages for station drills, academy classes, and instructor-led review.</p><span class="tag">Instructor friendly</span></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="starter">
+      <div class="wrap split">
+        <div>
+          <h2 class="section-title">Free Starter Pack included.</h2>
+          <p class="section-lead">The free download is designed to be useful on day one, with starter scenarios and branded printable sheets that introduce the main FirePumpSim workflow.</p>
+          <div class="hero-actions"><a class="btn primary" href="#download">Get FirePumpSim</a><a class="btn" href="#ecosystem">See other tools</a></div>
+        </div>
+        <div class="list">
+          <div class="row"><div class="check">✓</div><div><b>15 starter app scenarios</b><span>Attack lines, elevation, wye, standpipe/FDC, relay, hydrant, nozzle reaction, and deck gun flow.</span></div></div>
+          <div class="row"><div class="check">✓</div><div><b>10 branded printable pages</b><span>Free printable scenario sheets with FirePumpSim branding and more packs planned for the Scenario Library.</span></div></div>
+          <div class="row"><div class="check">✓</div><div><b>Chart-first pump card</b><span>Friction loss, smooth bore flow, nozzle reaction, appliance losses, water supply rules, and quick references.</span></div></div>
+          <div class="row"><div class="check">✓</div><div><b>Formula and How-To screens</b><span>Short explanations that reinforce the math without crowding the scenario player.</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="ecosystem">
+      <div class="wrap">
+        <h2 class="section-title">Part of the FireOps and EMSCodeSim training ecosystem.</h2>
+        <p class="section-lead">FirePumpSim is one piece of a larger set of firefighter and EMS training tools, including fire pump calculators, printable resources, EMS daily quizzes, and CPR/CCF instructor tools.</p>
+        <div class="project-grid">
+          <article class="card project">
+            <h3>FireOps Calc</h3>
+            <p>Firefighter-built pump pressure calculators, friction loss tools, water supply tools, printable pump cards, and driver/operator practice resources.</p>
+            <div class="project-actions">
+              <a class="smallbtn" href="https://fireopscalc.com/" target="_blank" rel="noopener">Website</a>
+              <a class="smallbtn" href="https://apps.apple.com/us/app/fireopscalc/id6753922160" target="_blank" rel="noopener">App Store</a>
+              <a class="smallbtn" href="https://play.google.com/store/apps/details?id=com.fireopscalc.app" target="_blank" rel="noopener">Google Play</a>
+            </div>
+          </article>
+          <article class="card project">
+            <h3>EMSCodeSim</h3>
+            <p>EMS and fire training simulators focused on assessment skills, vitals, respiratory findings, neuro checks, burns, and instructor tools.</p>
+            <div class="project-actions">
+              <a class="smallbtn" href="https://emscodesim.com/" target="_blank" rel="noopener">Website</a>
+              <a class="smallbtn" href="https://play.google.com/store/apps/developer?id=EMSCodeSim" target="_blank" rel="noopener">Google Play Developer Page</a>
+            </div>
+          </article>
+          <article class="card project">
+            <h3>CCF Timer</h3>
+            <p>Instructor-focused CPR/ACLS/PALS training tool for tracking chest compression fraction, pauses, medications, interventions, and reports.</p>
+            <div class="project-actions">
+              <a class="smallbtn" href="https://apps.apple.com/us/app/ccf-timer/id6760427840" target="_blank" rel="noopener">App Store</a>
+              <a class="smallbtn" href="https://play.google.com/store/apps/details?id=com.emscodesim.ccf" target="_blank" rel="noopener">Google Play</a>
+            </div>
+          </article>
+          <article class="card project">
+            <h3>Daily EMS Quiz</h3>
+            <p>Fast EMT and paramedic practice with daily questions, streaks, EMS facts, and short review activities.</p>
+            <div class="project-actions">
+              <a class="smallbtn" href="https://dailyemsquiz.com/" target="_blank" rel="noopener">Website</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap cta">
+        <div>
+          <h2>Train pump math with visual scenes.</h2>
+          <p>Use FirePumpSim for station drills, self-study, academy review, and driver/operator practice.</p>
+        </div>
+        <div class="hero-actions">
+          <a class="btn primary" href="mailto:davidagallaher@hotmail.com?subject=FirePumpSim%20App%20Link">Request app link</a>
+          <a class="btn dark" href="https://fireopscalc.com/" target="_blank" rel="noopener">Try FireOps Calc</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <div>© <span id="year"></span> FirePumpSim. Firefighter-built training tools.</div>
+      <div class="footer-links">
+        <a href="https://fireopscalc.com/" target="_blank" rel="noopener">FireOps Calc</a>
+        <a href="https://emscodesim.com/" target="_blank" rel="noopener">EMSCodeSim</a>
+        <a href="https://dailyemsquiz.com/" target="_blank" rel="noopener">Daily EMS Quiz</a>
+        <a href="mailto:davidagallaher@hotmail.com">Contact</a>
+      </div>
+    </div>
+  </footer>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>
