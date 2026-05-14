@@ -6,6 +6,7 @@ import 'package:firepumpsim/models/printable_pump_scenario.dart';
 import 'package:firepumpsim/nav.dart';
 import 'package:firepumpsim/services/printable_pack_storage.dart';
 import 'package:firepumpsim/theme.dart';
+import 'package:firepumpsim/utils/pdf_download.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -279,10 +280,17 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
         scenarios: _scenarios,
         includeAnswerKey: _includeAnswerKey,
       );
-      debugPrint('Printable PDF built: ${bytes.lengthInBytes} bytes. Opening print dialog…');
-      await pr.Printing.layoutPdf(name: 'FirePumpSim Worksheet', onLayout: (format) async => bytes);
-    } catch (e) {
-      debugPrint('Print/Save PDF failed: $e');
+      debugPrint('Printable PDF built: ${bytes.lengthInBytes} bytes. Launching output…');
+      if (kIsWeb) {
+        // In embedded web previews, print/share can be blocked or no-op.
+        // A direct download via an <a download> click is the most reliable.
+        await downloadPdfBytes(bytes: bytes, filename: 'FirePumpSim_Worksheet.pdf');
+        _toast('PDF downloaded. Open it to print or save.');
+      } else {
+        await pr.Printing.layoutPdf(name: 'FirePumpSim Worksheet', onLayout: (_) async => bytes);
+      }
+    } catch (e, st) {
+      debugPrint('Print/Save PDF failed: $e\n$st');
       _toast('Unable to print / save PDF on this device. If you are on web, make sure pop-ups are allowed.');
     } finally {
       if (mounted) setState(() => _printing = false);
@@ -293,13 +301,18 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
     setState(() => _printing = true);
     try {
       final bytes = await _buildBrandedPrintablePdf([page]);
-      debugPrint('Branded printable page PDF built: ${bytes.lengthInBytes} bytes. Opening print dialog…');
-      await pr.Printing.layoutPdf(
-        name: page.fileName,
-        onLayout: (_) async => bytes,
-      );
-    } catch (e) {
-      debugPrint('Branded printable page failed (${page.assetPath}): $e');
+      debugPrint('Branded printable page PDF built: ${bytes.lengthInBytes} bytes. Launching output…');
+      if (kIsWeb) {
+        await downloadPdfBytes(bytes: bytes, filename: page.fileName);
+        _toast('PDF downloaded. Open it to print or save.');
+      } else {
+        await pr.Printing.layoutPdf(
+          name: page.fileName,
+          onLayout: (_) async => bytes,
+        );
+      }
+    } catch (e, st) {
+      debugPrint('Branded printable page failed (${page.assetPath}): $e\n$st');
       _toast('Unable to print ${page.title}. Check that ${page.assetPath} exists and is listed in pubspec.yaml.');
     } finally {
       if (mounted) setState(() => _printing = false);
@@ -324,13 +337,18 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
       }
 
       final bytes = await _buildBrandedPrintablePdf(pages);
-      debugPrint('Branded printable pack PDF built: ${bytes.lengthInBytes} bytes. Opening print dialog…');
-      await pr.Printing.layoutPdf(
-        name: 'FirePumpSim Printable Starter Pack',
-        onLayout: (_) async => bytes,
-      );
-    } catch (e) {
-      debugPrint('Branded starter pack print failed: $e');
+      debugPrint('Branded printable pack PDF built: ${bytes.lengthInBytes} bytes. Launching output…');
+      if (kIsWeb) {
+        await downloadPdfBytes(bytes: bytes, filename: 'FirePumpSim_Printable_Starter_Pack.pdf');
+        _toast('PDF downloaded. Open it to print or save.');
+      } else {
+        await pr.Printing.layoutPdf(
+          name: 'FirePumpSim Printable Starter Pack',
+          onLayout: (_) async => bytes,
+        );
+      }
+    } catch (e, st) {
+      debugPrint('Branded starter pack print failed: $e\n$st');
       _toast('Unable to print branded starter pack. Check printable image assets and device print/share support.');
     } finally {
       if (mounted) setState(() => _printing = false);
