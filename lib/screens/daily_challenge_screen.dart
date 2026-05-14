@@ -981,13 +981,67 @@ class _ScenarioPlayerStyleImageWithOverlays extends StatelessWidget {
     return v.clamp(0.0, 1.0);
   }
 
+  String _safePhotoOverlayText(String raw) {
+    var s = raw.trim();
+    if (s.isEmpty || s.toLowerCase() == 'null') return '';
+
+    final originalLower = s.toLowerCase();
+
+    // Do not display answer-producing pressure values on photo labels.
+    // Examples:
+    //   "FDC +25 PSI" -> "FDC"
+    //   "Standpipe/FDC loss +25 PSI" -> "Standpipe/FDC"
+    //   "Wye +10" -> "Wye"
+    //   "+15 PSI elevation" -> "Elevation change"
+    //   "4th floor = 30′ = +15 PSI" -> "4th floor = 30′"
+    s = s.replaceAll(RegExp(r'\(\s*\+\s*\d+(?:\.\d+)?\s*(?:psi)?\s*\)', caseSensitive: false), '');
+    s = s.replaceAll(RegExp(r'\+\s*\d+(?:\.\d+)?\s*(?:psi)?', caseSensitive: false), '');
+
+    // Remove explicit loss wording from appliance labels while keeping the appliance type.
+    s = s.replaceAllMapped(
+      RegExp(r'\b(standpipe\s*/\s*fdc|fdc\s*/\s*standpipe|fdc|wye|siamese)\s+(?:appliance\s+)?(?:system\s+)?loss\b', caseSensitive: false),
+      (m) => m.group(1) ?? '',
+    );
+    s = s.replaceAll(RegExp(r'\b(appliance|system)?\s*loss\b', caseSensitive: false), '');
+    s = s.replaceAll(RegExp(r'\bpsi\s*(?:answer|total|pdp|pump pressure)\b', caseSensitive: false), '');
+    s = s.replaceAll(RegExp(r'\s*=\s*$', caseSensitive: false), '');
+    s = s.replaceAll(RegExp(r'\s{2,}'), ' ').trim();
+    s = s.replaceAll(RegExp(r'[-–—:,]+$'), '').trim();
+
+    if (s.isEmpty && originalLower.contains('elevation')) return 'Elevation change';
+    if (s.isEmpty) return '';
+
+    // Keep elevation distance/floor info, but do not keep PSI answer wording.
+    if (originalLower.contains('elevation') && !s.toLowerCase().contains('elevation')) {
+      return s;
+    }
+
+    return s;
+  }
+
+  bool _isAnswerGivingPhotoLabel(String label) {
+    final l = label.toLowerCase().trim();
+    if (l.isEmpty) return true;
+    return l.contains('friction loss') ||
+        l == 'fl' ||
+        l.contains('pump pressure') ||
+        l.contains('pdp') ||
+        l.contains('correct pp') ||
+        l.contains('correct answer') ||
+        l.contains('answer value') ||
+        l.contains('rounded pdp') ||
+        l.contains('rounded pump pressure');
+  }
+
+
   _ParsedOverlay? _parseOverlay(dynamic o) {
     if (o is! Map) return null;
     final m = Map<String, dynamic>.from(o);
     final valueText = (m['text'] ?? m['value'] ?? m['display'] ?? '').toString().trim();
     final fallback = (m['label'] ?? m['title'] ?? m['name'] ?? '').toString().trim();
-    final text = valueText.isNotEmpty ? valueText : fallback;
-    if (text.isEmpty) return null;
+    final rawText = valueText.isNotEmpty ? valueText : fallback;
+    final text = _safePhotoOverlayText(rawText);
+    if (text.isEmpty || _isAnswerGivingPhotoLabel(text)) return null;
     final x = _normalizeCoord(m['x'] ?? m['left'] ?? m['px'] ?? m['cx']);
     final y = _normalizeCoord(m['y'] ?? m['top'] ?? m['py'] ?? m['cy']);
     final canonical = _canonicalOverlayLabel(text);
