@@ -97,10 +97,51 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
         .replaceAll('•', '-')
         .replaceAll('—', '-')
         .replaceAll('–', '-')
-        .replaceAll('→', '->');
+        .replaceAll('→', '->')
+        .replaceAll('±', '+/-')
+        .replaceAll('×', 'x')
+        .replaceAll('²', '^2')
+        .replaceAll('³', '^3')
+        .replaceAll('¼', '1/4')
+        .replaceAll('½', '1/2')
+        .replaceAll('¾', '3/4')
+        .replaceAll('⅛', '1/8')
+        .replaceAll('⅞', '7/8')
+        .replaceAll('′', "'")
+        .replaceAll('″', '"')
+        .replaceAll('’', "'")
+        .replaceAll('“', '"')
+        .replaceAll('”', '"');
   }
 
-  String _pdfHoseLabel(PrintablePumpScenario scenario) => '${scenario.hoseDiameterLabel} - ${scenario.lengthFt} ft';
+  String _pdfHoseLabel(PrintablePumpScenario scenario) => _pdfSafeText('${scenario.hoseDiameterLabel} - ${scenario.lengthFt} ft');
+
+  Future<void> _outputPdf({
+    required Uint8List bytes,
+    required String filename,
+    required String title,
+  }) async {
+    if (kIsWeb) {
+      await downloadPdfBytes(bytes: bytes, filename: filename);
+      _toast('PDF downloaded. Open it to print or save.');
+      return;
+    }
+
+    // sharePdf is more reliable in iOS/Android builds than only opening the
+    // platform print dialog. It lets the user Save to Files, AirDrop, email,
+    // or choose Print from the native share sheet.
+    try {
+      await pr.Printing.sharePdf(bytes: bytes, filename: filename);
+      return;
+    } catch (e, st) {
+      debugPrint('PDF share failed, falling back to print dialog: $e\n$st');
+    }
+
+    await pr.Printing.layoutPdf(
+      name: title,
+      onLayout: (_) async => bytes,
+    );
+  }
 
   @override
   void initState() {
@@ -281,14 +322,11 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
         includeAnswerKey: _includeAnswerKey,
       );
       debugPrint('Printable PDF built: ${bytes.lengthInBytes} bytes. Launching output…');
-      if (kIsWeb) {
-        // In embedded web previews, print/share can be blocked or no-op.
-        // A direct download via an <a download> click is the most reliable.
-        await downloadPdfBytes(bytes: bytes, filename: 'FirePumpSim_Worksheet.pdf');
-        _toast('PDF downloaded. Open it to print or save.');
-      } else {
-        await pr.Printing.layoutPdf(name: 'FirePumpSim Worksheet', onLayout: (_) async => bytes);
-      }
+      await _outputPdf(
+        bytes: bytes,
+        filename: 'FirePumpSim_Worksheet.pdf',
+        title: 'FirePumpSim Worksheet',
+      );
     } catch (e, st) {
       debugPrint('Print/Save PDF failed: $e\n$st');
       _toast('Unable to print / save PDF on this device. If you are on web, make sure pop-ups are allowed.');
@@ -302,15 +340,11 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
     try {
       final bytes = await _buildBrandedPrintablePdf([page]);
       debugPrint('Branded printable page PDF built: ${bytes.lengthInBytes} bytes. Launching output…');
-      if (kIsWeb) {
-        await downloadPdfBytes(bytes: bytes, filename: page.fileName);
-        _toast('PDF downloaded. Open it to print or save.');
-      } else {
-        await pr.Printing.layoutPdf(
-          name: page.fileName,
-          onLayout: (_) async => bytes,
-        );
-      }
+      await _outputPdf(
+        bytes: bytes,
+        filename: page.fileName,
+        title: page.title,
+      );
     } catch (e, st) {
       debugPrint('Branded printable page failed (${page.assetPath}): $e\n$st');
       _toast('Unable to print ${page.title}. Check that ${page.assetPath} exists and is listed in pubspec.yaml.');
@@ -338,15 +372,11 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
 
       final bytes = await _buildBrandedPrintablePdf(pages);
       debugPrint('Branded printable pack PDF built: ${bytes.lengthInBytes} bytes. Launching output…');
-      if (kIsWeb) {
-        await downloadPdfBytes(bytes: bytes, filename: 'FirePumpSim_Printable_Starter_Pack.pdf');
-        _toast('PDF downloaded. Open it to print or save.');
-      } else {
-        await pr.Printing.layoutPdf(
-          name: 'FirePumpSim Printable Starter Pack',
-          onLayout: (_) async => bytes,
-        );
-      }
+      await _outputPdf(
+        bytes: bytes,
+        filename: 'FirePumpSim_Printable_Starter_Pack.pdf',
+        title: 'FirePumpSim Printable Starter Pack',
+      );
     } catch (e, st) {
       debugPrint('Branded starter pack print failed: $e\n$st');
       _toast('Unable to print branded starter pack. Check printable image assets and device print/share support.');
@@ -438,7 +468,7 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
                 for (var i = 0; i < scenarios.length; i++) ...[
                   pw.Text('Scenario ${i + 1}:', style: t(10, bold: true)),
                   pw.SizedBox(height: 2),
-                  pw.Text(scenarios[i].mathExplanation, style: t(9)),
+                  pw.Text(_pdfSafeText(scenarios[i].mathExplanation), style: t(9)),
                   if (i != scenarios.length - 1) pw.SizedBox(height: 10),
                 ],
                 pw.Spacer(),
@@ -501,9 +531,9 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
                   children: [
                     pw.Row(
                       children: [
-                        pw.Expanded(child: pw.Text(worksheetTitle, style: t(14, bold: true))),
+                        pw.Expanded(child: pw.Text(_pdfSafeText(worksheetTitle), style: t(14, bold: true))),
                         pw.SizedBox(width: 8),
-                        pw.Text(department, style: t(11, bold: true)),
+                        pw.Text(_pdfSafeText(department), style: t(11, bold: true)),
                       ],
                     ),
                     pw.SizedBox(height: 4),
@@ -554,7 +584,7 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
         children: [
           pw.Row(
             children: [
-              pw.Expanded(child: pw.Text('$index. ${scenario.title}', style: t(11, bold: true))),
+              pw.Expanded(child: pw.Text(_pdfSafeText('$index. ${scenario.title}'), style: t(11, bold: true))),
               pw.Text(_typeLabel(scenario.scenarioType), style: t(9)),
             ],
           ),
@@ -606,7 +636,7 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
                   children: [
                     pw.Row(
                       children: [
-                        pw.Expanded(child: pw.Text(scenario.title, style: t(13, bold: true))),
+                        pw.Expanded(child: pw.Text(_pdfSafeText(scenario.title), style: t(13, bold: true))),
                         pw.SizedBox(width: 8),
                         pw.Text(_typeLabel(scenario.scenarioType), style: t(10, bold: true)),
                       ],
@@ -653,7 +683,7 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
         pw.SizedBox(height: 10),
         pw.Row(
           children: [
-            pw.Expanded(child: pw.Text('$index. ${scenario.title}', style: t(14, bold: true))),
+            pw.Expanded(child: pw.Text(_pdfSafeText('$index. ${scenario.title}'), style: t(14, bold: true))),
             pw.Text(_typeLabel(scenario.scenarioType), style: t(10, bold: true)),
           ],
         ),
@@ -708,12 +738,12 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.stretch,
                   children: [
-                    pw.Text(scenario.problem, style: t(9)),
+                    pw.Text(_pdfSafeText(scenario.problem), style: t(9)),
                     pw.SizedBox(height: 6),
                     _pdfFactsGrid(scenario: scenario, t: t),
                     pw.SizedBox(height: 6),
-                    pw.Text('PP = NP + FL ± Elev + App', style: t(9, bold: true)),
-                    pw.Text('FL = C × (GPM/100)² × L/100', style: t(8)),
+                    pw.Text('PP = NP + FL +/- Elev + App', style: t(9, bold: true)),
+                    pw.Text('FL = C x (GPM/100)^2 x L/100', style: t(8)),
                   ],
                 ),
               ),
@@ -775,7 +805,7 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
         child: pw.Row(
           crossAxisAlignment: pw.CrossAxisAlignment.end,
           children: [
-            pw.Expanded(child: pw.Text(label, style: t(9))),
+            pw.Expanded(child: pw.Text(_pdfSafeText(label), style: t(9))),
             pw.SizedBox(width: 8),
             pw.Container(width: 120, height: 12, decoration: const pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide(color: PdfColors.black, width: 0.9)))),
           ],
@@ -788,7 +818,7 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
       children: [
         q('1) Nozzle pressure (NP):'),
         q('2) Friction loss (FL):'),
-        q('3) Elevation PSI (±):'),
+        q('3) Elevation PSI (+/-):'),
         q('4) Appliance loss (App):'),
         q('5) Pump pressure (raw):'),
         q('6) Pump pressure (rounded):'),
@@ -881,7 +911,7 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
     final items = <List<String>>[
       ['Hose', _pdfHoseLabel(scenario)],
       ['C', _fmtC(scenario.cValue)],
-      ['Nozzle', scenario.nozzleLabel],
+      ['Nozzle', _pdfSafeText(scenario.nozzleLabel)],
       ['Flow', '${scenario.gpm} GPM @ ${scenario.np} PSI'],
       ['Elevation', '${scenario.elevationFeet} ft (${scenario.elevationPsi} PSI)'],
       ['Appliance', '${scenario.appliancePsi} PSI'],
@@ -894,8 +924,8 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
         for (final row in items)
           pw.TableRow(
             children: [
-              pw.Padding(padding: const pw.EdgeInsets.all(3), child: pw.Text(row[0], style: t(8, bold: true))),
-              pw.Padding(padding: const pw.EdgeInsets.all(3), child: pw.Text(row[1], style: t(8))),
+              pw.Padding(padding: const pw.EdgeInsets.all(3), child: pw.Text(_pdfSafeText(row[0]), style: t(8, bold: true))),
+              pw.Padding(padding: const pw.EdgeInsets.all(3), child: pw.Text(_pdfSafeText(row[1]), style: t(8))),
             ],
           ),
       ],
@@ -929,7 +959,7 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
   }
 
   pw.Widget _pdfCell(String text, pw.TextStyle style, {PdfColor? fill}) {
-    return pw.Container(color: fill, padding: const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 5), child: pw.Text(text, style: style));
+    return pw.Container(color: fill, padding: const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 5), child: pw.Text(_pdfSafeText(text), style: style));
   }
 
   pw.Widget _pdfFooter(pw.TextStyle Function(double, {bool bold}) t) {
