@@ -985,80 +985,67 @@ class _InfoView extends StatelessWidget {
   final PlayableScenarioProblem problem;
   final String unit;
 
-  bool _containsAny(String text, List<String> needles) {
-    final lower = text.toLowerCase();
-    return needles.any(lower.contains);
+  bool _isBlockedLabel(String label) {
+    final l = label.toLowerCase().trim();
+    if (l.isEmpty) return false;
+    return l.contains('friction loss') ||
+        l == 'fl' ||
+        l.contains('pump pressure') ||
+        l == 'pdp' ||
+        l.contains('correct pp') ||
+        l.contains('answer value') ||
+        l.contains('correct answer') ||
+        l.contains('appliance loss') ||
+        l.contains('system loss');
   }
 
-  bool _shouldHideInfoRow(_InfoRow row) {
-    final label = row.label.toLowerCase().trim();
-    final value = row.value.toLowerCase().trim();
-    final combined = '$label $value';
+  bool _isBlockedValue(String value) {
+    final v = value.toLowerCase().trim();
+    if (v.isEmpty) return true;
+    return v.contains('friction loss') ||
+        v.contains('pump pressure') ||
+        v.contains('pdp') ||
+        v.contains('correct answer') ||
+        v.contains('answer value') ||
+        v.contains('rounded pdp') ||
+        v.contains('rounded pump pressure');
+  }
 
-    // The Info tab should show setup information only. Do not show calculated
-    // answers or hidden values the student is expected to solve.
-    if (_containsAny(combined, const [
-      'friction loss',
-      'pump pressure',
-      'pdp',
-      'correct pp',
-      'correctpp',
-      'answer value',
-      'correct answer',
-    ])) {
-      return true;
+  String _cleanSetupText(String raw) {
+    var s = raw.trim();
+    if (s.isEmpty || s.toLowerCase() == 'null') return '';
+
+    // Do not give away fixed appliance-loss or elevation-pressure answers.
+    // Examples:
+    //   "FDC +25 PSI" -> "FDC"
+    //   "Wye +10" -> "Wye"
+    //   "Floor 5 +20 PSI" -> "Floor 5"
+    //   "+10 PSI elevation" -> "Elevation change"
+    final lower = s.toLowerCase();
+    final hasPlusPsi = RegExp(r'\+\s*\d+(?:\.\d+)?\s*(?:psi)?', caseSensitive: false).hasMatch(s);
+    if (hasPlusPsi) {
+      s = s.replaceAll(RegExp(r'\+\s*\d+(?:\.\d+)?\s*(?:psi)?', caseSensitive: false), '').trim();
+      s = s.replaceAll(RegExp(r'\b(loss|appliance loss|system loss)\b', caseSensitive: false), '').trim();
+      s = s.replaceAll(RegExp(r'\s{2,}'), ' ').trim();
+      s = s.replaceAll(RegExp(r'[-–—:]+$'), '').trim();
+      if (s.isEmpty && lower.contains('elevation')) return 'Elevation change';
+      if (s.isEmpty) return '';
     }
 
-    // Do not display appliance/elevation pressure adders. The scenario should
-    // identify the appliance or elevation change, not give the PSI add-on.
-    if (_containsAny(combined, const ['appliance loss', 'system loss'])) return true;
-    if (label == 'elevation' && value.contains('psi')) return false; // sanitize, do not hide outright.
-
-    return false;
+    // Remove explicit pressure answer language while keeping setup type.
+    s = s.replaceAll(RegExp(r'\b(standpipe\/fdc|fdc|wye|siamese)\s+loss\b', caseSensitive: false), (m) => m.group(1) ?? '');
+    s = s.replaceAll(RegExp(r'\bappliance loss\b', caseSensitive: false), '').trim();
+    s = s.replaceAll(RegExp(r'\bsystem loss\b', caseSensitive: false), '').trim();
+    s = s.replaceAll(RegExp(r'\s{2,}'), ' ').trim();
+    return s;
   }
 
-  String _cleanApplianceText(String text) {
-    var cleaned = text.trim();
-    cleaned = cleaned.replaceAll(RegExp(r'\s*\+\s*\d+\s*(psi)?', caseSensitive: false), '');
-    cleaned = cleaned.replaceAll(RegExp(r'\b(loss|pressure loss)\b', caseSensitive: false), '');
-    cleaned = cleaned.replaceAll(RegExp(r'\s+'), ' ').trim();
-    return cleaned;
-  }
-
-  String _cleanElevationText(String text) {
-    var cleaned = text.trim();
-    // Keep the physical change, such as "3rd floor" or "20′", but remove the
-    // PSI answer such as "+10 PSI elevation" or "= +10 PSI".
-    cleaned = cleaned.replaceAll(RegExp(r'\s*=\s*\+?\d+(\.\d+)?\s*psi\b', caseSensitive: false), '');
-    cleaned = cleaned.replaceAll(RegExp(r'\+\s*\d+(\.\d+)?\s*psi\s*(elevation)?', caseSensitive: false), '');
-    cleaned = cleaned.replaceAll(RegExp(r'\b\d+(\.\d+)?\s*psi\b', caseSensitive: false), '');
-    cleaned = cleaned.replaceAll(RegExp(r'\s+'), ' ').trim();
-    return cleaned;
-  }
-
-  _InfoRow? _sanitizeInfoRow(_InfoRow row) {
-    var label = row.label.trim();
-    var value = row.value.trim();
-    if (label.isEmpty || value.isEmpty || value.toLowerCase() == 'null') return null;
-
-    final combined = '$label $value'.toLowerCase();
-    if (_shouldHideInfoRow(row)) return null;
-
-    if (_containsAny(combined, const ['fdc', 'standpipe', 'wye', 'siamese', 'monitor', 'deck gun'])) {
-      value = _cleanApplianceText(value);
-      label = _cleanApplianceText(label);
-    }
-
-    if (_containsAny(combined, const ['elevation', 'floor', 'story', 'storey', 'vertical'])) {
-      value = _cleanElevationText(value);
-      label = label.toLowerCase() == 'elevation' ? 'Elevation Change' : _cleanElevationText(label);
-    }
-
-    // If a row was only a pressure-adder label, sanitizing can make it empty.
-    if (label.isEmpty || value.isEmpty) return null;
-    if (value.toLowerCase() == 'psi') return null;
-
-    return _InfoRow(label: label, value: value);
+  _InfoRow? _safeRow(String label, String value) {
+    final cleanLabel = _cleanSetupText(label);
+    final cleanValue = _cleanSetupText(value);
+    if (cleanLabel.isEmpty || cleanValue.isEmpty) return null;
+    if (_isBlockedLabel(cleanLabel) || _isBlockedValue(cleanValue)) return null;
+    return _InfoRow(label: cleanLabel, value: cleanValue);
   }
 
   List<_InfoRow> _parseDetails(List<dynamic> details) {
@@ -1069,23 +1056,23 @@ class _InfoView extends StatelessWidget {
         final m = Map<String, dynamic>.from(d);
         final label = (m['label'] ?? m['title'] ?? m['name'] ?? m['key'] ?? '').toString().trim();
         final value = (m['value'] ?? m['text'] ?? m['display'] ?? m['description'] ?? '').toString().trim();
-        if (label.isNotEmpty && value.isNotEmpty) row = _InfoRow(label: label, value: value);
+        row = _safeRow(label, value);
       } else if (d is List && d.length >= 2) {
-        final label = d[0].toString().trim();
-        final value = d[1].toString().trim();
-        if (label.isNotEmpty && value.isNotEmpty) row = _InfoRow(label: label, value: value);
+        row = _safeRow(d[0].toString(), d[1].toString());
       } else {
         final text = d.toString().trim();
         if (text.isEmpty || text.toLowerCase() == 'null') continue;
         final colon = text.indexOf(':');
         if (colon > 0 && colon < 32 && colon < text.length - 1) {
-          row = _InfoRow(label: text.substring(0, colon).trim(), value: text.substring(colon + 1).trim());
+          row = _safeRow(text.substring(0, colon), text.substring(colon + 1));
         } else {
-          row = _InfoRow(label: 'Info ${rows.length + 1}', value: text);
+          final cleaned = _cleanSetupText(text);
+          if (cleaned.isNotEmpty && !_isBlockedValue(cleaned)) {
+            row = _InfoRow(label: 'Setup ${rows.length + 1}', value: cleaned);
+          }
         }
       }
-      final clean = row == null ? null : _sanitizeInfoRow(row);
-      if (clean != null) rows.add(clean);
+      if (row != null) rows.add(row);
     }
     return rows;
   }
@@ -1099,12 +1086,14 @@ class _InfoView extends StatelessWidget {
       final value = (m['text'] ?? m['value'] ?? m['display'] ?? '').toString().trim();
       _InfoRow? row;
       if (label.isNotEmpty && value.isNotEmpty) {
-        row = _InfoRow(label: label, value: value);
+        row = _safeRow(label, value);
       } else if (value.isNotEmpty) {
-        row = _InfoRow(label: 'Label ${rows.length + 1}', value: value);
+        final cleaned = _cleanSetupText(value);
+        if (cleaned.isNotEmpty && !_isBlockedValue(cleaned)) {
+          row = _InfoRow(label: 'Label ${rows.length + 1}', value: cleaned);
+        }
       }
-      final clean = row == null ? null : _sanitizeInfoRow(row);
-      if (clean != null) rows.add(clean);
+      if (row != null) rows.add(row);
     }
     return rows;
   }
@@ -1124,19 +1113,25 @@ class _InfoView extends StatelessWidget {
       _addUnique(effective, row);
     }
 
-    // Scenario Info should be a setup reference, not an answer key. Prefer
-    // author-provided details, then cleaned overlay labels. Do not append
-    // calculated answer fields like friction loss, appliance PSI, or PDP.
+    // Many files do not have a separate details/info field. Use sanitized overlay
+    // labels as setup info, but never display answer-producing values such as
+    // friction loss, pump pressure, appliance PSI, or elevation PSI.
     if (effective.isEmpty) {
       for (final row in _parseOverlays(problem.overlays)) {
         _addUnique(effective, row);
       }
     }
+
     if (effective.isEmpty) {
-      _addUnique(effective, _InfoRow(label: 'Scenario', value: 'Use the image labels and question to determine the correct answer.'));
+      _addUnique(effective, _InfoRow(label: 'Question', value: problem.studentQuestion));
     }
-    if (!effective.any((r) => r.label.toLowerCase().contains('unit'))) {
-      effective.add(_InfoRow(label: 'Answer Unit', value: unit));
+
+    final answerType = (problem.answers['answerLabel'] ?? '').toString().trim();
+    if (answerType.isNotEmpty) {
+      _addUnique(effective, _InfoRow(label: 'Answer Type', value: answerType));
+    }
+    if (unit.trim().isNotEmpty) {
+      _addUnique(effective, _InfoRow(label: 'Expected Answer Unit', value: unit));
     }
 
     return Container(
@@ -1154,82 +1149,11 @@ class _InfoView extends StatelessWidget {
                 letterSpacing: 0.6,
               ),
             ),
-            const SizedBox(height: 6),
-            Text(
-              'Setup facts only — no friction-loss or pump-pressure answers.',
-              style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMuted),
-            ),
             const SizedBox(height: 12),
             _InfoGrid(rows: effective),
           ],
         ),
       ),
-    );
-  }
-}
-
-@immutable
-class _InfoRow {
-  const _InfoRow({required this.label, required this.value});
-  final String label;
-  final String value;
-}
-
-class _InfoGrid extends StatelessWidget {
-  const _InfoGrid({required this.rows});
-  final List<_InfoRow> rows;
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, c) {
-        final textTheme = Theme.of(context).textTheme;
-        final twoCol = c.maxWidth >= 420;
-        final itemW = twoCol ? (c.maxWidth - 12) / 2 : c.maxWidth;
-        return Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          children: rows
-              .map(
-                (r) => SizedBox(
-                  width: itemW,
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: FirePumpSimColors.charcoal3.withValues(alpha: 0.7),
-                      borderRadius: BorderRadius.circular(AppRadius.lg),
-                      border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.7)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          r.label.toUpperCase(),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: textTheme.labelSmall?.copyWith(
-                            color: FirePumpSimColors.textMed,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          r.value,
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: FirePumpSimColors.textHigh,
-                            fontWeight: FontWeight.w800,
-                            height: 1.35,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              )
-              .toList(growable: false),
-        );
-      },
     );
   }
 }
