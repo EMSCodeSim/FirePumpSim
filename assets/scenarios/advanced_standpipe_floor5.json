@@ -56,13 +56,13 @@
         },
         {
           "id": "fdc",
-          "text": "FDC +25 PSI",
+          "text": "FDC",
           "x": 42,
           "y": 66
         },
         {
           "id": "floor",
-          "text": "Floor 5 +20 PSI",
+          "text": "Floor 5",
           "x": 70,
           "y": 22
         },

@@ -118,13 +118,13 @@
         },
         {
           "label": "Elevation",
-          "text": "+10 psi",
+          "text": "",
           "x": 74,
           "y": 40
         },
         {
-          "label": "System Loss",
-          "text": "System +25",
+          "label": "",
+          "text": "System",
           "x": 57,
           "y": 49
         }
@@ -217,13 +217,13 @@
         },
         {
           "label": "Elevation",
-          "text": "+10 psi",
+          "text": "",
           "x": 74,
           "y": 40
         },
         {
-          "label": "System Loss",
-          "text": "System +25",
+          "label": "",
+          "text": "System",
           "x": 57,
           "y": 49
         }
@@ -316,13 +316,13 @@
         },
         {
           "label": "Elevation",
-          "text": "+20 psi",
+          "text": "",
           "x": 74,
           "y": 32
         },
         {
-          "label": "System Loss",
-          "text": "System +25",
+          "label": "",
+          "text": "System",
           "x": 57,
           "y": 49
         }
@@ -415,13 +415,13 @@
         },
         {
           "label": "Elevation",
-          "text": "+10 psi",
+          "text": "",
           "x": 74,
           "y": 40
         },
         {
-          "label": "System Loss",
-          "text": "System +25",
+          "label": "",
+          "text": "System",
           "x": 57,
           "y": 49
         }
@@ -514,13 +514,13 @@
         },
         {
           "label": "Elevation",
-          "text": "+10 psi",
+          "text": "",
           "x": 74,
           "y": 40
         },
         {
-          "label": "System Loss",
-          "text": "System +25",
+          "label": "",
+          "text": "System",
           "x": 57,
           "y": 49
         }
