@@ -1552,8 +1552,7 @@ class _PrintableImagePreview extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(18),
                       child: Text(
-                        'Missing image asset:
-${page.assetPath}',
+                        'Missing image asset:\n${page.assetPath}',
                         textAlign: TextAlign.center,
                         style: (t.bodySmall ?? const TextStyle(fontSize: 12)).copyWith(
                           color: FirePumpSimColors.textMed,
@@ -2850,7 +2849,7 @@ class _PrimaryActionButton extends StatefulWidget {
   const _PrimaryActionButton({required this.label, required this.icon, required this.onTap});
   final String label;
   final IconData icon;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   State<_PrimaryActionButton> createState() => _PrimaryActionButtonState();
@@ -2862,24 +2861,34 @@ class _PrimaryActionButtonState extends State<_PrimaryActionButton> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final enabled = widget.onTap != null;
     return GestureDetector(
       onTap: widget.onTap,
-      onTapDown: (_) => setState(() => _pressed = true),
-      onTapCancel: () => setState(() => _pressed = false),
-      onTapUp: (_) => setState(() => _pressed = false),
+      onTapDown: enabled ? (_) => setState(() => _pressed = true) : null,
+      onTapCancel: enabled ? () => setState(() => _pressed = false) : null,
+      onTapUp: enabled ? (_) => setState(() => _pressed = false) : null,
       child: AnimatedScale(
         duration: const Duration(milliseconds: 120),
         curve: Curves.easeOutCubic,
-        scale: _pressed ? 0.985 : 1,
+        scale: enabled && _pressed ? 0.985 : 1,
         child: Container(
           height: 54,
-          decoration: BoxDecoration(color: FirePumpSimColors.red, borderRadius: BorderRadius.circular(18)),
+          decoration: BoxDecoration(
+            color: enabled ? FirePumpSimColors.red : FirePumpSimColors.red.withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(18),
+          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(widget.icon, color: Colors.white, size: 20),
+              Icon(widget.icon, color: Colors.white.withValues(alpha: enabled ? 1 : 0.85), size: 20),
               const SizedBox(width: 10),
-              Text(widget.label, style: (textTheme.bodyLarge ?? const TextStyle(fontSize: 16)).copyWith(color: Colors.white, fontWeight: FontWeight.w900)),
+              Text(
+                widget.label,
+                style: (textTheme.bodyLarge ?? const TextStyle(fontSize: 16)).copyWith(
+                  color: Colors.white.withValues(alpha: enabled ? 1 : 0.85),
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
             ],
           ),
         ),
