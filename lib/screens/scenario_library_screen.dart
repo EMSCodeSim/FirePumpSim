@@ -1,7 +1,9 @@
 import 'package:firepumpsim/models/scenario_pack.dart';
+import 'package:firepumpsim/models/printable_pack.dart';
 import 'package:firepumpsim/nav.dart';
 import 'package:firepumpsim/services/scenario_pack_repository.dart';
 import 'package:firepumpsim/services/scenario_pack_storage.dart';
+import 'package:firepumpsim/services/printable_pack_storage.dart';
 import 'package:firepumpsim/theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -16,9 +18,13 @@ class ScenarioLibraryScreen extends StatefulWidget {
 
 class _ScenarioLibraryScreenState extends State<ScenarioLibraryScreen> {
   final _storage = ScenarioPackStorage();
+  final _printableStorage = PrintablePackStorage();
 
   bool _loading = true;
   List<ScenarioPack> _packs = const [];
+
+  final List<PrintablePack> _printablePacks = PrintablePacksCatalog.allPacks().where((p) => !p.isFree).toList(growable: false);
+  Set<String> _purchasedPrintablePackIds = <String>{};
 
   @override
   void initState() {
@@ -31,8 +37,12 @@ class _ScenarioLibraryScreenState extends State<ScenarioLibraryScreen> {
     try {
       final repo = ScenarioPackRepository(storage: _storage);
       final packs = await repo.loadPacks();
+      final printablePurchased = await _printableStorage.loadPurchasedPackIds();
       if (!mounted) return;
-      setState(() => _packs = packs);
+      setState(() {
+        _packs = packs;
+        _purchasedPrintablePackIds = printablePurchased;
+      });
     } catch (e) {
       debugPrint('ScenarioLibrary load failed: $e');
     } finally {
@@ -46,11 +56,21 @@ class _ScenarioLibraryScreenState extends State<ScenarioLibraryScreen> {
     await _load();
   }
 
+  Future<void> _unlockPrintablePack(PrintablePack pack) async {
+    await _printableStorage.setPurchased(packId: pack.packId, purchased: true);
+    await _load();
+  }
+
+  bool _printableUnlocked(PrintablePack pack) => _purchasedPrintablePackIds.contains(pack.packId);
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final unlocked = _packs.where((p) => p.isFree || p.isPurchased).toList(growable: false);
     final locked = _packs.where((p) => !p.isFree && !p.isPurchased).toList(growable: false);
+
+    final printableUnlocked = _printablePacks.where(_printableUnlocked).toList(growable: false);
+    final printableLocked = _printablePacks.where((p) => !_printableUnlocked(p)).toList(growable: false);
 
     return Scaffold(
       backgroundColor: FirePumpSimColors.charcoal,
@@ -116,9 +136,150 @@ class _ScenarioLibraryScreenState extends State<ScenarioLibraryScreen> {
                     ),
                     const SizedBox(height: AppSpacing.sm),
                   ],
+
+                const SizedBox(height: AppSpacing.md),
+                _SectionHeader(title: 'Printable Packs', subtitle: 'Unlock branded printable worksheets', icon: Icons.picture_as_pdf_outlined),
+                const SizedBox(height: AppSpacing.sm),
+                if (printableUnlocked.isEmpty && printableLocked.isEmpty)
+                  const _InfoCard(text: 'No printable packs configured.')
+                else ...[
+                  if (printableUnlocked.isNotEmpty) ...[
+                    _SubHeader(title: 'Unlocked', subtitle: 'Available in Printable Scenarios'),
+                    const SizedBox(height: AppSpacing.sm),
+                    for (final p in printableUnlocked) ...[
+                      _PrintablePackCard(pack: p, locked: false, onTap: () => context.go(AppRoutes.printableScenarios)),
+                      const SizedBox(height: AppSpacing.sm),
+                    ],
+                    const SizedBox(height: AppSpacing.md),
+                  ],
+                  if (printableLocked.isNotEmpty) ...[
+                    _SubHeader(title: 'Locked', subtitle: 'Unlock to print'),
+                    const SizedBox(height: AppSpacing.sm),
+                    for (final p in printableLocked) ...[
+                      _PrintablePackCard(pack: p, locked: true, onUnlockAsync: () => _unlockPrintablePack(p)),
+                      const SizedBox(height: AppSpacing.sm),
+                    ],
+                  ],
+                ],
               ],
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SubHeader extends StatelessWidget {
+  const _SubHeader({required this.title, required this.subtitle});
+
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 2),
+      child: Row(
+        children: [
+          Expanded(child: Text(title, style: textTheme.titleSmall?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900))),
+          Text(subtitle, style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed)),
+        ],
+      ),
+    );
+  }
+}
+
+class _PrintablePackCard extends StatefulWidget {
+  const _PrintablePackCard({required this.pack, required this.locked, this.onTap, this.onUnlockAsync});
+
+  final PrintablePack pack;
+  final bool locked;
+  final VoidCallback? onTap;
+  final Future<void> Function()? onUnlockAsync;
+
+  @override
+  State<_PrintablePackCard> createState() => _PrintablePackCardState();
+}
+
+class _PrintablePackCardState extends State<_PrintablePackCard> {
+  bool _busy = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final accent = widget.locked ? FirePumpSimColors.steel : FirePumpSimColors.printGreen;
+    final badgeText = widget.locked ? 'LOCKED' : 'UNLOCKED';
+
+    return Container(
+      decoration: BoxDecoration(
+        color: FirePumpSimColors.charcoal2,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: accent.withValues(alpha: 0.55)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Expanded(child: Text(widget.pack.title, style: textTheme.titleMedium?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900))),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: accent.withValues(alpha: 0.14),
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(color: accent.withValues(alpha: 0.65)),
+                  ),
+                  child: Text(badgeText, style: textTheme.labelSmall?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900, letterSpacing: 0.2)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(widget.pack.description, style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed, height: 1.4)),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _Pill(icon: Icons.picture_as_pdf_outlined, label: '${widget.pack.pageCount} pages'),
+                const _Pill(icon: Icons.checklist, label: 'Questions + work'),
+              ],
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 48,
+              child: FilledButton.icon(
+                onPressed: _busy
+                    ? null
+                    : () async {
+                        if (!widget.locked && widget.onTap != null) {
+                          widget.onTap!.call();
+                          return;
+                        }
+                        if (widget.locked && widget.onUnlockAsync != null) {
+                          setState(() => _busy = true);
+                          try {
+                            await widget.onUnlockAsync!.call();
+                          } finally {
+                            if (mounted) setState(() => _busy = false);
+                          }
+                        }
+                      },
+                style: FilledButton.styleFrom(
+                  backgroundColor: FirePumpSimColors.red,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                ).copyWith(overlayColor: const WidgetStatePropertyAll(Colors.transparent)),
+                icon: _busy
+                    ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                    : Icon(widget.locked ? Icons.lock_open : Icons.print_outlined, color: Colors.white),
+                label: Text(widget.locked ? 'Unlock Pack' : 'Open Printable Scenarios', style: textTheme.titleSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w900)),
+              ),
+            ),
+          ],
         ),
       ),
     );

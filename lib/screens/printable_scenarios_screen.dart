@@ -1,8 +1,10 @@
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:firepumpsim/models/printable_pack.dart';
 import 'package:firepumpsim/models/printable_pump_scenario.dart';
 import 'package:firepumpsim/nav.dart';
+import 'package:firepumpsim/services/printable_pack_storage.dart';
 import 'package:firepumpsim/theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -44,294 +46,75 @@ class PrintableScenariosScreen extends StatefulWidget {
 enum _PreviewMode { worksheet, answerKey }
 
 class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
-  final _titleController = TextEditingController(text: 'Fire Pump Pressure Practice');
-  final _deptController = TextEditingController(text: 'Driver / Operator Training');
-
-  final PrintableScenarioGenerator _generator = PrintableScenarioGenerator();
-
-  PrintableScenarioMode _mode = PrintableScenarioMode.randomSheet;
   _PreviewMode _previewMode = _PreviewMode.worksheet;
 
-  PrintableWorksheetDifficulty _difficulty = PrintableWorksheetDifficulty.beginner;
-  int _scenarioCount = 4;
-  bool _includeAnswerKey = true;
+  final _packStorage = PrintablePackStorage();
+  final List<PrintablePack> _allPacks = PrintablePacksCatalog.allPacks();
 
+  bool _loading = true;
+  Set<String> _purchasedPrintablePackIds = <String>{};
+
+  late PrintablePack _selectedPack;
   late List<PrintablePumpScenario> _scenarios;
+  bool _includeAnswerKey = true;
   bool _printing = false;
 
-  // Builder state.
-  final _builderTitleController = TextEditingController(text: 'Custom Pump Scenario');
-  PrintableScenarioType _builderScenarioType = PrintableScenarioType.attackLine;
-  PrintableTargetArtwork _builderTargetArtwork = PrintableTargetArtwork.building;
-  PrintableHoseSize _builderHoseSize = PrintableHoseSize.inch175;
-  final _builderCController = TextEditingController(text: '15.5');
-  bool _cManuallyEdited = false;
-  int _builderLengthFt = 200;
-  bool _builderCustomLength = false;
-  final _builderCustomLengthController = TextEditingController(text: '200');
+  static const String _brandBannerAsset = 'assets/images/firepumpsim_brand_banner.png';
 
-  String _builderNozzle = _nozzleOptions.first.label;
-  bool _builderCustomNozzle = false;
-  final _builderCustomNozzleLabelController = TextEditingController(text: 'Custom Nozzle');
-  final _builderCustomGpmController = TextEditingController(text: '150');
-  final _builderCustomNpController = TextEditingController(text: '50');
+  /// PDF rendering uses built-in Helvetica by default which does not support some
+  /// Unicode punctuation (e.g. bullet "•" and em-dash "—").
+  ///
+  /// We sanitize text so PDF generation never fails due to missing glyphs.
+  String _pdfSafeText(String input) {
+    return input
+        .replaceAll('•', '-')
+        .replaceAll('—', '-')
+        .replaceAll('–', '-')
+        .replaceAll('→', '->');
+  }
 
-  final _builderElevationController = TextEditingController(text: '0');
-  int _builderAppliancePsi = 0;
-  final _builderProblemController = TextEditingController(
-    text: 'Engine 181 is stretching one attack line to a vehicle fire. Calculate the pump discharge pressure.',
-  );
-  int? _selectedScenarioIndex;
+  String _pdfHoseLabel(PrintablePumpScenario scenario) => '${scenario.hoseDiameterLabel} - ${scenario.lengthFt} ft';
 
   @override
   void initState() {
     super.initState();
-    _scenarios = _generator.generatePrintableSheet(difficulty: _difficulty, scenarioCount: _scenarioCount);
-    _titleController.addListener(_onMetaChanged);
-    _deptController.addListener(_onMetaChanged);
-    _builderCController.addListener(_onCChanged);
+    _selectedPack = _allPacks.firstWhere(
+      (p) => p.packId == PrintablePacksCatalog.starterPackId,
+      orElse: () => _allPacks.first,
+    );
+    _scenarios = _selectedPack.buildPages();
+    _loadPurchases();
   }
 
   @override
   void dispose() {
-    _titleController.removeListener(_onMetaChanged);
-    _deptController.removeListener(_onMetaChanged);
-    _builderCController.removeListener(_onCChanged);
-    _titleController.dispose();
-    _deptController.dispose();
-    _builderTitleController.dispose();
-    _builderCController.dispose();
-    _builderCustomLengthController.dispose();
-    _builderCustomNozzleLabelController.dispose();
-    _builderCustomGpmController.dispose();
-    _builderCustomNpController.dispose();
-    _builderElevationController.dispose();
-    _builderProblemController.dispose();
     super.dispose();
   }
 
-  void _onMetaChanged() {
-    if (!mounted) return;
-    setState(() {});
-  }
-
-  void _onCChanged() {
-    // If user types directly, treat as manual override.
-    if (!mounted) return;
-    if (!_cManuallyEdited) {
-      setState(() => _cManuallyEdited = true);
+  Future<void> _loadPurchases() async {
+    setState(() => _loading = true);
+    try {
+      final ids = await _packStorage.loadPurchasedPackIds();
+      if (!mounted) return;
+      setState(() => _purchasedPrintablePackIds = ids);
+    } catch (e) {
+      debugPrint('Printable pack purchase load failed: $e');
+    } finally {
+      if (mounted) setState(() => _loading = false);
     }
   }
 
-  String get _worksheetTitle => _titleController.text.trim().isEmpty ? 'Fire Pump Pressure Practice' : _titleController.text.trim();
-  String get _worksheetDept => _deptController.text.trim().isEmpty ? 'Driver / Operator Training' : _deptController.text.trim();
+  bool _isUnlocked(PrintablePack p) => p.isFree || _purchasedPrintablePackIds.contains(p.packId);
 
-  void _setScenarioCount(int v) {
-    if (_scenarioCount == v) return;
+  void _selectPack(PrintablePack p) {
+    if (!_isUnlocked(p)) {
+      _toast('This pack is locked. Unlock it in Scenario Library.');
+      return;
+    }
     setState(() {
-      _scenarioCount = v;
-      if (_scenarios.length > v) {
-        _scenarios = _scenarios.take(v).toList(growable: true);
-      }
-      if (_scenarios.length < v) {
-        // Keep existing work; pad with random scenarios.
-        final needed = v - _scenarios.length;
-        final extra = _generator.generatePrintableSheet(difficulty: _difficulty, scenarioCount: needed);
-        _scenarios = [..._scenarios, ...extra];
-      }
-      if (_selectedScenarioIndex != null && _selectedScenarioIndex! >= _scenarios.length) {
-        _selectedScenarioIndex = null;
-      }
-    });
-  }
-
-  void _setDifficulty(PrintableWorksheetDifficulty d) {
-    if (_difficulty == d) return;
-    setState(() => _difficulty = d);
-  }
-
-  void _generateRandomSheet() {
-    setState(() {
-      _scenarios = _generator.generatePrintableSheet(difficulty: _difficulty, scenarioCount: _scenarioCount);
-      _selectedScenarioIndex = null;
+      _selectedPack = p;
+      _scenarios = p.buildPages();
       _previewMode = _PreviewMode.worksheet;
-    });
-  }
-
-  void _syncDefaultCFromHose({required bool force}) {
-    final next = PrintableScenarioGenerator.defaultC[_builderHoseSize] ?? 15.5;
-    if (!force && _cManuallyEdited) return;
-    _cManuallyEdited = false;
-    _builderCController.text = _fmtC(next);
-  }
-
-  void _syncDefaultProblemFromType() {
-    if (_selectedScenarioIndex != null) return; // editing existing: do not overwrite.
-    _builderProblemController.text = _defaultProblemFor(_builderScenarioType);
-  }
-
-  PrintablePumpScenario _buildScenarioFromBuilder({String? id}) {
-    final title = _builderTitleController.text.trim().isEmpty ? 'Custom Pump Scenario' : _builderTitleController.text.trim();
-    final length = _builderCustomLength ? int.tryParse(_builderCustomLengthController.text.trim()) ?? _builderLengthFt : _builderLengthFt;
-    final cVal = double.tryParse(_builderCController.text.trim()) ?? (PrintableScenarioGenerator.defaultC[_builderHoseSize] ?? 15.5);
-    final elevationFeet = int.tryParse(_builderElevationController.text.trim()) ?? 0;
-
-    final nozzle = _builderCustomNozzle
-        ? (label: _builderCustomNozzleLabelController.text.trim().isEmpty ? 'Custom Nozzle' : _builderCustomNozzleLabelController.text.trim(), gpm: int.tryParse(_builderCustomGpmController.text.trim()) ?? 150, np: int.tryParse(_builderCustomNpController.text.trim()) ?? 50)
-        : _nozzleOptions.firstWhere((e) => e.label == _builderNozzle, orElse: () => _nozzleOptions.first);
-
-    final nozzleLabel = _builderCustomNozzle
-        ? '${nozzle.label} — ${nozzle.gpm} GPM @ ${nozzle.np} PSI'
-        : nozzle.label;
-
-    final problem = _builderProblemController.text.trim().isEmpty ? _defaultProblemFor(_builderScenarioType) : _builderProblemController.text.trim();
-
-    return PrintableScenarioCalculator.buildScenario(
-      id: id ?? 'pws_custom_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1 << 20)}',
-      inputs: PrintableScenarioInputs(
-        title: title,
-        scenarioType: _builderScenarioType,
-        targetArtwork: _builderTargetArtwork,
-        hoseSize: _builderHoseSize,
-        cValue: cVal,
-        lengthFt: max(1, length),
-        nozzleLabel: nozzleLabel,
-        gpm: max(1, nozzle.gpm),
-        np: max(0, nozzle.np),
-        elevationFeet: elevationFeet,
-        appliancePsi: max(0, _builderAppliancePsi),
-        problem: problem,
-      ),
-    );
-  }
-
-  void _addToWorksheet() {
-    if (_scenarios.length >= _scenarioCount) {
-      _toast('Worksheet is full ($_scenarioCount scenarios). Use “Replace Selected” or increase count.');
-      return;
-    }
-    setState(() {
-      _scenarios = [..._scenarios, _buildScenarioFromBuilder()];
-      _selectedScenarioIndex = null;
-    });
-  }
-
-  void _replaceSelected() {
-    final idx = _selectedScenarioIndex;
-    if (idx == null) {
-      _toast('Select a scenario to replace first.');
-      return;
-    }
-    setState(() {
-      final existingId = _scenarios[idx].id;
-      _scenarios[idx] = _buildScenarioFromBuilder(id: existingId);
-    });
-  }
-
-  void _clearBuilder() {
-    setState(() {
-      _selectedScenarioIndex = null;
-      _builderTitleController.text = 'Custom Pump Scenario';
-      _builderScenarioType = PrintableScenarioType.attackLine;
-      _builderTargetArtwork = PrintableTargetArtwork.building;
-      _builderHoseSize = PrintableHoseSize.inch175;
-      _syncDefaultCFromHose(force: true);
-      _builderLengthFt = 200;
-      _builderCustomLength = false;
-      _builderCustomLengthController.text = '200';
-      _builderNozzle = _nozzleOptions.first.label;
-      _builderCustomNozzle = false;
-      _builderCustomNozzleLabelController.text = 'Custom Nozzle';
-      _builderCustomGpmController.text = '150';
-      _builderCustomNpController.text = '50';
-      _builderElevationController.text = '0';
-      _builderAppliancePsi = 0;
-      _builderProblemController.text = _defaultProblemFor(_builderScenarioType);
-    });
-  }
-
-  void _randomizeThisScenario() {
-    final randomScenario = _generator.generatePrintableScenario(index: 1, difficulty: _difficulty);
-    setState(() {
-      _applyScenarioToBuilder(randomScenario);
-      _selectedScenarioIndex = null;
-    });
-  }
-
-  void _applyScenarioToBuilder(PrintablePumpScenario s) {
-    _builderTitleController.text = s.title;
-    _builderScenarioType = s.scenarioType;
-    _builderTargetArtwork = s.targetArtwork;
-    _builderHoseSize = s.hoseSize;
-    _cManuallyEdited = false;
-    _builderCController.text = _fmtC(s.cValue);
-    _builderLengthFt = s.lengthFt;
-    _builderCustomLength = false;
-    _builderCustomLengthController.text = s.lengthFt.toString();
-    final match = _nozzleOptions.where((n) => n.label == s.nozzleLabel).toList(growable: false);
-    if (match.isNotEmpty) {
-      _builderCustomNozzle = false;
-      _builderNozzle = s.nozzleLabel;
-    } else {
-      _builderCustomNozzle = true;
-      _builderNozzle = _nozzleOptions.first.label;
-      // Try to parse: "Label — 150 GPM @ 50 PSI"
-      final parts = s.nozzleLabel.split('—');
-      _builderCustomNozzleLabelController.text = parts.first.trim().isEmpty ? 'Custom Nozzle' : parts.first.trim();
-      final gpmMatch = RegExp(r'(\d+)\s*GPM').firstMatch(s.nozzleLabel);
-      final npMatch = RegExp(r'@\s*(\d+)\s*PSI', caseSensitive: false).firstMatch(s.nozzleLabel);
-      _builderCustomGpmController.text = (gpmMatch?.group(1) ?? s.gpm.toString());
-      _builderCustomNpController.text = (npMatch?.group(1) ?? s.np.toString());
-    }
-    _builderElevationController.text = s.elevationFeet.toString();
-    _builderAppliancePsi = s.appliancePsi;
-    _builderProblemController.text = s.problem;
-  }
-
-  void _editScenario(int index) {
-    setState(() {
-      _selectedScenarioIndex = index;
-      _applyScenarioToBuilder(_scenarios[index]);
-      _mode = PrintableScenarioMode.createScenario;
-    });
-  }
-
-  void _duplicateScenario(int index) {
-    if (_scenarios.length >= _scenarioCount) {
-      _toast('Worksheet is full ($_scenarioCount scenarios).');
-      return;
-    }
-    final s = _scenarios[index];
-    setState(() {
-      _scenarios = [
-        ..._scenarios.take(index + 1),
-        s.copyWith(id: 'pws_dup_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(1 << 20)}'),
-        ..._scenarios.skip(index + 1),
-      ];
-    });
-  }
-
-  void _deleteScenario(int index) {
-    setState(() {
-      _scenarios = [..._scenarios]..removeAt(index);
-      if (_selectedScenarioIndex == index) _selectedScenarioIndex = null;
-      if (_selectedScenarioIndex != null && _selectedScenarioIndex! > index) _selectedScenarioIndex = _selectedScenarioIndex! - 1;
-    });
-  }
-
-  void _moveScenario(int index, int delta) {
-    final newIndex = index + delta;
-    if (newIndex < 0 || newIndex >= _scenarios.length) return;
-    setState(() {
-      final copy = [..._scenarios];
-      final item = copy.removeAt(index);
-      copy.insert(newIndex, item);
-      _scenarios = copy;
-      if (_selectedScenarioIndex == index) {
-        _selectedScenarioIndex = newIndex;
-      } else if (_selectedScenarioIndex == newIndex) {
-        _selectedScenarioIndex = index;
-      }
     });
   }
 
@@ -350,6 +133,9 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
+    final unlocked = _allPacks.where(_isUnlocked).toList(growable: false);
+    final locked = _allPacks.where((p) => !_isUnlocked(p)).toList(growable: false);
+
     return Scaffold(
       backgroundColor: FirePumpSimColors.charcoal,
       body: SafeArea(
@@ -359,7 +145,7 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
             SliverToBoxAdapter(
               child: _PrintableHeader(
                 title: 'Printable Scenarios',
-                subtitle: 'Build pump pressure worksheets or generate random practice sheets.',
+                subtitle: 'Print branded FirePumpSim training pages. Starter Pack is included — unlock more packs in Scenario Library.',
                 onBack: () => context.go(AppRoutes.home),
               ),
             ),
@@ -369,6 +155,7 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
                 child: _StarterPrintablePageCard(
                   printing: _printing,
                   onPrint: _printing ? null : _handlePrintStarterScenario001,
+<<<<<<< Updated upstream
                 ),
               ),
             ),
@@ -378,115 +165,78 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
                 child: _ModeSegmentedControl(
                   mode: _mode,
                   onChanged: (m) => setState(() => _mode = m),
+=======
+>>>>>>> Stashed changes
                 ),
               ),
             ),
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.md),
               sliver: SliverToBoxAdapter(
-                child: _MetaCard(titleController: _titleController, departmentController: _deptController),
-              ),
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.md),
-              sliver: SliverToBoxAdapter(
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 220),
-                  switchInCurve: Curves.easeOutCubic,
-                  switchOutCurve: Curves.easeInCubic,
-                  child: _mode == PrintableScenarioMode.randomSheet
-                      ? _RandomSheetCard(
-                          key: const ValueKey('random'),
-                          difficulty: _difficulty,
-                          scenarioCount: _scenarioCount,
-                          includeAnswerKey: _includeAnswerKey,
-                          printing: _printing,
-                          onDifficultyChanged: _setDifficulty,
-                          onScenarioCountChanged: _setScenarioCount,
-                          onIncludeAnswerKeyChanged: (v) => setState(() => _includeAnswerKey = v),
-                          onGenerate: _generateRandomSheet,
-                          onPrint: _printing ? null : _handlePrint,
-                        )
-                      : _ScenarioBuilderCard(
-                          key: const ValueKey('builder'),
-                          scenarioCount: _scenarioCount,
-                          currentCount: _scenarios.length,
-                          selectedIndex: _selectedScenarioIndex,
-                          titleController: _builderTitleController,
-                          scenarioType: _builderScenarioType,
-                          targetArtwork: _builderTargetArtwork,
-                          hoseSize: _builderHoseSize,
-                          cController: _builderCController,
-                          customLength: _builderCustomLength,
-                          lengthFt: _builderLengthFt,
-                          customLengthController: _builderCustomLengthController,
-                          nozzleValue: _builderNozzle,
-                          customNozzle: _builderCustomNozzle,
-                          customNozzleLabelController: _builderCustomNozzleLabelController,
-                          customGpmController: _builderCustomGpmController,
-                          customNpController: _builderCustomNpController,
-                          elevationController: _builderElevationController,
-                          appliancePsi: _builderAppliancePsi,
-                          problemController: _builderProblemController,
-                          calculatedScenario: _buildScenarioFromBuilder(id: 'preview'),
-                          onScenarioTypeChanged: (v) {
-                            setState(() {
-                              _builderScenarioType = v;
-                              _syncDefaultProblemFromType();
-                              _builderTargetArtwork = _defaultArtworkForScenarioType(v);
-                            });
-                          },
-                          onTargetArtworkChanged: (v) => setState(() => _builderTargetArtwork = v),
-                          onHoseSizeChanged: (v) {
-                            setState(() {
-                              _builderHoseSize = v;
-                              _syncDefaultCFromHose(force: false);
-                            });
-                          },
-                          onCValueEdited: () => setState(() => _cManuallyEdited = true),
-                          onLengthChanged: (len, isCustom) {
-                            setState(() {
-                              _builderLengthFt = len;
-                              _builderCustomLength = isCustom;
-                              if (!isCustom) _builderCustomLengthController.text = len.toString();
-                            });
-                          },
-                          onNozzleChanged: (value, isCustom) => setState(() {
-                            _builderNozzle = value;
-                            _builderCustomNozzle = isCustom;
-                          }),
-                          onAppliancePsiChanged: (v) => setState(() => _builderAppliancePsi = v),
-                          onAddToWorksheet: _addToWorksheet,
-                          onReplaceSelected: _replaceSelected,
-                          onClear: _clearBuilder,
-                          onRandomize: _randomizeThisScenario,
+                child: _CardShell(
+                  titleIcon: Icons.collections_bookmark_outlined,
+                  title: 'Printable Packs',
+                  subtitle: 'Select a pack to preview and print. The free Starter Pack includes 10 pages.',
+                  child: _loading
+                      ? const Center(child: Padding(padding: EdgeInsets.symmetric(vertical: 10), child: CircularProgressIndicator(color: FirePumpSimColors.red)))
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text('Free Printable Starter Pack — included', style: (textTheme.bodyMedium ?? const TextStyle(fontSize: 14)).copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
+                            const SizedBox(height: 10),
+                            for (final p in unlocked.where((p) => p.isFree))
+                              _PrintablePackTile(pack: p, selected: p.packId == _selectedPack.packId, unlocked: true, onTap: () => _selectPack(p)),
+                            const SizedBox(height: 16),
+                            Text('Printable Pack Library — locked/purchased packs', style: (textTheme.bodyMedium ?? const TextStyle(fontSize: 14)).copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
+                            const SizedBox(height: 10),
+                            for (final p in unlocked.where((p) => !p.isFree)) ...[
+                              const SizedBox(height: 10),
+                              _PrintablePackTile(pack: p, selected: p.packId == _selectedPack.packId, unlocked: true, onTap: () => _selectPack(p)),
+                            ],
+                            for (final p in locked) ...[
+                              const SizedBox(height: 10),
+                              _PrintablePackTile(pack: p, selected: false, unlocked: false, onTap: () => context.go(AppRoutes.scenarioLibrary)),
+                            ],
+                            if (locked.isNotEmpty) ...[
+                              const SizedBox(height: 12),
+                              _SecondaryActionButton(label: 'Unlock packs in Scenario Library', icon: Icons.lock_open, onTap: () => context.go(AppRoutes.scenarioLibrary)),
+                            ],
+                          ],
                         ),
                 ),
               ),
             ),
-            if (_mode == PrintableScenarioMode.createScenario)
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.md),
-                sliver: SliverToBoxAdapter(
-                  child: _WorksheetListCard(
-                    textTheme: textTheme,
-                    scenarios: _scenarios,
-                    selectedIndex: _selectedScenarioIndex,
-                    scenarioCountLimit: _scenarioCount,
-                    onEdit: _editScenario,
-                    onDuplicate: _duplicateScenario,
-                    onDelete: _deleteScenario,
-                    onMoveUp: (i) => _moveScenario(i, -1),
-                    onMoveDown: (i) => _moveScenario(i, 1),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.md),
+              sliver: SliverToBoxAdapter(
+                child: _CardShell(
+                  titleIcon: Icons.print_outlined,
+                  title: 'Print Options',
+                  subtitle: 'This pack prints as 10 pages (one scenario per page).',
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SwitchListTile.adaptive(
+                        value: _includeAnswerKey,
+                        onChanged: (v) => setState(() => _includeAnswerKey = v),
+                        contentPadding: EdgeInsets.zero,
+                        activeColor: FirePumpSimColors.red,
+                        title: Text('Include answer key', style: (textTheme.bodyMedium ?? const TextStyle(fontSize: 14)).copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w800)),
+                        subtitle: Text('Adds an answer key page + math at the end', style: (textTheme.bodySmall ?? const TextStyle(fontSize: 12)).copyWith(color: FirePumpSimColors.textMed, height: 1.35)),
+                      ),
+                      const SizedBox(height: 10),
+                      _SecondaryActionButton(label: _printing ? 'Preparing PDF…' : 'Print / Save PDF', icon: Icons.picture_as_pdf_outlined, onTap: _printing ? null : _handlePrint),
+                    ],
                   ),
                 ),
               ),
+            ),
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.lg),
               sliver: SliverToBoxAdapter(
                 child: _PreviewCard(
-                  worksheetTitle: _worksheetTitle,
-                  department: _worksheetDept,
+                  worksheetTitle: _selectedPack.title,
+                  department: 'FirePumpSim Training',
                   scenarios: _scenarios,
                   includeAnswerKey: _includeAnswerKey,
                   previewMode: _previewMode,
@@ -508,15 +258,44 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
     setState(() => _printing = true);
     try {
       final bytes = await _buildPdfBytes(
-        worksheetTitle: _worksheetTitle,
-        department: _worksheetDept,
+        worksheetTitle: _selectedPack.title,
+        department: 'FirePumpSim Training',
         scenarios: _scenarios,
         includeAnswerKey: _includeAnswerKey,
       );
+      debugPrint('Printable PDF built: ${bytes.lengthInBytes} bytes. Opening print dialog…');
       await pr.Printing.layoutPdf(name: 'FirePumpSim Worksheet', onLayout: (format) async => bytes);
     } catch (e) {
       debugPrint('Print/Save PDF failed: $e');
-      _toast('Unable to print / save PDF on this device.');
+      _toast('Unable to print / save PDF on this device. If you are on web, make sure pop-ups are allowed.');
+    } finally {
+      if (mounted) setState(() => _printing = false);
+    }
+  }
+
+  Future<void> _handlePrintStarterScenario001() async {
+    setState(() => _printing = true);
+    try {
+      final imageData = await rootBundle.load(PrintableScenarioAssetPack.starterScenario001);
+      final image = pw.MemoryImage(imageData.buffer.asUint8List());
+      final doc = pw.Document();
+      doc.addPage(
+        pw.Page(
+          pageFormat: PdfPageFormat.letter,
+          margin: const pw.EdgeInsets.all(18),
+          build: (_) => pw.Center(
+            child: pw.Image(image, fit: pw.BoxFit.contain),
+          ),
+        ),
+      );
+      final bytes = await doc.save();
+      await pr.Printing.layoutPdf(
+        name: 'FirePumpSim Printable Scenario 001',
+        onLayout: (format) async => bytes,
+      );
+    } catch (e) {
+      debugPrint('Printable Scenario 001 failed: $e');
+      _toast('Unable to open Printable Scenario 001. Check that assets/printable/FirePumpSim_printable_scenario_001.png exists.');
     } finally {
       if (mounted) setState(() => _printing = false);
     }
@@ -562,27 +341,30 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
     final boldFont = pw.Font.helveticaBold();
     pw.TextStyle t(double size, {bool bold = false}) => pw.TextStyle(font: bold ? boldFont : baseFont, fontSize: size);
 
-    doc.addPage(
-      pw.Page(
-        pageFormat: PdfPageFormat.letter,
-        margin: const pw.EdgeInsets.fromLTRB(24, 24, 24, 26),
-        build: (context) {
-          return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.stretch,
-            children: [
-              _pdfHeader(worksheetTitle: worksheetTitle, department: department, t: t),
-              pw.SizedBox(height: 10),
-              for (var i = 0; i < scenarios.length; i++) ...[
-                _pdfScenarioRow(index: i + 1, scenario: scenarios[i], t: t, assets: pdfAssets),
-                if (i != scenarios.length - 1) pw.SizedBox(height: 8),
-              ],
-              pw.Spacer(),
-              _pdfFooter(t),
-            ],
-          );
-        },
-      ),
-    );
+    final safeWorksheetTitle = _pdfSafeText(worksheetTitle);
+    final safeDepartment = _pdfSafeText(department);
+
+    // Worksheet pages: 1 scenario per page.
+    // This allows the scene artwork to become the main visual focus (roughly ~50% of page height)
+    // while keeping the student question + work area readable.
+    for (var i = 0; i < scenarios.length; i++) {
+      doc.addPage(
+        pw.Page(
+          pageFormat: PdfPageFormat.letter,
+          margin: const pw.EdgeInsets.fromLTRB(24, 24, 24, 26),
+          build: (context) => _pdfScenarioPage(
+            index: i + 1,
+            total: scenarios.length,
+            worksheetTitle: safeWorksheetTitle,
+            department: safeDepartment,
+            scenario: scenarios[i],
+            t: t,
+            assets: pdfAssets,
+            brandBanner: pdfAssets[_brandBannerAsset],
+          ),
+        ),
+      );
+    }
 
     if (includeAnswerKey) {
       doc.addPage(
@@ -593,9 +375,15 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
             return pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.stretch,
               children: [
-                pw.Text('Answer Key', style: t(18, bold: true)),
+                pw.Row(
+                  children: [
+                    if (pdfAssets[_brandBannerAsset] != null) pw.SizedBox(height: 24, child: pw.Image(pdfAssets[_brandBannerAsset]!)),
+                    if (pdfAssets[_brandBannerAsset] != null) pw.SizedBox(width: 10),
+                    pw.Text('Answer Key', style: t(18, bold: true)),
+                  ],
+                ),
                 pw.SizedBox(height: 6),
-                pw.Text('$worksheetTitle • $department', style: t(10)),
+                pw.Text('${safeWorksheetTitle} - ${safeDepartment}', style: t(10)),
                 pw.SizedBox(height: 12),
                 _pdfAnswerKeyTable(scenarios: scenarios, t: t),
                 pw.SizedBox(height: 14),
@@ -631,6 +419,7 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
     }
 
     final entries = <String, pw.ImageProvider?>{
+      _brandBannerAsset: await load(_brandBannerAsset),
       PrintableScenarioAssetPack.truck: await load(PrintableScenarioAssetPack.truck),
       PrintableScenarioAssetPack.building: await load(PrintableScenarioAssetPack.building),
       PrintableScenarioAssetPack.sedan: await load(PrintableScenarioAssetPack.sedan),
@@ -641,7 +430,12 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
     return {for (final e in entries.entries) if (e.value != null) e.key: e.value!};
   }
 
-  pw.Widget _pdfHeader({required String worksheetTitle, required String department, required pw.TextStyle Function(double, {bool bold}) t}) {
+  pw.Widget _pdfHeader({
+    required String worksheetTitle,
+    required String department,
+    required pw.TextStyle Function(double, {bool bold}) t,
+    required pw.ImageProvider? brandBanner,
+  }) {
     return pw.Container(
       padding: const pw.EdgeInsets.fromLTRB(12, 10, 12, 10),
       decoration: pw.BoxDecoration(border: pw.Border.all(color: PdfColors.black, width: 1)),
@@ -651,21 +445,50 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
           pw.Row(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Expanded(child: pw.Text(worksheetTitle, style: t(14, bold: true))),
-              pw.SizedBox(width: 8),
-              pw.Expanded(child: pw.Align(alignment: pw.Alignment.topRight, child: pw.Text(department, style: t(11, bold: true), textAlign: pw.TextAlign.right))),
-            ],
-          ),
-          pw.SizedBox(height: 4),
-          pw.Row(
-            children: [
-              pw.Expanded(child: pw.Text('Generated by FirePumpSim', style: t(9))),
-              pw.Text('Date: __________', style: t(9)),
+              if (brandBanner != null) ...[
+                pw.SizedBox(height: 22, child: pw.Image(brandBanner, fit: pw.BoxFit.contain)),
+                pw.SizedBox(width: 10),
+              ],
+              pw.Expanded(
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+                  children: [
+                    pw.Row(
+                      children: [
+                        pw.Expanded(child: pw.Text(worksheetTitle, style: t(14, bold: true))),
+                        pw.SizedBox(width: 8),
+                        pw.Text(department, style: t(11, bold: true)),
+                      ],
+                    ),
+                    pw.SizedBox(height: 4),
+                    pw.Row(
+                      children: [
+                        pw.Expanded(child: pw.Text('Name: ___________________________', style: t(9))),
+                        pw.SizedBox(width: 10),
+                        pw.Text('Date: __________', style: t(9)),
+                        pw.SizedBox(width: 10),
+                        pw.Text('Score: ______ / ______', style: t(9)),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ],
       ),
     );
+  }
+
+  List<pw.Widget> _pdfTargetPositions(List<pw.ImageProvider> targets) {
+    if (targets.isEmpty) return const <pw.Widget>[];
+    if (targets.length == 1) {
+      return [pw.Positioned(right: 4, top: 4, child: pw.SizedBox(width: 52, height: 36, child: pw.Image(targets.first, fit: pw.BoxFit.contain)))];
+    }
+    return [
+      pw.Positioned(right: 4, top: 4, child: pw.SizedBox(width: 52, height: 34, child: pw.Image(targets[0], fit: pw.BoxFit.contain))),
+      pw.Positioned(right: 18, bottom: 6, child: pw.SizedBox(width: 30, height: 22, child: pw.Image(targets[1], fit: pw.BoxFit.contain))),
+    ];
   }
 
   pw.Widget _pdfScenarioRow({
@@ -718,12 +541,17 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
                           painter: (PdfGraphics canvas, PdfPoint size) => _pdfPaintScene(
                             canvas,
                             size,
+<<<<<<< Updated upstream
                             hoseLabel: '${scenario.hoseDiameterLabel} • ${scenario.lengthFt} ft',
+=======
+                            targetArtwork: scenario.targetArtwork,
+                            hoseLabel: _pdfHoseLabel(scenario),
+>>>>>>> Stashed changes
                             flowLabel: '${scenario.gpm} GPM',
                           ),
                         ),
                       ),
-                      pw.Positioned(left: 4, top: 2, child: pw.Text('${scenario.hoseDiameterLabel} • ${scenario.lengthFt} ft', style: t(6, bold: true))),
+                      pw.Positioned(left: 4, top: 2, child: pw.Text(_pdfHoseLabel(scenario), style: t(6, bold: true))),
                       pw.Positioned(right: 4, top: 2, child: pw.Text('${scenario.gpm} GPM', style: t(6, bold: true))),
                     ],
                   ),
@@ -734,24 +562,21 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.stretch,
                   children: [
-                    pw.Text(scenario.problem, style: t(9)),
-                    pw.SizedBox(height: 6),
-                    _pdfFactsGrid(scenario: scenario, t: t),
-                    pw.SizedBox(height: 6),
-                    pw.Text('PP = NP + FL ± Elevation + Appliance', style: t(9, bold: true)),
-                    pw.Text('FL = C × (GPM/100)² × Length/100', style: t(8)),
-                    pw.SizedBox(height: 6),
                     pw.Row(
                       children: [
-                        pw.Expanded(child: pw.Text('NP: ______', style: t(9))),
-                        pw.Expanded(child: pw.Text('FL: ______', style: t(9))),
+                        pw.Expanded(child: pw.Text(scenario.title, style: t(13, bold: true))),
+                        pw.SizedBox(width: 8),
+                        pw.Text(_typeLabel(scenario.scenarioType), style: t(10, bold: true)),
                       ],
                     ),
-                    pw.SizedBox(height: 3),
+                    pw.SizedBox(height: 4),
                     pw.Row(
                       children: [
-                        pw.Expanded(child: pw.Text('Elev/App: ______', style: t(9))),
-                        pw.Expanded(child: pw.Text('Final PP: ______', style: t(9))),
+                        pw.Expanded(child: pw.Text('Name: ___________________________', style: t(9))),
+                        pw.SizedBox(width: 10),
+                        pw.Text('Date: __________', style: t(9)),
+                        pw.SizedBox(width: 10),
+                        pw.Text('Score: ______ / ______', style: t(9)),
                       ],
                     ),
                   ],
@@ -764,19 +589,255 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
     );
   }
 
-  List<pw.Widget> _pdfTargetPositions(List<pw.ImageProvider> targets) {
+  pw.Widget _pdfScenarioPage({
+    required int index,
+    required int total,
+    required String worksheetTitle,
+    required String department,
+    required PrintablePumpScenario scenario,
+    required pw.TextStyle Function(double, {bool bold}) t,
+    required Map<String, pw.ImageProvider> assets,
+    required pw.ImageProvider? brandBanner,
+  }) {
+    final truck = assets[PrintableScenarioAssetPack.truck];
+    final targets = PrintableScenarioAssetPack.targetAssetsFor(scenario.targetArtwork).map((p) => assets[p]).whereType<pw.ImageProvider>().toList(growable: false);
+
+    const sceneHeight = 335.0; // ~45-55% of printable content height on letter with margins.
+
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+      children: [
+        _pdfHeader(worksheetTitle: worksheetTitle, department: department, t: t, brandBanner: brandBanner),
+        pw.SizedBox(height: 10),
+        pw.Row(
+          children: [
+            pw.Expanded(child: pw.Text('$index. ${scenario.title}', style: t(14, bold: true))),
+            pw.Text(_typeLabel(scenario.scenarioType), style: t(10, bold: true)),
+          ],
+        ),
+        pw.SizedBox(height: 8),
+        pw.Container(
+          height: sceneHeight,
+          decoration: pw.BoxDecoration(border: pw.Border.all(color: PdfColors.black, width: 1.1)),
+          child: pw.Stack(
+            children: [
+              pw.Positioned.fill(
+                child: pw.CustomPaint(
+                  painter: (PdfGraphics canvas, PdfPoint size) => _pdfPaintSceneBackground(
+                    canvas,
+                    size,
+                    drawFallbackTruck: truck == null,
+                    drawFallbackTarget: targets.isEmpty,
+                  ),
+                ),
+              ),
+              if (truck != null) ...[
+                pw.Positioned(
+                  left: 14,
+                  bottom: 14,
+                  child: pw.SizedBox(width: 170, height: 110, child: pw.Image(truck, fit: pw.BoxFit.contain)),
+                ),
+              ],
+              if (targets.isNotEmpty) ..._pdfTargetPositionsLarge(targets),
+              pw.Positioned.fill(
+                child: pw.CustomPaint(
+                  painter: (PdfGraphics canvas, PdfPoint size) => _pdfPaintScene(
+                    canvas,
+                    size,
+                    targetArtwork: scenario.targetArtwork,
+                    hoseLabel: _pdfHoseLabel(scenario),
+                    flowLabel: '${scenario.gpm} GPM',
+                  ),
+                ),
+              ),
+              pw.Positioned(left: 10, top: 8, child: pw.Text(_pdfHoseLabel(scenario), style: t(10, bold: true))),
+              pw.Positioned(right: 10, top: 8, child: pw.Text('${scenario.gpm} GPM', style: t(10, bold: true))),
+            ],
+          ),
+        ),
+        pw.SizedBox(height: 12),
+        pw.Row(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [
+            pw.Expanded(
+              child: _pdfBox(
+                title: 'Given / Reference',
+                t: t,
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+                  children: [
+                    pw.Text(scenario.problem, style: t(9)),
+                    pw.SizedBox(height: 6),
+                    _pdfFactsGrid(scenario: scenario, t: t),
+                    pw.SizedBox(height: 6),
+                    pw.Text('PP = NP + FL ± Elev + App', style: t(9, bold: true)),
+                    pw.Text('FL = C × (GPM/100)² × L/100', style: t(8)),
+                  ],
+                ),
+              ),
+            ),
+            pw.SizedBox(width: 10),
+            pw.Expanded(
+              child: _pdfBox(
+                title: 'Questions',
+                t: t,
+                child: _pdfQuestions(t: t, scenario: scenario),
+              ),
+            ),
+          ],
+        ),
+        pw.SizedBox(height: 10),
+        _pdfBox(
+          title: 'Show Your Work',
+          t: t,
+          child: pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+            children: [
+              pw.Text('Final PDP (PP) = ________ PSI (round to nearest 5 PSI)', style: t(10, bold: true)),
+              pw.SizedBox(height: 6),
+              _pdfWorkArea(),
+            ],
+          ),
+        ),
+        pw.Spacer(),
+        pw.Row(
+          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+          children: [
+            _pdfFooter(t),
+            pw.Text('Page $index / $total', style: t(8)),
+          ],
+        ),
+      ],
+    );
+  }
+
+  pw.Widget _pdfBox({required String title, required pw.TextStyle Function(double, {bool bold}) t, required pw.Widget child}) {
+    return pw.Container(
+      padding: const pw.EdgeInsets.fromLTRB(10, 8, 10, 10),
+      decoration: pw.BoxDecoration(border: pw.Border.all(color: PdfColors.black, width: 1)),
+      child: pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+        children: [
+          pw.Text(title.toUpperCase(), style: t(9, bold: true)),
+          pw.SizedBox(height: 6),
+          child,
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _pdfQuestions({required pw.TextStyle Function(double, {bool bold}) t, required PrintablePumpScenario scenario}) {
+    pw.Widget q(String label) {
+      return pw.Container(
+        padding: const pw.EdgeInsets.only(bottom: 6),
+        child: pw.Row(
+          crossAxisAlignment: pw.CrossAxisAlignment.end,
+          children: [
+            pw.Expanded(child: pw.Text(label, style: t(9))),
+            pw.SizedBox(width: 8),
+            pw.Container(width: 120, height: 12, decoration: const pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide(color: PdfColors.black, width: 0.9)))),
+          ],
+        ),
+      );
+    }
+
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+      children: [
+        q('1) Nozzle pressure (NP):'),
+        q('2) Friction loss (FL):'),
+        q('3) Elevation PSI (±):'),
+        q('4) Appliance loss (App):'),
+        q('5) Pump pressure (raw):'),
+        q('6) Pump pressure (rounded):'),
+        q('7) Hose diameter & length:'),
+      ],
+    );
+  }
+
+  pw.Widget _pdfWorkArea() {
+    // Light write-in area with several horizontal lines.
+    return pw.Container(
+      height: 135,
+      decoration: pw.BoxDecoration(border: pw.Border.all(color: PdfColors.black, width: 0.8)),
+      child: pw.Stack(
+        children: [
+          pw.Positioned.fill(
+            child: pw.CustomPaint(
+              painter: (canvas, size) {
+                final h = size.y;
+                final w = size.x;
+                canvas
+                  ..setColor(PdfColors.grey300)
+                  ..setLineWidth(0.7);
+                const top = 14.0;
+                const gap = 16.0;
+                for (var y = top; y < h - 6; y += gap) {
+                  canvas
+                    ..moveTo(8, y)
+                    ..lineTo(w - 8, y)
+                    ..strokePath();
+                }
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _pdfWorkLines({required pw.TextStyle Function(double, {bool bold}) t}) {
+    pw.Widget line(String label) {
+      return pw.Container(
+        padding: const pw.EdgeInsets.symmetric(vertical: 4),
+        child: pw.Row(
+          children: [
+            pw.SizedBox(width: 90, child: pw.Text('$label:', style: t(11, bold: true))),
+            pw.Expanded(child: pw.Container(height: 14, decoration: const pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide(color: PdfColors.black, width: 0.9))))),
+          ],
+        ),
+      );
+    }
+
+    return pw.Column(
+      children: [
+        line('NP'),
+        line('FL'),
+        line('Elevation'),
+        line('Appliance'),
+        pw.SizedBox(height: 4),
+        pw.Container(
+          padding: const pw.EdgeInsets.symmetric(vertical: 4),
+          child: pw.Row(
+            children: [
+              pw.SizedBox(width: 90, child: pw.Text('Final PP:', style: t(12, bold: true))),
+              pw.Expanded(child: pw.Container(height: 16, decoration: const pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide(color: PdfColors.black, width: 1.2))))),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<pw.Widget> _pdfTargetPositionsLarge(List<pw.ImageProvider> targets) {
     if (targets.length == 1) {
-      return [pw.Positioned(right: 4, top: 4, child: pw.SizedBox(width: 40, height: 30, child: pw.Image(targets.first, fit: pw.BoxFit.contain)))];
+      return [
+        pw.Positioned(
+          right: 18,
+          top: 22,
+          child: pw.SizedBox(width: 190, height: 150, child: pw.Image(targets.first, fit: pw.BoxFit.contain)),
+        ),
+      ];
     }
     return [
-      pw.Positioned(right: 4, top: 4, child: pw.SizedBox(width: 40, height: 30, child: pw.Image(targets[0], fit: pw.BoxFit.contain))),
-      pw.Positioned(right: 6, bottom: 6, child: pw.SizedBox(width: 18, height: 18, child: pw.Image(targets[1], fit: pw.BoxFit.contain))),
+      pw.Positioned(right: 18, top: 22, child: pw.SizedBox(width: 190, height: 150, child: pw.Image(targets[0], fit: pw.BoxFit.contain))),
+      pw.Positioned(right: 40, bottom: 26, child: pw.SizedBox(width: 92, height: 92, child: pw.Image(targets[1], fit: pw.BoxFit.contain))),
     ];
   }
 
   pw.Widget _pdfFactsGrid({required PrintablePumpScenario scenario, required pw.TextStyle Function(double, {bool bold}) t}) {
     final items = <List<String>>[
-      ['Hose', '${scenario.hoseDiameterLabel} • ${scenario.lengthFt} ft'],
+      ['Hose', _pdfHoseLabel(scenario)],
       ['C', _fmtC(scenario.cValue)],
       ['Nozzle', scenario.nozzleLabel],
       ['Flow', '${scenario.gpm} GPM @ ${scenario.np} PSI'],
@@ -842,6 +903,7 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
     final w = size.x;
     final h = size.y;
 
+<<<<<<< Updated upstream
     final stroke = PdfColor.fromInt(0xFF000000);
     final faint = PdfColor.fromInt(0xFFEEEEEE);
 
@@ -860,6 +922,61 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
     // Nozzle at the end of the line.
     canvas
       ..drawRect(targetAnchor.x - 4, targetAnchor.y - 2, 8, 4)
+=======
+    final outline = PdfColor.fromInt(0xFF1A1A1A);
+    final hose = PdfColor.fromInt(0xFFEDEDED);
+    final shadow = PdfColor.fromInt(0x66000000);
+
+    final layout = _PdfSceneLayout.forSize(w: w, h: h, targetArtwork: targetArtwork);
+
+    // Shadow (slight offset) so the hose reads over artwork.
+    canvas
+      ..setColor(shadow)
+      ..setLineWidth(layout.hoseWidth + 2.2)
+      ..moveTo(layout.engine.x + 1.6, layout.engine.y + 1.6)
+      ..curveTo(layout.hydrant.x + 1.6, layout.hydrant.y + 1.6, layout.wye.x + 1.6, layout.wye.y + 1.6, layout.fdc.x + 1.6, layout.fdc.y + 1.6)
+      ..curveTo(layout.nozzle.x + 1.6, layout.nozzle.y + 1.6, layout.target.x + 1.6, layout.target.y + 1.6, layout.target.x + 1.6, layout.target.y + 1.6)
+      ..strokePath();
+
+    // Outer dark outline.
+    canvas
+      ..setColor(outline)
+      ..setLineWidth(layout.hoseWidth + 2.6)
+      ..moveTo(layout.engine.x, layout.engine.y)
+      ..curveTo(layout.hydrant.x, layout.hydrant.y, layout.wye.x, layout.wye.y, layout.fdc.x, layout.fdc.y)
+      ..curveTo(layout.nozzle.x, layout.nozzle.y, layout.target.x, layout.target.y, layout.target.x, layout.target.y)
+      ..strokePath();
+
+    // Inner hose body.
+    canvas
+      ..setColor(hose)
+      ..setLineWidth(layout.hoseWidth)
+      ..moveTo(layout.engine.x, layout.engine.y)
+      ..curveTo(layout.hydrant.x, layout.hydrant.y, layout.wye.x, layout.wye.y, layout.fdc.x, layout.fdc.y)
+      ..curveTo(layout.nozzle.x, layout.nozzle.y, layout.target.x, layout.target.y, layout.target.x, layout.target.y)
+      ..strokePath();
+
+    // Anchor markers.
+    canvas
+      ..setColor(outline)
+      ..setLineWidth(1.2)
+      ..drawEllipse(layout.engine.x - 4, layout.engine.y - 4, 8, 8)
+      ..strokePath();
+    canvas
+      ..drawEllipse(layout.hydrant.x - 4, layout.hydrant.y - 4, 8, 8)
+      ..strokePath();
+    canvas
+      ..drawEllipse(layout.wye.x - 4, layout.wye.y - 4, 8, 8)
+      ..strokePath();
+    canvas
+      ..drawEllipse(layout.fdc.x - 4, layout.fdc.y - 4, 8, 8)
+      ..strokePath();
+    canvas
+      ..drawEllipse(layout.nozzle.x - 4, layout.nozzle.y - 4, 8, 8)
+      ..strokePath();
+    canvas
+      ..drawRect(layout.target.x - 6, layout.target.y - 4, 12, 8)
+>>>>>>> Stashed changes
       ..strokePath();
 
   }
@@ -901,6 +1018,123 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
         ..drawRect(w - 50, 10, 36, 22)
         ..strokePath();
     }
+  }
+}
+
+/// Shared layout math for the printable scene so the asset placement and hose anchors
+/// stay physically connected even as the scene scales up/down.
+class _PrintableSceneLayout {
+  const _PrintableSceneLayout({
+    required this.truckRect,
+    required this.primaryTargetRect,
+    required this.secondaryTargetRect,
+    required this.engineAnchor,
+    required this.hydrantAnchor,
+    required this.wyeAnchor,
+    required this.fdcAnchor,
+    required this.nozzleAnchor,
+    required this.targetAnchor,
+  });
+
+  final Rect truckRect;
+  final Rect primaryTargetRect;
+  final Rect secondaryTargetRect;
+
+  final Offset engineAnchor;
+  final Offset hydrantAnchor;
+  final Offset wyeAnchor;
+  final Offset fdcAnchor;
+  final Offset nozzleAnchor;
+  final Offset targetAnchor;
+
+  static _PrintableSceneLayout forSize({required Size size, required PrintableTargetArtwork targetArtwork}) {
+    final w = size.width;
+    final h = size.height;
+    final safe = Rect.fromLTWH(10, 10, max(1, w - 20), max(1, h - 20));
+
+    // Composition goals:
+    // - engine lower-left
+    // - target upper-right / upper-center
+    // - hose travels across the page with a natural S-curve
+    final truck = Rect.fromLTWH(safe.left + safe.width * 0.02, safe.top + safe.height * 0.62, safe.width * 0.40, safe.height * 0.30);
+
+    final primaryTarget = Rect.fromLTWH(safe.left + safe.width * 0.58, safe.top + safe.height * 0.06, safe.width * 0.38, safe.height * 0.36);
+    final secondaryTarget = Rect.fromLTWH(safe.left + safe.width * 0.74, safe.top + safe.height * 0.62, safe.width * 0.16, safe.height * 0.16);
+
+    final engineAnchor = Offset(truck.right - 12, truck.top + truck.height * 0.55);
+
+    // Fixed anchor points (even if not all are contextually used) so the hose reads realistic.
+    final hydrantAnchor = Offset(safe.left + safe.width * 0.30, safe.top + safe.height * 0.78);
+    final wyeAnchor = Offset(safe.left + safe.width * 0.44, safe.top + safe.height * 0.62);
+    final fdcAnchor = Offset(safe.left + safe.width * 0.54, safe.top + safe.height * 0.48);
+    final nozzleAnchor = Offset(safe.left + safe.width * 0.66, safe.top + safe.height * 0.40);
+
+    // Target point depends slightly on artwork selection.
+    final targetAnchor = switch (targetArtwork) {
+      PrintableTargetArtwork.hydrant => Offset(primaryTarget.left + primaryTarget.width * 0.35, primaryTarget.top + primaryTarget.height * 0.62),
+      PrintableTargetArtwork.brush => Offset(primaryTarget.left + primaryTarget.width * 0.55, primaryTarget.top + primaryTarget.height * 0.40),
+      PrintableTargetArtwork.sedan => Offset(primaryTarget.left + primaryTarget.width * 0.55, primaryTarget.top + primaryTarget.height * 0.55),
+      PrintableTargetArtwork.sedanAndBrush => Offset(primaryTarget.left + primaryTarget.width * 0.56, primaryTarget.top + primaryTarget.height * 0.52),
+      PrintableTargetArtwork.buildingAndBrush => Offset(primaryTarget.left + primaryTarget.width * 0.56, primaryTarget.top + primaryTarget.height * 0.46),
+      PrintableTargetArtwork.building => Offset(primaryTarget.left + primaryTarget.width * 0.62, primaryTarget.top + primaryTarget.height * 0.40),
+    };
+
+    return _PrintableSceneLayout(
+      truckRect: truck,
+      primaryTargetRect: primaryTarget,
+      secondaryTargetRect: secondaryTarget,
+      engineAnchor: engineAnchor,
+      hydrantAnchor: hydrantAnchor,
+      wyeAnchor: wyeAnchor,
+      fdcAnchor: fdcAnchor,
+      nozzleAnchor: nozzleAnchor,
+      targetAnchor: targetAnchor,
+    );
+  }
+}
+
+class _PdfSceneLayout {
+  const _PdfSceneLayout({
+    required this.engine,
+    required this.hydrant,
+    required this.wye,
+    required this.fdc,
+    required this.nozzle,
+    required this.target,
+    required this.hoseWidth,
+  });
+
+  final PdfPoint engine;
+  final PdfPoint hydrant;
+  final PdfPoint wye;
+  final PdfPoint fdc;
+  final PdfPoint nozzle;
+  final PdfPoint target;
+  final double hoseWidth;
+
+  static _PdfSceneLayout forSize({required double w, required double h, required PrintableTargetArtwork targetArtwork}) {
+    final safeLeft = 12.0;
+    final safeTop = 12.0;
+    final safeW = max(1.0, w - 24.0);
+    final safeH = max(1.0, h - 24.0);
+
+    final engine = PdfPoint(safeLeft + safeW * 0.29, safeTop + safeH * 0.80);
+    final hydrant = PdfPoint(safeLeft + safeW * 0.34, safeTop + safeH * 0.84);
+    final wye = PdfPoint(safeLeft + safeW * 0.46, safeTop + safeH * 0.66);
+    final fdc = PdfPoint(safeLeft + safeW * 0.56, safeTop + safeH * 0.52);
+    final nozzle = PdfPoint(safeLeft + safeW * 0.68, safeTop + safeH * 0.42);
+
+    final target = switch (targetArtwork) {
+      PrintableTargetArtwork.hydrant => PdfPoint(safeLeft + safeW * 0.76, safeTop + safeH * 0.34),
+      PrintableTargetArtwork.brush => PdfPoint(safeLeft + safeW * 0.84, safeTop + safeH * 0.26),
+      PrintableTargetArtwork.sedan => PdfPoint(safeLeft + safeW * 0.84, safeTop + safeH * 0.30),
+      PrintableTargetArtwork.sedanAndBrush => PdfPoint(safeLeft + safeW * 0.84, safeTop + safeH * 0.30),
+      PrintableTargetArtwork.buildingAndBrush => PdfPoint(safeLeft + safeW * 0.86, safeTop + safeH * 0.22),
+      PrintableTargetArtwork.building => PdfPoint(safeLeft + safeW * 0.86, safeTop + safeH * 0.22),
+    };
+
+    final hoseWidth = max(3.6, min(w, h) * 0.018);
+    return _PdfSceneLayout(engine: engine, hydrant: hydrant, wye: wye, fdc: fdc, nozzle: nozzle, target: target, hoseWidth: hoseWidth);
   }
 }
 
@@ -968,15 +1202,25 @@ class _PrintableSceneWidgetState extends State<PrintableSceneWidget> {
   Widget build(BuildContext context) {
     final targets = PrintableScenarioAssetPack.targetAssetsFor(widget.targetArtwork);
     final anyTargetOk = targets.any((t) => _targetOkByAsset[t] == true);
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        Positioned.fill(
-          child: CustomPaint(
-            painter: _PrintableSceneBackgroundPainter(
-              drawFallbackTruck: !_truckOk,
-              drawFallbackTarget: !anyTargetOk,
+
+    return LayoutBuilder(
+      builder: (context, c) {
+        final layout = _PrintableSceneLayout.forSize(size: c.biggest, targetArtwork: widget.targetArtwork);
+
+        Widget img(String path) => Image.asset(path, fit: BoxFit.contain, errorBuilder: (_, __, ___) => const SizedBox());
+
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            Positioned.fill(
+              child: CustomPaint(
+                painter: _PrintableSceneBackgroundPainter(
+                  drawFallbackTruck: !_truckOk,
+                  drawFallbackTarget: !anyTargetOk,
+                ),
+              ),
             ),
+<<<<<<< Updated upstream
           ),
         ),
         if (_truckOk)
@@ -993,25 +1237,37 @@ class _PrintableSceneWidgetState extends State<PrintableSceneWidget> {
             painter: _PrintableHosePainter(
               hoseLabel: widget.hoseLabel,
               flowLabel: widget.flowLabel,
+=======
+            if (_truckOk) Positioned.fromRect(rect: layout.truckRect, child: img(PrintableScenarioAssetPack.truck)),
+            ..._targetWidgetsWithLayout(targets, layout: layout),
+            Positioned.fill(
+              child: CustomPaint(
+                painter: _PrintableHosePainter(
+                  targetArtwork: widget.targetArtwork,
+                  hoseLabel: widget.hoseLabel,
+                  flowLabel: widget.flowLabel,
+                ),
+              ),
+>>>>>>> Stashed changes
             ),
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     );
   }
 
-  List<Widget> _targetWidgets(List<String> targets) {
-    Widget img(String path, {double? w, double? h}) {
+  List<Widget> _targetWidgetsWithLayout(List<String> targets, {required _PrintableSceneLayout layout}) {
+    Widget img(String path) {
       if (_targetOkByAsset[path] != true) return const SizedBox();
       return Image.asset(path, fit: BoxFit.contain, color: Colors.black, colorBlendMode: BlendMode.srcIn, errorBuilder: (_, __, ___) => const SizedBox());
     }
 
     if (targets.length == 1) {
-      return [Positioned(right: 6, top: 4, width: 40, height: 30, child: img(targets.first))];
+      return [Positioned.fromRect(rect: layout.primaryTargetRect, child: img(targets.first))];
     }
     return [
-      Positioned(right: 6, top: 4, width: 40, height: 30, child: img(targets[0])),
-      Positioned(right: 6, bottom: 6, width: 18, height: 18, child: img(targets[1])),
+      Positioned.fromRect(rect: layout.primaryTargetRect, child: img(targets[0])),
+      Positioned.fromRect(rect: layout.secondaryTargetRect, child: img(targets[1])),
     ];
   }
 }
@@ -1027,12 +1283,13 @@ class _PrintableSceneBackgroundPainter extends CustomPainter {
     final stroke = Paint()..color = Colors.black..style = PaintingStyle.stroke..strokeWidth = 1;
     final fill = Paint()..color = Colors.black.withValues(alpha: 0.06)..style = PaintingStyle.fill;
 
-    // Background / groundline.
-    canvas.drawLine(Offset(4, size.height - 10), Offset(size.width - 4, size.height - 10), stroke);
+    // Background / groundline (lighter + positioned so it sits behind engine wheels).
+    final groundY = size.height * 0.90;
+    canvas.drawLine(Offset(10, groundY), Offset(size.width - 10, groundY), stroke);
 
     // Fallback shapes ONLY if the asset image(s) are missing.
-    final truck = Rect.fromLTWH(10, size.height - 30, 40, 16);
-    final target = Rect.fromLTWH(size.width - 50, 10, 36, 22);
+    final truck = Rect.fromLTWH(size.width * 0.06, size.height * 0.66, size.width * 0.34, size.height * 0.22);
+    final target = Rect.fromLTWH(size.width * 0.62, size.height * 0.10, size.width * 0.30, size.height * 0.22);
 
     if (drawFallbackTruck) {
       canvas.drawRect(truck, stroke);
@@ -1064,6 +1321,7 @@ class _PrintableHosePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+<<<<<<< Updated upstream
     final stroke = Paint()..color = Colors.black..style = PaintingStyle.stroke..strokeWidth = 1;
     final truck = Rect.fromLTWH(10, size.height - 30, 40, 16);
     final target = Rect.fromLTWH(size.width - 50, 10, 36, 22);
@@ -1075,15 +1333,83 @@ class _PrintableHosePainter extends CustomPainter {
     canvas.drawPath(hose, stroke);
 
     canvas.drawRect(Rect.fromCenter(center: p2, width: 8, height: 4), stroke);
+=======
+    final layout = _PrintableSceneLayout.forSize(size: size, targetArtwork: targetArtwork);
 
+    final hoseShadow = Paint()
+      ..color = Colors.black.withValues(alpha: 0.30)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 10
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3.5);
+
+    final hoseOutline = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 9
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    final hoseFill = Paint()
+      ..color = const Color(0xFFF2F2F2)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 7.5
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    final markerStroke = Paint()..color = Colors.black..style = PaintingStyle.stroke..strokeWidth = 1.4;
+    final markerFill = Paint()..color = Colors.white..style = PaintingStyle.fill;
+
+    // Hose path: multi-anchor, multi-curve so it reads like a real routing.
+    final p0 = layout.engineAnchor;
+    final p1 = layout.hydrantAnchor;
+    final p2 = layout.wyeAnchor;
+    final p3 = layout.fdcAnchor;
+    final p4 = layout.nozzleAnchor;
+    final p5 = layout.targetAnchor;
+
+    final hosePath = Path()
+      ..moveTo(p0.dx, p0.dy)
+      ..cubicTo(p0.dx + (p1.dx - p0.dx) * 0.55, p0.dy, p1.dx, p1.dy + (p2.dy - p1.dy) * 0.25, p2.dx, p2.dy)
+      ..cubicTo(p2.dx + (p3.dx - p2.dx) * 0.35, p2.dy + (p3.dy - p2.dy) * 0.2, p3.dx - 10, p3.dy + 16, p3.dx, p3.dy)
+      ..cubicTo(p3.dx + 40, p3.dy - 30, p4.dx - 30, p4.dy + 10, p4.dx, p4.dy)
+      ..cubicTo(p4.dx + 28, p4.dy - 18, p5.dx - 26, p5.dy + 10, p5.dx, p5.dy);
+
+    canvas.drawPath(hosePath.shift(const Offset(1.5, 2.0)), hoseShadow);
+    canvas.drawPath(hosePath, hoseOutline);
+    canvas.drawPath(hosePath, hoseFill);
+>>>>>>> Stashed changes
+
+    void drawAnchor(Offset p, String label) {
+      canvas.drawCircle(p, 4.2, markerFill);
+      canvas.drawCircle(p, 4.2, markerStroke);
+      final tp = TextPainter(textDirection: TextDirection.ltr);
+      tp.text = TextSpan(text: label, style: const TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.w800));
+      tp.layout(maxWidth: size.width);
+      final offset = Offset((p.dx + 8).clamp(4, size.width - tp.width - 4), (p.dy - 14).clamp(4, size.height - tp.height - 4));
+      tp.paint(canvas, offset);
+    }
+
+    drawAnchor(p0, 'Engine');
+    drawAnchor(p1, 'Hydrant');
+    drawAnchor(p2, 'Wye');
+    drawAnchor(p3, 'FDC');
+    drawAnchor(p4, 'Nozzle');
+
+    // Target marker.
+    canvas.drawRect(Rect.fromCenter(center: p5, width: 16, height: 10), markerFill);
+    canvas.drawRect(Rect.fromCenter(center: p5, width: 16, height: 10), markerStroke);
+
+    // Overlay labels (hose + flow) stay pinned at top for readability.
     final textPainter = TextPainter(textDirection: TextDirection.ltr);
-    textPainter.text = TextSpan(text: hoseLabel, style: const TextStyle(color: Colors.black, fontSize: 7, fontWeight: FontWeight.w700));
-    textPainter.layout(maxWidth: size.width - 8);
-    textPainter.paint(canvas, const Offset(4, 2));
+    textPainter.text = TextSpan(text: hoseLabel, style: const TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.w900));
+    textPainter.layout(maxWidth: size.width - 16);
+    textPainter.paint(canvas, const Offset(10, 8));
 
-    textPainter.text = TextSpan(text: flowLabel, style: const TextStyle(color: Colors.black, fontSize: 7, fontWeight: FontWeight.w700));
-    textPainter.layout(maxWidth: size.width - 8);
-    textPainter.paint(canvas, Offset(size.width - 4 - textPainter.width, 2));
+    textPainter.text = TextSpan(text: flowLabel, style: const TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.w900));
+    textPainter.layout(maxWidth: size.width - 16);
+    textPainter.paint(canvas, Offset(size.width - 10 - textPainter.width, 8));
   }
 
   @override
@@ -1757,7 +2083,7 @@ class _PreviewCard extends StatelessWidget {
     return _CardShell(
       titleIcon: Icons.preview_outlined,
       title: 'Preview',
-      subtitle: 'Phone-friendly preview of what will print on letter paper.',
+      subtitle: 'Phone-friendly preview of what will print on letter paper (1 scenario per page).',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -1787,24 +2113,22 @@ class _PreviewCard extends StatelessWidget {
           const SizedBox(height: 10),
           _SecondaryActionButton(label: printing ? 'Preparing PDF…' : 'Print / Save PDF', icon: Icons.picture_as_pdf_outlined, onTap: onPrint),
           const SizedBox(height: 12),
-          AspectRatio(
-            aspectRatio: 8.5 / 11.0,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: Colors.black.withValues(alpha: 0.22)),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(18),
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-                  child: DefaultTextStyle(
-                    style: (t.bodySmall ?? const TextStyle(fontSize: 12)).copyWith(color: Colors.black, height: 1.25),
-                    child: previewMode == _PreviewMode.worksheet
-                        ? _WorksheetPagePreview(worksheetTitle: worksheetTitle, department: department, scenarios: scenarios)
-                        : _AnswerKeyPagePreview(worksheetTitle: worksheetTitle, department: department, scenarios: scenarios),
-                  ),
+          Container(
+            height: 540,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: Colors.black.withValues(alpha: 0.22)),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+                child: DefaultTextStyle(
+                  style: (t.bodySmall ?? const TextStyle(fontSize: 12)).copyWith(color: Colors.black, height: 1.25),
+                  child: previewMode == _PreviewMode.worksheet
+                      ? _WorksheetMultiPagePreview(worksheetTitle: worksheetTitle, department: department, scenarios: scenarios)
+                      : _AnswerKeyPagePreview(worksheetTitle: worksheetTitle, department: department, scenarios: scenarios),
                 ),
               ),
             ),
@@ -1819,8 +2143,8 @@ class _PreviewCard extends StatelessWidget {
   }
 }
 
-class _WorksheetPagePreview extends StatelessWidget {
-  const _WorksheetPagePreview({required this.worksheetTitle, required this.department, required this.scenarios});
+class _WorksheetMultiPagePreview extends StatelessWidget {
+  const _WorksheetMultiPagePreview({required this.worksheetTitle, required this.department, required this.scenarios});
   final String worksheetTitle;
   final String department;
   final List<PrintablePumpScenario> scenarios;
@@ -1830,14 +2154,263 @@ class _WorksheetPagePreview extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _PreviewHeader(title: worksheetTitle, department: department),
-        const SizedBox(height: 10),
         for (var i = 0; i < scenarios.length; i++) ...[
-          _PreviewScenarioRow(index: i + 1, scenario: scenarios[i]),
-          if (i != scenarios.length - 1) const SizedBox(height: 8),
+          _PrintablePageFrame(
+            child: _WorksheetScenarioPagePreview(
+              worksheetTitle: worksheetTitle,
+              department: department,
+              scenario: scenarios[i],
+              index: i + 1,
+              total: scenarios.length,
+            ),
+          ),
+          if (i != scenarios.length - 1) const SizedBox(height: 16),
         ],
-        const SizedBox(height: 10),
-        const _PreviewFooter(),
+      ],
+    );
+  }
+}
+
+class _PrintablePageFrame extends StatelessWidget {
+  const _PrintablePageFrame({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, c) {
+        final w = c.maxWidth;
+        final h = w * (11 / 8.5);
+        return SizedBox(
+          width: w,
+          height: h,
+          child: DecoratedBox(
+            decoration: BoxDecoration(border: Border.all(color: Colors.black, width: 1)),
+            child: Padding(padding: const EdgeInsets.fromLTRB(12, 12, 12, 12), child: child),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _WorksheetScenarioPagePreview extends StatelessWidget {
+  const _WorksheetScenarioPagePreview({
+    required this.worksheetTitle,
+    required this.department,
+    required this.scenario,
+    required this.index,
+    required this.total,
+  });
+
+  final String worksheetTitle;
+  final String department;
+  final PrintablePumpScenario scenario;
+  final int index;
+  final int total;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    return LayoutBuilder(
+      builder: (context, c) {
+        final sceneH = c.maxHeight * 0.50;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _PreviewHeader(title: worksheetTitle, department: department),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(child: Text('$index. ${scenario.title}', style: (t.bodyLarge ?? const TextStyle(fontSize: 16)).copyWith(fontWeight: FontWeight.w900, color: Colors.black))),
+                Text(_typeLabel(scenario.scenarioType), style: (t.labelSmall ?? const TextStyle(fontSize: 11)).copyWith(color: Colors.black87, fontWeight: FontWeight.w800)),
+              ],
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              height: sceneH,
+              child: DecoratedBox(
+                decoration: BoxDecoration(border: Border.all(color: Colors.black, width: 1)),
+                child: PrintableSceneWidget(
+                  targetArtwork: scenario.targetArtwork,
+                  hoseLabel: '${scenario.hoseDiameterLabel} • ${scenario.lengthFt} ft',
+                  flowLabel: '${scenario.gpm} GPM',
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: _PreviewBox(
+                    title: 'Given / Reference',
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(scenario.problem, style: (t.labelSmall ?? const TextStyle(fontSize: 11)).copyWith(color: Colors.black87, height: 1.25)),
+                        const SizedBox(height: 6),
+                        _FactsGrid(scenario: scenario),
+                        const SizedBox(height: 6),
+                        Text('PP = NP + FL ± Elev + App', style: (t.labelSmall ?? const TextStyle(fontSize: 11)).copyWith(color: Colors.black, fontWeight: FontWeight.w900)),
+                        Text('FL = C × (GPM/100)² × L/100', style: (t.labelSmall ?? const TextStyle(fontSize: 11)).copyWith(color: Colors.black87)),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                const Expanded(child: _PreviewQuestionsBox()),
+              ],
+            ),
+            const SizedBox(height: 10),
+            const _PreviewShowWorkBox(),
+            const Spacer(),
+            Row(
+              children: [
+                const Expanded(child: _PreviewFooter()),
+                Text('Page $index / $total', style: (t.labelSmall ?? const TextStyle(fontSize: 11)).copyWith(color: Colors.black87)),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _PreviewBox extends StatelessWidget {
+  const _PreviewBox({required this.title, required this.child});
+
+  final String title;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    return Container(
+      padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
+      decoration: BoxDecoration(border: Border.all(color: Colors.black, width: 1)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(title.toUpperCase(), style: (t.labelSmall ?? const TextStyle(fontSize: 11)).copyWith(color: Colors.black, fontWeight: FontWeight.w900)),
+          const SizedBox(height: 6),
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+class _PreviewQuestionsBox extends StatelessWidget {
+  const _PreviewQuestionsBox();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    Widget q(String label) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 6),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Expanded(child: Text(label, style: (t.labelSmall ?? const TextStyle(fontSize: 11)).copyWith(color: Colors.black))),
+            const SizedBox(width: 8),
+            const Expanded(child: Divider(height: 12, thickness: 1, color: Colors.black)),
+          ],
+        ),
+      );
+    }
+
+    return _PreviewBox(
+      title: 'Questions',
+      child: Column(
+        children: [
+          q('1) Nozzle pressure (NP)'),
+          q('2) Friction loss (FL)'),
+          q('3) Elevation PSI (±)'),
+          q('4) Appliance loss (App)'),
+          q('5) Pump pressure (raw)'),
+          q('6) Pump pressure (rounded)'),
+          q('7) Hose diameter & length'),
+        ],
+      ),
+    );
+  }
+}
+
+class _PreviewShowWorkBox extends StatelessWidget {
+  const _PreviewShowWorkBox();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    return _PreviewBox(
+      title: 'Show Your Work',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text('Final PDP (PP) = ________ PSI (round to nearest 5 PSI)', style: (t.labelSmall ?? const TextStyle(fontSize: 11)).copyWith(color: Colors.black, fontWeight: FontWeight.w900)),
+          const SizedBox(height: 6),
+          Container(
+            height: 84,
+            decoration: BoxDecoration(border: Border.all(color: Colors.black, width: 0.8)),
+            child: CustomPaint(painter: _WorkAreaLinesPainter()),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _WorkAreaLinesPainter extends CustomPainter {
+  const _WorkAreaLinesPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final p = Paint()..color = Colors.black.withValues(alpha: 0.14)..strokeWidth = 1;
+    const top = 14.0;
+    const gap = 16.0;
+    for (var y = top; y < size.height - 6; y += gap) {
+      canvas.drawLine(Offset(8, y), Offset(size.width - 8, y), p);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _WorkLines extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    Widget line(String label) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 6),
+        child: Row(
+          children: [
+            SizedBox(width: 74, child: Text('$label:', style: const TextStyle(fontWeight: FontWeight.w900, color: Colors.black))),
+            const Expanded(child: Divider(height: 14, thickness: 1, color: Colors.black)),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        line('NP'),
+        line('FL'),
+        line('Elevation'),
+        line('Appliance'),
+        const SizedBox(height: 2),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 6),
+          child: Row(
+            children: [
+              const SizedBox(width: 74, child: Text('Final PP:', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black))),
+              const Expanded(child: Divider(height: 16, thickness: 1.4, color: Colors.black)),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -1924,88 +2497,26 @@ class _PreviewHeader extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Image.asset(
+                _PrintableScenariosScreenState._brandBannerAsset,
+                height: 18,
+                fit: BoxFit.contain,
+                errorBuilder: (_, __, ___) => const SizedBox(width: 0, height: 18),
+              ),
+              const SizedBox(width: 10),
               Expanded(child: Text(title, style: (t.bodyMedium ?? const TextStyle(fontSize: 14)).copyWith(fontWeight: FontWeight.w900, color: Colors.black))),
               const SizedBox(width: 10),
-              Expanded(child: Text(department, textAlign: TextAlign.right, style: (t.bodySmall ?? const TextStyle(fontSize: 12)).copyWith(fontWeight: FontWeight.w800, color: Colors.black))),
-            ],
-          ),
-          const SizedBox(height: 2),
-          Row(
-            children: [
-              Expanded(child: Text('Generated by FirePumpSim', style: (t.labelSmall ?? const TextStyle(fontSize: 11)).copyWith(color: Colors.black87))),
-              Text('Date: __________', style: (t.labelSmall ?? const TextStyle(fontSize: 11)).copyWith(color: Colors.black87)),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _PreviewScenarioRow extends StatelessWidget {
-  const _PreviewScenarioRow({required this.index, required this.scenario});
-  final int index;
-  final PrintablePumpScenario scenario;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = Theme.of(context).textTheme;
-    return Container(
-      padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
-      decoration: BoxDecoration(border: Border.all(color: Colors.black, width: 1)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            children: [
-              Expanded(child: Text('$index. ${scenario.title}', style: (t.bodySmall ?? const TextStyle(fontSize: 12)).copyWith(fontWeight: FontWeight.w900, color: Colors.black))),
-              Text(_typeLabel(scenario.scenarioType), style: (t.labelSmall ?? const TextStyle(fontSize: 11)).copyWith(color: Colors.black87)),
+              Text(department, style: (t.bodySmall ?? const TextStyle(fontSize: 12)).copyWith(fontWeight: FontWeight.w800, color: Colors.black)),
             ],
           ),
           const SizedBox(height: 6),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                width: 118,
-                height: 64,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(border: Border.all(color: Colors.black, width: 0.8)),
-                  child: PrintableSceneWidget(
-                    targetArtwork: scenario.targetArtwork,
-                    hoseLabel: '${scenario.hoseDiameterLabel} • ${scenario.lengthFt} ft',
-                    flowLabel: '${scenario.gpm} GPM',
-                  ),
-                ),
-              ),
+              Expanded(child: Text('Name: ___________________________', style: (t.labelSmall ?? const TextStyle(fontSize: 11)).copyWith(color: Colors.black87, fontWeight: FontWeight.w700))),
               const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(scenario.problem, style: (t.labelSmall ?? const TextStyle(fontSize: 11)).copyWith(color: Colors.black87, height: 1.25)),
-                    const SizedBox(height: 6),
-                    _FactsGrid(scenario: scenario),
-                    const SizedBox(height: 6),
-                    Text('PP = NP + FL ± Elevation + Appliance', style: (t.labelSmall ?? const TextStyle(fontSize: 11)).copyWith(fontWeight: FontWeight.w900, color: Colors.black)),
-                    Text('FL = C × (GPM/100)² × Length/100', style: (t.labelSmall ?? const TextStyle(fontSize: 11)).copyWith(color: Colors.black87)),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        Expanded(child: Text('NP: ______', style: (t.labelSmall ?? const TextStyle(fontSize: 11)).copyWith(color: Colors.black))),
-                        Expanded(child: Text('FL: ______', style: (t.labelSmall ?? const TextStyle(fontSize: 11)).copyWith(color: Colors.black))),
-                      ],
-                    ),
-                    const SizedBox(height: 2),
-                    Row(
-                      children: [
-                        Expanded(child: Text('Elev/App: ______', style: (t.labelSmall ?? const TextStyle(fontSize: 11)).copyWith(color: Colors.black))),
-                        Expanded(child: Text('Final PP: ______', style: (t.labelSmall ?? const TextStyle(fontSize: 11)).copyWith(color: Colors.black))),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+              Text('Date: __________', style: (t.labelSmall ?? const TextStyle(fontSize: 11)).copyWith(color: Colors.black87, fontWeight: FontWeight.w700)),
+              const SizedBox(width: 10),
+              Text('Score: ______ / ______', style: (t.labelSmall ?? const TextStyle(fontSize: 11)).copyWith(color: Colors.black87, fontWeight: FontWeight.w700)),
             ],
           ),
         ],
@@ -2013,6 +2524,8 @@ class _PreviewScenarioRow extends StatelessWidget {
     );
   }
 }
+
+// _PreviewScenarioRow removed in favor of full-page preview.
 
 class _FactsGrid extends StatelessWidget {
   const _FactsGrid({required this.scenario});
@@ -2096,6 +2609,120 @@ class _CardShell extends StatelessWidget {
             child,
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _PrintablePackTile extends StatefulWidget {
+  const _PrintablePackTile({required this.pack, required this.selected, required this.unlocked, required this.onTap});
+
+  final PrintablePack pack;
+  final bool selected;
+  final bool unlocked;
+  final VoidCallback onTap;
+
+  @override
+  State<_PrintablePackTile> createState() => _PrintablePackTileState();
+}
+
+class _PrintablePackTileState extends State<_PrintablePackTile> {
+  bool _pressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final accent = widget.unlocked ? FirePumpSimColors.printGreen : FirePumpSimColors.steel;
+    final badgeText = widget.unlocked ? (widget.pack.isFree ? 'INCLUDED' : 'UNLOCKED') : 'LOCKED';
+    return GestureDetector(
+      onTap: widget.onTap,
+      onTapDown: (_) => setState(() => _pressed = true),
+      onTapCancel: () => setState(() => _pressed = false),
+      onTapUp: (_) => setState(() => _pressed = false),
+      child: AnimatedScale(
+        duration: const Duration(milliseconds: 120),
+        curve: Curves.easeOutCubic,
+        scale: _pressed ? 0.99 : 1,
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: FirePumpSimColors.charcoal3.withValues(alpha: widget.selected ? 0.65 : 0.45),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: widget.selected ? FirePumpSimColors.red : accent.withValues(alpha: 0.55), width: widget.selected ? 1.3 : 1),
+          ),
+          child: Row(
+            children: [
+              Container(
+                height: 40,
+                width: 40,
+                decoration: BoxDecoration(
+                  color: accent.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: accent.withValues(alpha: 0.35)),
+                ),
+                child: Center(child: Icon(widget.unlocked ? Icons.description_outlined : Icons.lock_outline, color: widget.unlocked ? FirePumpSimColors.textHigh : FirePumpSimColors.textMed, size: 18)),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(child: Text(widget.pack.title, style: (t.bodyMedium ?? const TextStyle(fontSize: 14)).copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900))),
+                        const SizedBox(width: 10),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(color: accent.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(999), border: Border.all(color: accent.withValues(alpha: 0.55))),
+                          child: Text(badgeText, style: (t.labelSmall ?? const TextStyle(fontSize: 11)).copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900, letterSpacing: 0.2)),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(widget.pack.description, style: (t.bodySmall ?? const TextStyle(fontSize: 12)).copyWith(color: FirePumpSimColors.textMed, height: 1.35)),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        _PrintablePill(icon: Icons.picture_as_pdf_outlined, label: '${widget.pack.pageCount} pages'),
+                        const _PrintablePill(icon: Icons.checklist, label: 'Questions + work'),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PrintablePill extends StatelessWidget {
+  const _PrintablePill({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: FirePumpSimColors.charcoal2,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.65)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: FirePumpSimColors.textMed),
+          const SizedBox(width: 6),
+          Text(label, style: (t.labelSmall ?? const TextStyle(fontSize: 11)).copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
+        ],
       ),
     );
   }

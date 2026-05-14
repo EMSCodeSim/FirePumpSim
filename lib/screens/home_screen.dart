@@ -52,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final double heroHeight = (screenWidth / (isTight ? 1.65 : 1.58)).clamp(240.0, 340.0);
     final double heroTopInset = isTight ? 10 : 12;
     final double cardHeight = isTight ? 62 : 68;
-    const double gap = 7;
+    const double cardGap = 12;
 
     return Scaffold(
       backgroundColor: FirePumpSimColors.charcoal,
@@ -67,15 +67,13 @@ class _HomeScreenState extends State<HomeScreen> {
             // Edge-to-edge branded header: no side padding, no outer card styling.
             _HeroHeader(height: heroHeight, topInset: heroTopInset),
             Expanded(
-              child: Padding(
-                // Bring the menu cards closer to the hero banner.
-                padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.xs, AppSpacing.md, 0),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(AppSpacing.md, 16, AppSpacing.md, 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const SizedBox(height: 2),
                     const _SectionLabel('TRAINING'),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 10),
                     _MainMenuCard(
                       height: cardHeight,
                       title: 'Practice Scenarios',
@@ -83,20 +81,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       icon: Icons.safety_check,
                       onTap: () => context.go(AppRoutes.practiceScenarios),
                     ),
-                    const SizedBox(height: gap),
+                    const SizedBox(height: cardGap),
                     _MainMenuCard(
                       height: cardHeight,
                       title: 'Daily Challenge',
                       description: _dailyLoaded
                           ? (_dailyStats.currentStreak > 0
                               ? 'One question per day • Streak ${_dailyStats.currentStreak}d'
-                              : 'One question per day (all bundled scenarios)')
+                              : 'One question per day')
                           : 'Loading…',
                       icon: Icons.calendar_today,
                       indicator: const _TodayPill(),
                       onTap: () => context.go(AppRoutes.dailyChallenge),
                     ),
-                    const SizedBox(height: gap),
+                    const SizedBox(height: cardGap),
                     _MainMenuCard(
                       height: cardHeight,
                       title: 'Scenario Library',
@@ -104,9 +102,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       icon: Icons.auto_stories,
                       onTap: () => context.go(AppRoutes.scenarioLibrary),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 20),
                     const _SectionLabel('TOOLS'),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 10),
                     _MainMenuCard(
                       height: cardHeight,
                       title: 'Printable Scenarios',
@@ -114,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       icon: Icons.print,
                       onTap: () => context.go(AppRoutes.printableScenarios),
                     ),
-                    const SizedBox(height: gap),
+                    const SizedBox(height: cardGap),
                     _MainMenuCard(
                       height: cardHeight,
                       title: 'How To',
@@ -122,6 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       icon: Icons.school,
                       onTap: () => context.go(AppRoutes.howTo),
                     ),
+                    const SizedBox(height: AppSpacing.lg),
                   ],
                 ),
               ),
