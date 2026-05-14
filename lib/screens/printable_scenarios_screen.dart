@@ -20,6 +20,7 @@ class PrintableScenarioAssetPack {
   static const sedan = 'assets/printable/sedan.png';
   static const hydrant = 'assets/printable/hydrant.png';
   static const bush = 'assets/printable/bush.png';
+  static const starterScenario001 = 'assets/printable/FirePumpSim_printable_scenario_001.png';
 
   static List<String> targetAssetsFor(PrintableTargetArtwork artwork) {
     return switch (artwork) {
@@ -365,6 +366,15 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.md),
               sliver: SliverToBoxAdapter(
+                child: _StarterPrintablePageCard(
+                  printing: _printing,
+                  onPrint: _printing ? null : _handlePrintStarterScenario001,
+                ),
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.md),
+              sliver: SliverToBoxAdapter(
                 child: _ModeSegmentedControl(
                   mode: _mode,
                   onChanged: (m) => setState(() => _mode = m),
@@ -507,6 +517,34 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
     } catch (e) {
       debugPrint('Print/Save PDF failed: $e');
       _toast('Unable to print / save PDF on this device.');
+    } finally {
+      if (mounted) setState(() => _printing = false);
+    }
+  }
+
+  Future<void> _handlePrintStarterScenario001() async {
+    setState(() => _printing = true);
+    try {
+      final imageData = await rootBundle.load(PrintableScenarioAssetPack.starterScenario001);
+      final image = pw.MemoryImage(imageData.buffer.asUint8List());
+      final doc = pw.Document();
+      doc.addPage(
+        pw.Page(
+          pageFormat: PdfPageFormat.letter,
+          margin: const pw.EdgeInsets.all(18),
+          build: (_) => pw.Center(
+            child: pw.Image(image, fit: pw.BoxFit.contain),
+          ),
+        ),
+      );
+      final bytes = await doc.save();
+      await pr.Printing.layoutPdf(
+        name: 'FirePumpSim Printable Scenario 001',
+        onLayout: (format) async => bytes,
+      );
+    } catch (e) {
+      debugPrint('Printable Scenario 001 failed: $e');
+      _toast('Unable to open Printable Scenario 001. Check that assets/printable/FirePumpSim_printable_scenario_001.png exists.');
     } finally {
       if (mounted) setState(() => _printing = false);
     }
@@ -680,7 +718,6 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
                           painter: (PdfGraphics canvas, PdfPoint size) => _pdfPaintScene(
                             canvas,
                             size,
-                            targetArtwork: scenario.targetArtwork,
                             hoseLabel: '${scenario.hoseDiameterLabel} • ${scenario.lengthFt} ft',
                             flowLabel: '${scenario.gpm} GPM',
                           ),
@@ -799,7 +836,6 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
   void _pdfPaintScene(
     PdfGraphics canvas,
     PdfPoint size, {
-    required PrintableTargetArtwork targetArtwork,
     required String hoseLabel,
     required String flowLabel,
   }) {
@@ -807,44 +843,25 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
     final h = size.y;
 
     final stroke = PdfColor.fromInt(0xFF000000);
-    final shadow = PdfColor.fromInt(0xFFFFFFFF);
+    final faint = PdfColor.fromInt(0xFFEEEEEE);
 
-    // Match the exact artwork placement used in the preview/PDF Stack:
-    // truck image = left 4, bottom 4, width 44, height 26
-    // primary target image = right 4, top 4, width 40, height 30
-    // This keeps the drawn hose physically connected to the engine and scene target.
-    final start = PdfPoint(48, h - 17); // engine discharge / pump panel
-    final c1 = PdfPoint(w * 0.35, h * 0.78);
-    final c2 = PdfPoint(w * 0.63, h * 0.43);
-    final end = PdfPoint(w - 44, 24); // fire/target side of artwork
-
-    // Draw a light underlay first so the hose remains visible over dark artwork.
-    canvas
-      ..setColor(shadow)
-      ..setLineWidth(2.2)
-      ..moveTo(start.x, start.y)
-      ..lineTo(c1.x, c1.y)
-      ..lineTo(c2.x, c2.y)
-      ..lineTo(end.x, end.y)
-      ..strokePath();
-
+    // Hose path.
+    final truckAnchor = PdfPoint(50, h - 26);
+    final targetAnchor = PdfPoint(w - 44, 28);
+    final control = PdfPoint(w * 0.58, h * 0.55);
     canvas
       ..setColor(stroke)
-      ..setLineWidth(1.1)
-      ..moveTo(start.x, start.y)
-      ..lineTo(c1.x, c1.y)
-      ..lineTo(c2.x, c2.y)
-      ..lineTo(end.x, end.y)
+      ..setLineWidth(1.0)
+      ..moveTo(truckAnchor.x, truckAnchor.y)
+      ..lineTo(control.x, control.y)
+      ..lineTo(targetAnchor.x, targetAnchor.y)
       ..strokePath();
 
-    // Engine coupling and nozzle/target marker.
+    // Nozzle at the end of the line.
     canvas
-      ..setColor(stroke)
-      ..drawRect(start.x - 2.5, start.y - 2.5, 5, 5)
+      ..drawRect(targetAnchor.x - 4, targetAnchor.y - 2, 8, 4)
       ..strokePath();
-    canvas
-      ..drawRect(end.x - 4, end.y - 2, 8, 4)
-      ..strokePath();
+
   }
 
   void _pdfPaintSceneBackground(
@@ -968,13 +985,12 @@ class _PrintableSceneWidgetState extends State<PrintableSceneWidget> {
             bottom: 4,
             width: 42,
             height: 26,
-            child: Image.asset(PrintableScenarioAssetPack.truck, fit: BoxFit.contain, errorBuilder: (_, __, ___) => const SizedBox()),
+            child: Image.asset(PrintableScenarioAssetPack.truck, fit: BoxFit.contain, color: Colors.black, colorBlendMode: BlendMode.srcIn),
           ),
         ..._targetWidgets(targets),
         Positioned.fill(
           child: CustomPaint(
             painter: _PrintableHosePainter(
-              targetArtwork: widget.targetArtwork,
               hoseLabel: widget.hoseLabel,
               flowLabel: widget.flowLabel,
             ),
@@ -987,7 +1003,7 @@ class _PrintableSceneWidgetState extends State<PrintableSceneWidget> {
   List<Widget> _targetWidgets(List<String> targets) {
     Widget img(String path, {double? w, double? h}) {
       if (_targetOkByAsset[path] != true) return const SizedBox();
-      return Image.asset(path, fit: BoxFit.contain, errorBuilder: (_, __, ___) => const SizedBox());
+      return Image.asset(path, fit: BoxFit.contain, color: Colors.black, colorBlendMode: BlendMode.srcIn, errorBuilder: (_, __, ___) => const SizedBox());
     }
 
     if (targets.length == 1) {
@@ -1039,53 +1055,26 @@ class _PrintableSceneBackgroundPainter extends CustomPainter {
 
 class _PrintableHosePainter extends CustomPainter {
   const _PrintableHosePainter({
-    required this.targetArtwork,
     required this.hoseLabel,
     required this.flowLabel,
   });
 
-  final PrintableTargetArtwork targetArtwork;
   final String hoseLabel;
   final String flowLabel;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final hoseUnderlay = Paint()
-      ..color = Colors.white.withValues(alpha: 0.82)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.0
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-    final hoseStroke = Paint()
-      ..color = Colors.black
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.6
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-    final marker = Paint()
-      ..color = Colors.black
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
+    final stroke = Paint()..color = Colors.black..style = PaintingStyle.stroke..strokeWidth = 1;
+    final truck = Rect.fromLTWH(10, size.height - 30, 40, 16);
+    final target = Rect.fromLTWH(size.width - 50, 10, 36, 22);
 
-    // Match the actual asset placement used by PrintableSceneWidget:
-    // truck image = left 4, bottom 4, width 42, height 26
-    // primary fire/target image = right 6, top 4, width 40, height 30
-    // The old hose used fallback-box coordinates, so it could float away from the engine.
-    final start = Offset(46, size.height - 17); // engine discharge / pump panel
-    final end = Offset(size.width - 45, 25); // target/fire side of the scene
-    final c1 = Offset(size.width * 0.34, size.height * 0.80);
-    final c2 = Offset(size.width * 0.63, size.height * 0.42);
+    final p0 = Offset(truck.right, truck.top);
+    final p2 = Offset(target.left, target.bottom);
+    final c1 = Offset(size.width * 0.55, size.height * 0.55);
+    final hose = Path()..moveTo(p0.dx, p0.dy)..quadraticBezierTo(c1.dx, c1.dy, p2.dx, p2.dy);
+    canvas.drawPath(hose, stroke);
 
-    final hose = Path()
-      ..moveTo(start.dx, start.dy)
-      ..cubicTo(c1.dx, c1.dy, c2.dx, c2.dy, end.dx, end.dy);
-
-    canvas.drawPath(hose, hoseUnderlay);
-    canvas.drawPath(hose, hoseStroke);
-
-    // Small coupling/nozzle markers make the connection points obvious on phone and print preview.
-    canvas.drawCircle(start, 2.6, marker);
-    canvas.drawRect(Rect.fromCenter(center: end, width: 8, height: 4), marker);
+    canvas.drawRect(Rect.fromCenter(center: p2, width: 8, height: 4), stroke);
 
     final textPainter = TextPainter(textDirection: TextDirection.ltr);
     textPainter.text = TextSpan(text: hoseLabel, style: const TextStyle(color: Colors.black, fontSize: 7, fontWeight: FontWeight.w700));
@@ -1099,7 +1088,7 @@ class _PrintableHosePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _PrintableHosePainter oldDelegate) {
-    return oldDelegate.targetArtwork != targetArtwork || oldDelegate.hoseLabel != hoseLabel || oldDelegate.flowLabel != flowLabel;
+    return oldDelegate.hoseLabel != hoseLabel || oldDelegate.flowLabel != flowLabel;
   }
 }
 
@@ -1167,6 +1156,74 @@ class _BackButtonState extends State<_BackButton> {
           ),
           child: const Icon(Icons.arrow_back, color: FirePumpSimColors.textHigh, size: 20),
         ),
+      ),
+    );
+  }
+}
+
+
+class _StarterPrintablePageCard extends StatelessWidget {
+  const _StarterPrintablePageCard({required this.printing, required this.onPrint});
+
+  final bool printing;
+  final VoidCallback? onPrint;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    return _CardShell(
+      titleIcon: Icons.article_outlined,
+      title: 'Free Printable Starter Pack',
+      subtitle: 'Page 1 — FirePumpSim printable scenario 001',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(18),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.55)),
+              ),
+              child: AspectRatio(
+                aspectRatio: 8.5 / 11,
+                child: Image.asset(
+                  PrintableScenarioAssetPack.starterScenario001,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(18),
+                        child: Text(
+                          'Missing image asset:\n${PrintableScenarioAssetPack.starterScenario001}',
+                          textAlign: TextAlign.center,
+                          style: (t.bodySmall ?? const TextStyle(fontSize: 12)).copyWith(
+                            color: FirePumpSimColors.textMed,
+                            height: 1.35,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _SecondaryActionButton(
+            label: printing ? 'Preparing printable…' : 'View / Print Page 1',
+            icon: Icons.print_outlined,
+            onTap: onPrint,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Add future printable pages here as separate branded PNG worksheets, then wire each page to its own preview/print button or pack list.',
+            style: (t.bodySmall ?? const TextStyle(fontSize: 12)).copyWith(
+              color: FirePumpSimColors.textMed,
+              height: 1.35,
+            ),
+          ),
+        ],
       ),
     );
   }
