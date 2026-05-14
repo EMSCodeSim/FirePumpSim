@@ -1033,7 +1033,11 @@ class _InfoView extends StatelessWidget {
     }
 
     // Remove explicit pressure answer language while keeping setup type.
-    s = s.replaceAll(RegExp(r'\b(standpipe\/fdc|fdc|wye|siamese)\s+loss\b', caseSensitive: false), (m) => m.group(1) ?? '');
+    // (Need replaceAllMapped because replacement depends on match.)
+    s = s.replaceAllMapped(
+      RegExp(r'\b(standpipe\/fdc|fdc|wye|siamese)\s+loss\b', caseSensitive: false),
+      (m) => m.group(1) ?? '',
+    );
     s = s.replaceAll(RegExp(r'\bappliance loss\b', caseSensitive: false), '').trim();
     s = s.replaceAll(RegExp(r'\bsystem loss\b', caseSensitive: false), '').trim();
     s = s.replaceAll(RegExp(r'\s{2,}'), ' ').trim();
@@ -1154,6 +1158,83 @@ class _InfoView extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _InfoRow {
+  const _InfoRow({required this.label, required this.value});
+
+  final String label;
+  final String value;
+}
+
+class _InfoGrid extends StatelessWidget {
+  const _InfoGrid({required this.rows});
+
+  final List<_InfoRow> rows;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth >= 520;
+        final crossAxisCount = isWide ? 2 : 1;
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: rows.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            crossAxisSpacing: AppSpacing.md,
+            mainAxisSpacing: AppSpacing.md,
+            childAspectRatio: isWide ? 3.2 : 3.8,
+          ),
+          itemBuilder: (context, index) {
+            final row = rows[index];
+            return Container(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                color: FirePumpSimColors.charcoal3,
+                borderRadius: BorderRadius.circular(AppSpacing.md),
+                border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.16)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    row.label.toUpperCase(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: textTheme.labelSmall?.copyWith(
+                      color: FirePumpSimColors.textMed,
+                      letterSpacing: 0.6,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        row.value,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: FirePumpSimColors.textHigh,
+                          height: 1.35,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
