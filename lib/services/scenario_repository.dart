@@ -119,8 +119,9 @@ class ScenarioRepository {
         }
       }
 
-      if (!manifestOnly) _cachedScenarios = scenarios;
-      return scenarios;
+      final dedupedScenarios = _dedupeScenariosById(scenarios);
+      if (!manifestOnly) _cachedScenarios = dedupedScenarios;
+      return dedupedScenarios;
     } catch (e) {
       debugPrint('Failed to load scenarios: $e');
       if (!manifestOnly) _cachedScenarios = const [];
@@ -157,7 +158,7 @@ class ScenarioRepository {
           debugPrint('Failed to load scenario file $assetPath: $e');
         }
       }
-      return scenarios;
+      return _dedupeScenariosById(scenarios);
     } catch (e) {
       debugPrint('Failed to load scenarios from explicit file list: $e');
       return const <PracticeScenario>[];
@@ -224,6 +225,22 @@ class ScenarioRepository {
   Future<List<PlayableScenarioProblem>> loadPlayableProblemsFromScenarioFiles(List<String> files) async {
     final scenarios = await loadScenariosFromFiles(files);
     return _flattenPlayableFromScenarios(scenarios);
+  }
+
+  List<PracticeScenario> _dedupeScenariosById(List<PracticeScenario> scenarios) {
+    final seen = <String>{};
+    final out = <PracticeScenario>[];
+    for (final scenario in scenarios) {
+      final key = scenario.id.trim().toLowerCase();
+      if (key.isEmpty) continue;
+      if (seen.contains(key)) {
+        debugPrint('Skipping duplicate scenario id: ${scenario.id}');
+        continue;
+      }
+      seen.add(key);
+      out.add(scenario);
+    }
+    return out;
   }
 
   List<PlayableScenarioProblem> _flattenPlayableFromScenarios(List<PracticeScenario> scenarios) {
