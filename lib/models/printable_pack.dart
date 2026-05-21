@@ -2,10 +2,10 @@ import 'dart:math';
 
 import 'package:firepumpsim/models/printable_pump_scenario.dart';
 
-/// A purchasable/unlockable pack of branded printable training pages.
+/// A pack of branded printable training pages.
 ///
-/// This is intentionally local/offline-only. Purchase/unlock state is stored
-/// via SharedPreferences in [PrintablePackStorage].
+/// Only the free starter pack is active in this build. Future paid printable
+/// packs can be added after the content is created.
 class PrintablePack {
   const PrintablePack({
     required this.packId,
@@ -39,6 +39,8 @@ class PrintablePacksCatalog {
   static const String starterPackId = 'printable_starter_pack';
 
   static List<PrintablePack> allPacks() {
+    // Only the included starter pack is active for now. Future printable packs
+    // should be added here after the worksheet content is created.
     return [
       PrintablePack(
         packId: starterPackId,
@@ -47,62 +49,6 @@ class PrintablePacksCatalog {
         isFree: true,
         pageCount: 10,
         buildPages: PrintablePackScenarioFactory.starterPackPages,
-      ),
-      PrintablePack(
-        packId: 'printable_driver_operator_1',
-        title: 'Driver/Operator I Pack',
-        description: 'Core PDP problems with common attack line and supply evolutions.',
-        isFree: false,
-        pageCount: 10,
-        buildPages: () => PrintablePackScenarioFactory.seededPages(seed: 101, focus: PrintablePackFocus.driverOperator1),
-      ),
-      PrintablePack(
-        packId: 'printable_driver_operator_2',
-        title: 'Driver/Operator II Pack',
-        description: 'More complex hydraulics: longer lays, larger flows, and mixed components.',
-        isFree: false,
-        pageCount: 10,
-        buildPages: () => PrintablePackScenarioFactory.seededPages(seed: 202, focus: PrintablePackFocus.driverOperator2),
-      ),
-      PrintablePack(
-        packId: 'printable_standpipe',
-        title: 'Standpipe Pack',
-        description: 'Standpipe-style friction loss and appliance/elevation practice.',
-        isFree: false,
-        pageCount: 10,
-        buildPages: () => PrintablePackScenarioFactory.seededPages(seed: 303, focus: PrintablePackFocus.standpipe),
-      ),
-      PrintablePack(
-        packId: 'printable_water_supply',
-        title: 'Water Supply Pack',
-        description: 'Hydrant supply, LDH, and water supply decision practice.',
-        isFree: false,
-        pageCount: 10,
-        buildPages: () => PrintablePackScenarioFactory.seededPages(seed: 404, focus: PrintablePackFocus.waterSupply),
-      ),
-      PrintablePack(
-        packId: 'printable_relay_pumping',
-        title: 'Relay Pumping Pack',
-        description: 'Relay-style pressure problems and longer distance operations.',
-        isFree: false,
-        pageCount: 10,
-        buildPages: () => PrintablePackScenarioFactory.seededPages(seed: 505, focus: PrintablePackFocus.relayPumping),
-      ),
-      PrintablePack(
-        packId: 'printable_master_stream',
-        title: 'Master Stream Pack',
-        description: 'High-flow problems with clean hose layouts and readable givens.',
-        isFree: false,
-        pageCount: 10,
-        buildPages: () => PrintablePackScenarioFactory.seededPages(seed: 606, focus: PrintablePackFocus.masterStream),
-      ),
-      PrintablePack(
-        packId: 'printable_wildland_rural',
-        title: 'Wildland / Rural Water Pack',
-        description: 'Rural operations style problems: longer lines and varying elevations.',
-        isFree: false,
-        pageCount: 10,
-        buildPages: () => PrintablePackScenarioFactory.seededPages(seed: 707, focus: PrintablePackFocus.wildlandRural),
       ),
     ];
   }
