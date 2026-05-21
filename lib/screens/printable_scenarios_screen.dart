@@ -86,7 +86,7 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
   bool _includeAnswerKey = true;
   bool _printing = false;
 
-  static const String _brandBannerAsset = 'assets/images/firepumpsim_brand_banner.png';
+  static const String _brandBannerAsset = 'assets/images/firepumpsim_brand_banner.jpg';
 
   /// PDF rendering uses built-in Helvetica by default which does not support some
   /// Unicode punctuation (e.g. bullet "•" and em-dash "—").
@@ -121,6 +121,8 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
     required String filename,
     required String title,
   }) async {
+    // Web output is handled by a pre-opened download session started from the
+    // button tap, to avoid popup/download blockers.
     if (kIsWeb) {
       await downloadPdfBytes(bytes: bytes, filename: filename);
       _toast('PDF downloaded. Open it to print or save.');
@@ -176,7 +178,7 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
 
   void _selectPack(PrintablePack p) {
     if (!_isUnlocked(p)) {
-      _toast('This pack is locked. Unlock it in Scenario Library.');
+      _toast('This printable pack is coming soon.');
       return;
     }
     setState(() {
@@ -202,7 +204,6 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
     final textTheme = Theme.of(context).textTheme;
 
     final unlocked = _allPacks.where(_isUnlocked).toList(growable: false);
-    final locked = _allPacks.where((p) => !_isUnlocked(p)).toList(growable: false);
 
     return Scaffold(
       backgroundColor: FirePumpSimColors.charcoal,
@@ -213,7 +214,7 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
             SliverToBoxAdapter(
               child: _PrintableHeader(
                 title: 'Printable Scenarios',
-                subtitle: 'Print branded FirePumpSim training pages. Starter Pack is included — unlock more packs in Scenario Library.',
+                subtitle: 'Print branded FirePumpSim training pages. Starter Pack is included. More printable packs are coming soon.',
                 onBack: () => context.go(AppRoutes.home),
               ),
             ),
@@ -245,20 +246,20 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
                             for (final p in unlocked.where((p) => p.isFree))
                               _PrintablePackTile(pack: p, selected: p.packId == _selectedPack.packId, unlocked: true, onTap: () => _selectPack(p)),
                             const SizedBox(height: 16),
-                            Text('Printable Pack Library — locked/purchased packs', style: (textTheme.bodyMedium ?? const TextStyle(fontSize: 14)).copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
+                            Text('Printable Pack Library — coming soon', style: (textTheme.bodyMedium ?? const TextStyle(fontSize: 14)).copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
                             const SizedBox(height: 10),
-                            for (final p in unlocked.where((p) => !p.isFree)) ...[
-                              const SizedBox(height: 10),
-                              _PrintablePackTile(pack: p, selected: p.packId == _selectedPack.packId, unlocked: true, onTap: () => _selectPack(p)),
-                            ],
-                            for (final p in locked) ...[
-                              const SizedBox(height: 10),
-                              _PrintablePackTile(pack: p, selected: false, unlocked: false, onTap: () => context.go(AppRoutes.scenarioLibrary)),
-                            ],
-                            if (locked.isNotEmpty) ...[
-                              const SizedBox(height: 12),
-                              _SecondaryActionButton(label: 'Unlock packs in Scenario Library', icon: Icons.lock_open, onTap: () => context.go(AppRoutes.scenarioLibrary)),
-                            ],
+                            Container(
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                color: FirePumpSimColors.charcoal3.withValues(alpha: 0.65),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(color: FirePumpSimColors.printGreen.withValues(alpha: 0.45)),
+                              ),
+                              child: Text(
+                                'Additional printable worksheet packs will be added after the content is created. No paid printable packs are active in this build.',
+                                style: (textTheme.bodySmall ?? const TextStyle(fontSize: 12)).copyWith(color: FirePumpSimColors.textMed, height: 1.35),
+                              ),
+                            ),
                           ],
                         ),
                 ),
@@ -314,7 +315,9 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
 
   Future<void> _handlePrint() async {
     setState(() => _printing = true);
+    PdfDownloadSession? webSession;
     try {
+      if (kIsWeb) webSession = startPdfDownload(filename: 'FirePumpSim_Worksheet.pdf');
       final bytes = await _buildPdfBytes(
         worksheetTitle: _selectedPack.title,
         department: 'FirePumpSim Training',
@@ -322,13 +325,21 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
         includeAnswerKey: _includeAnswerKey,
       );
       debugPrint('Printable PDF built: ${bytes.lengthInBytes} bytes. Launching output…');
-      await _outputPdf(
-        bytes: bytes,
-        filename: 'FirePumpSim_Worksheet.pdf',
-        title: 'FirePumpSim Worksheet',
-      );
+      if (kIsWeb && webSession != null) {
+        await webSession.complete(bytes);
+        _toast('PDF opened in a new tab. Use the browser print button.');
+      } else {
+        await _outputPdf(
+          bytes: bytes,
+          filename: 'FirePumpSim_Worksheet.pdf',
+          title: 'FirePumpSim Worksheet',
+        );
+      }
     } catch (e, st) {
       debugPrint('Print/Save PDF failed: $e\n$st');
+      try {
+        await webSession?.abort(e);
+      } catch (_) {}
       _toast('Unable to print / save PDF on this device. If you are on web, make sure pop-ups are allowed.');
     } finally {
       if (mounted) setState(() => _printing = false);
@@ -337,16 +348,26 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
 
   Future<void> _handlePrintBrandedPage(_BrandedPrintablePage page) async {
     setState(() => _printing = true);
+    PdfDownloadSession? webSession;
     try {
+      if (kIsWeb) webSession = startPdfDownload(filename: page.fileName);
       final bytes = await _buildBrandedPrintablePdf([page]);
       debugPrint('Branded printable page PDF built: ${bytes.lengthInBytes} bytes. Launching output…');
-      await _outputPdf(
-        bytes: bytes,
-        filename: page.fileName,
-        title: page.title,
-      );
+      if (kIsWeb && webSession != null) {
+        await webSession.complete(bytes);
+        _toast('PDF opened in a new tab. Use the browser print button.');
+      } else {
+        await _outputPdf(
+          bytes: bytes,
+          filename: page.fileName,
+          title: page.title,
+        );
+      }
     } catch (e, st) {
       debugPrint('Branded printable page failed (${page.assetPath}): $e\n$st');
+      try {
+        await webSession?.abort(e);
+      } catch (_) {}
       _toast('Unable to print ${page.title}. Check that ${page.assetPath} exists and is listed in pubspec.yaml.');
     } finally {
       if (mounted) setState(() => _printing = false);
@@ -355,7 +376,9 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
 
   Future<void> _handlePrintBrandedStarterPack() async {
     setState(() => _printing = true);
+    PdfDownloadSession? webSession;
     try {
+      if (kIsWeb) webSession = startPdfDownload(filename: 'FirePumpSim_Printable_Starter_Pack.pdf');
       final pages = <_BrandedPrintablePage>[];
       for (final page in PrintableScenarioAssetPack.brandedStarterPages) {
         try {
@@ -372,13 +395,21 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
 
       final bytes = await _buildBrandedPrintablePdf(pages);
       debugPrint('Branded printable pack PDF built: ${bytes.lengthInBytes} bytes. Launching output…');
-      await _outputPdf(
-        bytes: bytes,
-        filename: 'FirePumpSim_Printable_Starter_Pack.pdf',
-        title: 'FirePumpSim Printable Starter Pack',
-      );
+      if (kIsWeb && webSession != null) {
+        await webSession.complete(bytes);
+        _toast('PDF opened in a new tab. Use the browser print button.');
+      } else {
+        await _outputPdf(
+          bytes: bytes,
+          filename: 'FirePumpSim_Printable_Starter_Pack.pdf',
+          title: 'FirePumpSim Printable Starter Pack',
+        );
+      }
     } catch (e, st) {
       debugPrint('Branded starter pack print failed: $e\n$st');
+      try {
+        await webSession?.abort(e);
+      } catch (_) {}
       _toast('Unable to print branded starter pack. Check printable image assets and device print/share support.');
     } finally {
       if (mounted) setState(() => _printing = false);

@@ -110,12 +110,26 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
         }
       }
 
-      // Timer behavior: 2 minutes per day while the user is on this screen.
-      // - If the day changes, reset.
-      // - If the user already completed today correctly, stop the timer.
+      // Timer behavior: one persisted 2-minute countdown per date.
+      // Leaving the screen and coming back should not restart the clock.
       final isNewDay = _todayDate.isNotEmpty && _todayDate != todayKey;
-      if (_challengeEndsAt == null || isNewDay) {
-        _challengeEndsAt = DateTime.now().add(_challengeDuration);
+      var endsAt = await _storage.loadChallengeEndsAt(todayKey);
+      if (endsAt == null || isNewDay) {
+        endsAt = DateTime.now().add(_challengeDuration);
+        await _storage.saveChallengeEndsAt(yyyyMmDd: todayKey, endsAt: endsAt);
+      }
+      _challengeEndsAt = endsAt;
+
+      if (!mounted) return;
+
+      if (isNewDay) {
+        _answerCtrl.clear();
+        _lastSubmitCorrect = null;
+        _lastUserAnswer = null;
+        _lastCorrectAnswer = null;
+        _lastDiff = null;
+        _lastTol = null;
+        _lastUnit = _CorrectAnswerInfo.fromProblem(todayProblem).unit;
       }
 
       setState(() {

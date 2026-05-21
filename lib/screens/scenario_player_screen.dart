@@ -24,10 +24,36 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
 
   final TextEditingController _answerController = TextEditingController();
 
+  Future<PlayableScenarioProblem?>? _problemFuture;
   _PlayerMode _mode = _PlayerMode.photo;
   bool _hasChecked = false;
   bool _isCorrect = false;
   bool _showExplanation = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _queueProblemLoad(resetAnswerState: true);
+  }
+
+  @override
+  void didUpdateWidget(covariant ScenarioPlayerScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.problemId != widget.problemId) {
+      _queueProblemLoad(resetAnswerState: true);
+    }
+  }
+
+  void _queueProblemLoad({required bool resetAnswerState}) {
+    _problemFuture = _loadProblem(widget.problemId);
+    if (resetAnswerState) {
+      _answerController.clear();
+      _hasChecked = false;
+      _isCorrect = false;
+      _showExplanation = false;
+      _mode = _PlayerMode.photo;
+    }
+  }
 
   @override
   void dispose() {
@@ -137,7 +163,7 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
       body: SafeArea(
         bottom: true,
         child: FutureBuilder<PlayableScenarioProblem?>(
-          future: _loadProblem(widget.problemId),
+          future: _problemFuture,
           builder: (context, snapshot) {
             final p = snapshot.data;
 
@@ -208,10 +234,10 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
                 builder: (context, constraints) {
                   final unit = _expectedUnit(p);
                   final totalH = constraints.maxHeight;
-                  // Header + segmented control + answer card (collapsed) + bottom breathing room.
+                  // Header + prominent question card + segmented control + answer card (collapsed) + bottom breathing room.
                   // Note: the answer card can expand; in that case the page will scroll.
-                  const reserved = 76.0 + 8.0 + 44.0 + 8.0 + 122.0 + 12.0;
-                  final cardH = (totalH - reserved).clamp(420.0, 700.0);
+                  const reserved = 76.0 + 8.0 + 132.0 + 10.0 + 44.0 + 10.0 + 122.0 + 12.0;
+                  final cardH = (totalH - reserved).clamp(300.0, 620.0);
 
                   return SingleChildScrollView(
                     padding: EdgeInsets.zero,
@@ -253,7 +279,9 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
                           ],
                         ),
                         const SizedBox(height: 8),
+                        _ScenarioQuestionCard(problem: p, unit: unit),
 
+                        const SizedBox(height: 10),
                         SizedBox(
                           height: cardH,
                           width: double.infinity,
@@ -308,6 +336,81 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
 }
 
 enum _PlayerMode { photo, problem, info }
+
+
+class _ScenarioQuestionCard extends StatelessWidget {
+  const _ScenarioQuestionCard({required this.problem, required this.unit});
+
+  final PlayableScenarioProblem problem;
+  final String unit;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final answerLabel = (problem.answers['answerLabel'] ?? problem.answers['label'] ?? 'Answer').toString().trim();
+    final safeLabel = answerLabel.isEmpty ? 'Answer' : answerLabel;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: FirePumpSimColors.charcoal2,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: FirePumpSimColors.red.withValues(alpha: 0.65)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.22),
+            blurRadius: 14,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: FirePumpSimColors.red.withValues(alpha: 0.16),
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(color: FirePumpSimColors.red.withValues(alpha: 0.55)),
+                ),
+                child: Text(
+                  'QUESTION',
+                  style: textTheme.labelSmall?.copyWith(
+                    color: FirePumpSimColors.textHigh,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0.7,
+                  ),
+                ),
+              ),
+              const Spacer(),
+              Text(
+                '$safeLabel • $unit',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: textTheme.labelSmall?.copyWith(color: FirePumpSimColors.textMed, fontWeight: FontWeight.w900),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            problem.studentQuestion,
+            maxLines: 5,
+            overflow: TextOverflow.ellipsis,
+            style: textTheme.titleSmall?.copyWith(
+              color: FirePumpSimColors.textHigh,
+              height: 1.35,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class _MainDisplayCard extends StatelessWidget {
   const _MainDisplayCard({required this.mode, required this.photo, required this.problem, required this.info});

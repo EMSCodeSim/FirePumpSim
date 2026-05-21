@@ -143,8 +143,8 @@ class _HeroHeader extends StatelessWidget {
 
   /// TODO: Replace this with the exact filename of your uploaded FirePumpSim
   /// branding artwork (Assets panel → images). Example:
-  /// `assets/images/firepumpsim_brand_banner.png`
-  static const String _brandingBannerAssetPath = 'assets/images/firepumpsim_brand_banner.png';
+  /// `assets/images/firepumpsim_brand_banner.jpg`
+  static const String _brandingBannerAssetPath = 'assets/images/firepumpsim_brand_banner.jpg';
 
   @override
   Widget build(BuildContext context) {
