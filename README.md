@@ -1,16 +1,19 @@
-# firepumpsim
+# FirePumpSim
 
-A new Flutter project.
+FirePumpSim is a fire pump operator practice app with visual scenarios, daily challenge questions, formula references, calculator tools, pump-card references, and printable pump practice worksheets.
 
-## Getting Started
+## Current content
 
-This project is a starting point for a Flutter application.
+- Free Starter Pack scenarios are included in Practice Scenarios.
+- Digital paid scenario packs are marked as **Coming Soon** until content is created.
+- Printable paid packs are marked as **Coming Soon** until content is created.
 
-A few resources to get you started if this is your first Flutter project:
+## Scenario validation
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Run this before publishing new scenario content:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+python3 tool/validate_scenarios.py
+```
+
+The script checks for invalid JSON, duplicate scenario/problem IDs, missing images, and missing answer keys.

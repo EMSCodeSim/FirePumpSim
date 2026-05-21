@@ -1,5 +1,5 @@
 name: firepumpsim
-description: "A new Flutter project."
+description: "Fire pump operator training scenarios, formulas, calculator tools, and printable pump practice."
 publish_to: "none"
 
 version: 1.0.4
@@ -29,7 +29,6 @@ flutter:
     - assets/icons/
     - assets/images/
     - assets/scenarios/
-    - assets/scenarios/packs/
     - assets/printable/
 
 flutter_launcher_icons:
