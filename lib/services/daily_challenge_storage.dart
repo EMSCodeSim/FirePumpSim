@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class DailyChallengeStorage {
   static const _statsKey = 'firepumpsim.dailyChallenge.stats';
   static const _historyKey = 'firepumpsim.dailyChallenge.history';
+  static const _timerEndsAtByDateKey = 'firepumpsim.dailyChallenge.timerEndsAtByDate';
 
   Future<DailyChallengeStats> loadStats() async {
     try {
@@ -26,6 +27,42 @@ class DailyChallengeStorage {
       await prefs.setString(_statsKey, jsonEncode(stats.toJson()));
     } catch (e) {
       debugPrint('DailyChallengeStorage.saveStats failed: $e');
+    }
+  }
+
+
+  Future<DateTime?> loadChallengeEndsAt(String yyyyMmDd) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_timerEndsAtByDateKey);
+      if (raw == null || raw.trim().isEmpty) return null;
+      final decoded = jsonDecode(raw);
+      if (decoded is! Map) return null;
+      final value = decoded[yyyyMmDd]?.toString().trim() ?? '';
+      if (value.isEmpty) return null;
+      return DateTime.tryParse(value);
+    } catch (e) {
+      debugPrint('DailyChallengeStorage.loadChallengeEndsAt failed: $e');
+      return null;
+    }
+  }
+
+  Future<void> saveChallengeEndsAt({required String yyyyMmDd, required DateTime endsAt}) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_timerEndsAtByDateKey);
+      final map = <String, dynamic>{};
+      if (raw != null && raw.trim().isNotEmpty) {
+        final decoded = jsonDecode(raw);
+        if (decoded is Map) map.addAll(Map<String, dynamic>.from(decoded));
+      }
+      map[yyyyMmDd] = endsAt.toIso8601String();
+
+      // Keep storage small. Old dates do not need timer end times.
+      map.removeWhere((key, value) => key != yyyyMmDd);
+      await prefs.setString(_timerEndsAtByDateKey, jsonEncode(map));
+    } catch (e) {
+      debugPrint('DailyChallengeStorage.saveChallengeEndsAt failed: $e');
     }
   }
 
