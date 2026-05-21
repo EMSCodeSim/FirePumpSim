@@ -1,95 +1,26 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'theme.dart';
-import 'nav.dart';
 
-/// Main entry point for the application
-///
-/// This sets up:
-/// - go_router navigation
-/// - Material 3 theming with light/dark modes
+import 'nav.dart';
+import 'theme.dart';
+
 void main() {
-  // Helps detect “reverting” builds across multiple devices/sessions.
-  debugPrint('FirePumpSim build stamp: 2026-05-12 locked-nav+dropdown-filters+hero');
-  runApp(const MyApp());
+  debugPrint('FirePumpSim build stamp: 2026-05-21 library-coming-soon+scenario-cache+daily-timer');
+  runApp(const FirePumpSimApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class FirePumpSimApp extends StatelessWidget {
+  const FirePumpSimApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // As you extend the app, use MultiProvider to wrap the app
-    // and provide state to all widgets
-    // Example:
-    // return MultiProvider(
-    //   providers: [
-    //     ChangeNotifierProvider(create: (_) => ExampleProvider()),
-    //   ],
-    //   child: MaterialApp.router(
-    //     title: 'Dreamflow Starter',
-    //     debugShowCheckedModeBanner: false,
-    //     routerConfig: AppRouter.router,
-    //   ),
-    // );
     return MaterialApp.router(
       title: 'FirePumpSim',
       debugShowCheckedModeBanner: false,
-
-      // Theme configuration
       theme: lightTheme,
       darkTheme: darkTheme,
-      // FirePumpSim is designed as a dark, tactical training UI.
-      // Force dark mode to avoid white backgrounds when the device is in light mode.
       themeMode: ThemeMode.dark,
-
-      // Router configuration
       routerConfig: AppRouter.router,
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppBarTheme.of(context).backgroundColor,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
     );
   }
 }
