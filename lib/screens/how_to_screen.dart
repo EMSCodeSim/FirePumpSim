@@ -390,7 +390,7 @@ class _TopTipCard extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            '1) Identify the setup.  2) Find flow.  3) Calculate hose FL.  4) Add NP, elevation, and appliance/system loss when used.',
+            '1) Identify the setup.  2) Find flow.  3) Calculate hose FL.  4) Add NP, elevation, and appliance/system loss when used. Training reference only—verify with department SOPs.',
             style: textTheme.bodySmall?.copyWith(
               color: FirePumpSimColors.textMed,
               height: 1.35,

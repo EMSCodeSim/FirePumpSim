@@ -458,7 +458,7 @@ class _FormulaDisclaimer extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'Training reference only. Always follow department SOPs, manufacturer specifications, and local training standards.',
+              'Training reference only. Formulas use common fire-service pump operator training rules. Always follow department SOPs, manufacturer pump/nozzle data, local training standards, and instructor direction before operational use.',
               style: textTheme.bodyMedium?.copyWith(color: FirePumpSimColors.textMed, height: 1.45),
             ),
           ),

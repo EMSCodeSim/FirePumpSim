@@ -120,6 +120,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       icon: Icons.school,
                       onTap: () => context.go(AppRoutes.howTo),
                     ),
+                    const SizedBox(height: AppSpacing.md),
+                    const _SafetyPrivacyCard(),
                     const SizedBox(height: AppSpacing.lg),
                   ],
                 ),
@@ -141,9 +143,6 @@ class _HeroHeader extends StatelessWidget {
   final double height;
   final double topInset;
 
-  /// TODO: Replace this with the exact filename of your uploaded FirePumpSim
-  /// branding artwork (Assets panel → images). Example:
-  /// `assets/images/firepumpsim_brand_banner.jpg`
   static const String _brandingBannerAssetPath = 'assets/images/firepumpsim_brand_banner.jpg';
 
   @override
@@ -243,6 +242,36 @@ class _HeaderImage extends StatelessWidget {
           debugPrint('Header image failed to load ($assetPath): $error');
           return const DecoratedBox(decoration: BoxDecoration(color: FirePumpSimColors.charcoal2));
         },
+      ),
+    );
+  }
+}
+
+class _SafetyPrivacyCard extends StatelessWidget {
+  const _SafetyPrivacyCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: FirePumpSimColors.charcoal2,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.65)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.verified_user_outlined, color: FirePumpSimColors.textMed.withValues(alpha: 0.95), size: 20),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Training reference only. FirePumpSim uses local device storage, does not require an account, and should be checked against department SOPs and manufacturer data before operational use.',
+              style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed, height: 1.4),
+            ),
+          ),
+        ],
       ),
     );
   }
