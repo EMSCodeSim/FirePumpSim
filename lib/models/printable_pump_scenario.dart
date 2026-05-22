@@ -354,7 +354,7 @@ class PrintableScenarioGenerator {
         return difficulty == PrintableWorksheetDifficulty.advanced && _random.nextBool() ? PrintableTargetArtwork.buildingAndBrush : PrintableTargetArtwork.building;
       case PrintableScenarioType.attackLine:
       case PrintableScenarioType.standpipeStyleLine:
-        // TODO: Add house-fire.png later for residential targets.
+        // Optional: add house-fire.png later for residential targets.
         return PrintableTargetArtwork.building;
     }
   }
