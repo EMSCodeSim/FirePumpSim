@@ -1,6 +1,6 @@
 {
-  "name": "FirePump Sim",
-  "short_name": "FirePump Sim",
+  "name": "FirePumpSim",
+  "short_name": "FirePumpSim",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#0B0D10",
