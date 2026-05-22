@@ -558,7 +558,7 @@ class _CompactHeader extends StatelessWidget {
     return Padding(
       // Keep the header visually tight so the first content card (practice box)
       // sits closer to the banner area.
-      padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.xs),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, 0),
       child: Row(
         children: [
           IconButton(
@@ -581,7 +581,7 @@ class _CompactHeader extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: textTheme.headlineSmall?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
                   subtitle,
                   maxLines: 2,
