@@ -103,69 +103,55 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
     final filtered = _filterLocal(_allScenarios);
     final grouped = _groupFilteredByPack(filtered);
 
+    // On small phones, we keep the "button area" (header + filter card + summary)
+    // non-scrollable so it stays in view; only the results list scrolls.
     return Scaffold(
       body: SafeArea(
         bottom: false,
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: _CompactHeader(
-                title: 'Pick Scenario',
-                subtitle: 'Find a pump problem or start random practice',
-                // Locked behavior: Back from Scenario Picker always returns to Home.
-                // (This screen may be opened from multiple entry points, so pop() can be ambiguous.)
-                onBack: () => context.go(AppRoutes.home),
+        child: Column(
+          children: [
+            _CompactHeader(
+              title: 'Pick Scenario',
+              subtitle: 'Find a pump problem or start random practice',
+              // Locked behavior: Back from Scenario Picker always returns to Home.
+              // (This screen may be opened from multiple entry points, so pop() can be ambiguous.)
+              onBack: () => context.go(AppRoutes.home),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.md),
+              child: _FilterCard(
+                activeFilterCount: _hasActiveFilters ? _activeFilterCount : 0,
+                searchController: _searchController,
+                onRandom: _startRandomFromCurrentFilters,
+                typeValue: _selectedType,
+                levelValue: _selectedLevel,
+                modeValue: _selectedMode,
+                sortValue: _selectedSort,
+                typeOptions: typeOptions,
+                onTypeChanged: (v) => setState(() => _selectedType = v),
+                onLevelChanged: (v) => setState(() => _selectedLevel = v),
+                onModeChanged: (v) => setState(() => _selectedMode = v),
+                onSortChanged: (v) => setState(() => _selectedSort = v),
+                onClear: _clearAll,
               ),
             ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.md),
-                child: _FilterCard(
-                  activeFilterCount: _hasActiveFilters ? _activeFilterCount : 0,
-                  searchController: _searchController,
-                  onRandom: _startRandomFromCurrentFilters,
-                  typeValue: _selectedType,
-                  levelValue: _selectedLevel,
-                  modeValue: _selectedMode,
-                  sortValue: _selectedSort,
-                  typeOptions: typeOptions,
-                  onTypeChanged: (v) => setState(() => _selectedType = v),
-                  onLevelChanged: (v) => setState(() => _selectedLevel = v),
-                  onModeChanged: (v) => setState(() => _selectedMode = v),
-                  onSortChanged: (v) => setState(() => _selectedSort = v),
-                  onClear: _clearAll,
-                ),
-              ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.sm),
+              child: _ResultsSummary(count: filtered.length, filtered: _hasActiveFilters),
             ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.sm),
-                child: _ResultsSummary(
-                  count: filtered.length,
-                  filtered: _hasActiveFilters,
-                ),
-              ),
+            Expanded(
+              child: _loading
+                  ? const _LoadingState()
+                  : filtered.isEmpty
+                      ? Padding(
+                          padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.lg, AppSpacing.md, AppSpacing.lg),
+                          child: _EmptyState(onClear: _clearAll),
+                        )
+                      : ListView(
+                          padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.lg),
+                          children: [...grouped, const SizedBox(height: 90)],
+                        ),
             ),
-            if (_loading)
-              const SliverToBoxAdapter(child: _LoadingState())
-            else if (filtered.isEmpty)
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.lg, AppSpacing.md, AppSpacing.lg),
-                  child: _EmptyState(onClear: _clearAll),
-                ),
-              )
-            else
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.lg),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) => grouped[index],
-                    childCount: grouped.length,
-                  ),
-                ),
-              ),
-            const SliverToBoxAdapter(child: SizedBox(height: 90)),
           ],
         ),
       ),
@@ -558,16 +544,19 @@ class _CompactHeader extends StatelessWidget {
     return Padding(
       // Keep the header visually tight so the first content card (practice box)
       // sits closer to the banner area.
-      padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, 0),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.xs, AppSpacing.md, 0),
       child: Row(
         children: [
           IconButton(
             onPressed: onBack,
             icon: const Icon(Icons.arrow_back, color: FirePumpSimColors.textHigh),
+            visualDensity: VisualDensity.compact,
             style: IconButton.styleFrom(
               backgroundColor: FirePumpSimColors.charcoal2,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               side: BorderSide(color: FirePumpSimColors.steel.withValues(alpha: 0.8)),
+              padding: const EdgeInsets.all(10),
+              minimumSize: const Size(44, 44),
             ),
           ),
           const SizedBox(width: AppSpacing.md),
@@ -715,7 +704,8 @@ class _FilterCard extends StatelessWidget {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.sm),
+                // Keep the top of this card tight so the search + Random button sit closer to the page banner.
+                padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.xs),
                 child: Row(
                   children: [
                     const Icon(Icons.tune, color: FirePumpSimColors.textHigh, size: 18),
@@ -763,7 +753,7 @@ class _FilterCard extends StatelessWidget {
                           SizedBox(width: 160, child: _RandomButton(onPressed: onRandom)),
                         ],
                       ),
-                    const SizedBox(height: AppSpacing.md),
+                    const SizedBox(height: AppSpacing.sm),
                     _FilterDropdownGrid(
                       isNarrow: isNarrow,
                       children: [
