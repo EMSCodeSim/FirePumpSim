@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FirePumpSim | Fire Pump Operator Training</title>
+  <meta name="description" content="FirePumpSim is a firefighter pump operator training app with visual scenarios, formula helpers, pump cards, printable worksheets, and daily challenges." />
+  <style>
+    :root {
+      --bg: #05070a;
+      --panel: #0d1117;
+      --panel2: #151a22;
+      --red: #e50922;
+      --red2: #ff3146;
+      --text: #f5f7fa;
+      --muted: #b8bec8;
+      --border: rgba(229,9,34,.45);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: radial-gradient(circle at top right, rgba(229,9,34,.25), transparent 35%), linear-gradient(180deg, #080b10, var(--bg));
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .wrap { width: min(1100px, 92%); margin: 0 auto; }
+    header { padding: 26px 0; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 900; font-size: 28px; letter-spacing: .5px; }
+    .brand span { color: var(--red); }
+    .logo { width: 38px; height: 38px; border: 2px solid var(--red); border-radius: 10px; display: grid; place-items: center; color: var(--red); font-weight: 900; }
+    .hero { padding: 54px 0 36px; display: grid; grid-template-columns: 1.1fr .9fr; gap: 36px; align-items: center; }
+    h1 { font-size: clamp(42px, 7vw, 76px); line-height: .98; margin: 0 0 20px; letter-spacing: -2px; }
+    h1 span { color: var(--red); }
+    .lead { font-size: clamp(18px, 2.2vw, 24px); color: var(--muted); max-width: 680px; margin-bottom: 28px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 14px; }
+    a.btn { color: var(--text); text-decoration: none; padding: 14px 18px; border-radius: 14px; font-weight: 800; border: 1px solid rgba(255,255,255,.14); background: var(--panel2); }
+    a.btn.primary { background: linear-gradient(135deg, var(--red), var(--red2)); border-color: var(--red); }
+    .phone-card, .card { background: rgba(13,17,23,.86); border: 1px solid rgba(255,255,255,.12); border-radius: 24px; box-shadow: 0 24px 70px rgba(0,0,0,.4); overflow: hidden; }
+    .phone-card img { width: 100%; display: block; }
+    .phone-card .fallback { padding: 28px; min-height: 260px; display: grid; place-items: center; text-align: center; color: var(--muted); }
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 24px 0 44px; }
+    .card { padding: 22px; }
+    .card h3 { margin: 0 0 8px; font-size: 20px; }
+    .card p { margin: 0; color: var(--muted); }
+    .disclaimer { color: var(--muted); border-top: 1px solid rgba(255,255,255,.08); padding: 24px 0 44px; font-size: 14px; }
+    footer { border-top: 1px solid rgba(255,255,255,.08); padding: 24px 0; color: var(--muted); }
+    footer a { color: var(--text); margin-right: 18px; }
+    @media (max-width: 850px) {
+      .hero { grid-template-columns: 1fr; padding-top: 36px; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap brand"><div class="logo">F</div> Fire<span>Pump</span>Sim</div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <h1>Train pump operators with <span>real scenarios.</span></h1>
+        <p class="lead">FirePumpSim helps firefighters and driver/operator students practice pump pressure, friction loss, elevation, standpipe/FDC, wye, relay, and master stream problems.</p>
+        <div class="actions">
+          <a class="btn primary" href="/support">Support</a>
+          <a class="btn" href="/privacy">Privacy Policy</a>
+        </div>
+      </div>
+      <div class="phone-card">
+        <img src="assets/images/firepumpsim_brand_banner.jpg" alt="FirePumpSim training app banner" onerror="this.style.display='none';this.nextElementSibling.style.display='grid';" />
+        <div class="fallback" style="display:none;">FirePumpSim<br/>Train • Practice • Perform</div>
+      </div>
+    </section>
+
+    <section class="grid" aria-label="FirePumpSim features">
+      <div class="card"><h3>Practice Scenarios</h3><p>Visual pump problems built around common fireground layouts.</p></div>
+      <div class="card"><h3>Formula Helpers</h3><p>Quick tools for pump pressure, friction loss, elevation, and nozzle reaction.</p></div>
+      <div class="card"><h3>Printable Sheets</h3><p>Training worksheets and answer keys for driver/operator practice.</p></div>
+      <div class="card"><h3>Pump Cards</h3><p>Simple reference material for hose, nozzle, and pump math review.</p></div>
+    </section>
+
+    <section class="disclaimer">
+      FirePumpSim is for education, practice, and reference only. It does not replace department SOPs, certified instruction, manufacturer guidance, or real-world fireground decision-making.
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <a href="/support">Support</a>
+      <a href="/privacy">Privacy Policy</a>
+      <span>© 2026 FirePumpSim</span>
+    </div>
+  </footer>
+</body>
+</html>
