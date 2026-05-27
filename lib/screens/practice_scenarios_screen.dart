@@ -99,6 +99,16 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
 
   bool get _hasActiveFilters => _activeFilterCount > 0;
 
+  List<String> get typeOptions {
+    final set = <String>{};
+    for (final s in _allScenarios) {
+      final t = s.type.trim();
+      if (t.isNotEmpty) set.add(t);
+    }
+    final rest = set.toList(growable: false)..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    return ['All Categories', ...rest];
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
