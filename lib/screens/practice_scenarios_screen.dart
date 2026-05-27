@@ -82,12 +82,17 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
     }
   }
 
-  int get _activeFilterCount {
+  int get _activePickerFilterCount {
     var count = 0;
     if (_selectedType != 'All Categories') count++;
     if (_selectedLevel != 'All Levels') count++;
     if (_selectedMode != 'All Modes') count++;
     if (_selectedSort != 'Recommended') count++;
+    return count;
+  }
+
+  int get _activeFilterCount {
+    var count = _activePickerFilterCount;
     if (_searchController.text.trim().isNotEmpty) count++;
     return count;
   }
@@ -99,7 +104,6 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
     final width = MediaQuery.sizeOf(context).width;
     final maxContentWidth = width >= 900 ? 980.0 : double.infinity;
 
-    final typeOptions = _buildTypeOptions(_allScenarios);
     final filtered = _filterLocal(_allScenarios);
     final grouped = _groupFilteredByPack(filtered);
 
@@ -131,18 +135,10 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
               padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.md),
               child: pageContent(
                 _FilterCard(
-                  activeFilterCount: _hasActiveFilters ? _activeFilterCount : 0,
+                  activeFilterCount: _activePickerFilterCount,
                   searchController: _searchController,
                   onRandom: _startRandomFromCurrentFilters,
-                  typeValue: _selectedType,
-                  levelValue: _selectedLevel,
-                  modeValue: _selectedMode,
-                  sortValue: _selectedSort,
-                  typeOptions: typeOptions,
-                  onTypeChanged: (v) => setState(() => _selectedType = v),
-                  onLevelChanged: (v) => setState(() => _selectedLevel = v),
-                  onModeChanged: (v) => setState(() => _selectedMode = v),
-                  onSortChanged: (v) => setState(() => _selectedSort = v),
+                  onOpenFilters: _openFilterSheet,
                   onClear: _clearAll,
                 ),
               ),
@@ -174,6 +170,194 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _openFilterSheet() async {
+    final textTheme = Theme.of(context).textTheme;
+
+    var pendingType = typeOptions.contains(_selectedType) ? _selectedType : typeOptions.first;
+    var pendingLevel = _selectedLevel;
+    var pendingMode = _selectedMode;
+    var pendingSort = _selectedSort;
+
+    const levels = ['All Levels', 'Beginner', 'Intermediate', 'Advanced'];
+    const modes = ['All Modes', 'Timed Available', 'Untimed'];
+    const sorts = ['Recommended', 'A-Z', 'Beginner First', 'Advanced First'];
+
+    void applyPending() {
+      setState(() {
+        _selectedType = pendingType;
+        _selectedLevel = levels.contains(pendingLevel) ? pendingLevel : levels.first;
+        _selectedMode = modes.contains(pendingMode) ? pendingMode : modes.first;
+        _selectedSort = sorts.contains(pendingSort) ? pendingSort : sorts.first;
+      });
+    }
+
+    await showModalBottomSheet<void>(
+      context: context,
+      useSafeArea: true,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (sheetContext, setSheetState) {
+            final bottomInset = MediaQuery.viewInsetsOf(sheetContext).bottom;
+            return Padding(
+              padding: EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.md + bottomInset),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: FirePumpSimColors.charcoal2,
+                  borderRadius: BorderRadius.circular(AppRadius.xl),
+                  border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.85)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.30),
+                      blurRadius: 22,
+                      offset: const Offset(0, 12),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(AppRadius.xl),
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.md),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              height: 40,
+                              width: 40,
+                              decoration: BoxDecoration(
+                                color: FirePumpSimColors.red.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(color: FirePumpSimColors.red.withValues(alpha: 0.45)),
+                              ),
+                              child: const Icon(Icons.tune_rounded, color: FirePumpSimColors.red, size: 22),
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Filter Practice',
+                                    style: textTheme.titleMedium?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    'Choose what type of scenario to practice.',
+                                    style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed, fontWeight: FontWeight.w700),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () => Navigator.of(sheetContext).pop(),
+                              icon: const Icon(Icons.close, color: FirePumpSimColors.textMed),
+                              style: IconButton.styleFrom(backgroundColor: FirePumpSimColors.charcoal3),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        _DropdownField(
+                          label: 'Category',
+                          value: typeOptions.contains(pendingType) ? pendingType : typeOptions.first,
+                          options: typeOptions,
+                          onChanged: (v) => setSheetState(() => pendingType = v),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        _DropdownField(
+                          label: 'Level',
+                          value: levels.contains(pendingLevel) ? pendingLevel : levels.first,
+                          options: levels,
+                          onChanged: (v) => setSheetState(() => pendingLevel = v),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        _DropdownField(
+                          label: 'Mode',
+                          value: modes.contains(pendingMode) ? pendingMode : modes.first,
+                          options: modes,
+                          onChanged: (v) => setSheetState(() => pendingMode = v),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        _DropdownField(
+                          label: 'Sort',
+                          value: sorts.contains(pendingSort) ? pendingSort : sorts.first,
+                          options: sorts,
+                          onChanged: (v) => setSheetState(() => pendingSort = v),
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: () {
+                                  setSheetState(() {
+                                    pendingType = typeOptions.first;
+                                    pendingLevel = levels.first;
+                                    pendingMode = modes.first;
+                                    pendingSort = sorts.first;
+                                  });
+                                },
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: FirePumpSimColors.textHigh,
+                                  side: BorderSide(color: FirePumpSimColors.steel.withValues(alpha: 0.85)),
+                                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+                                ).copyWith(overlayColor: const WidgetStatePropertyAll(Colors.transparent)),
+                                icon: const Icon(Icons.refresh_rounded, color: FirePumpSimColors.textHigh, size: 18),
+                                label: Text('Clear', style: textTheme.labelLarge?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            Expanded(
+                              child: FilledButton.icon(
+                                onPressed: () {
+                                  applyPending();
+                                  Navigator.of(sheetContext).pop();
+                                },
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: FirePumpSimColors.red,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+                                ).copyWith(overlayColor: const WidgetStatePropertyAll(Colors.transparent)),
+                                icon: const Icon(Icons.check_rounded, color: Colors.white, size: 18),
+                                label: Text('Apply', style: textTheme.labelLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w900)),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        FilledButton.icon(
+                          onPressed: () {
+                            applyPending();
+                            Navigator.of(sheetContext).pop();
+                            Future<void>.microtask(_startRandomFromCurrentFilters);
+                          },
+                          style: FilledButton.styleFrom(
+                            backgroundColor: FirePumpSimColors.charcoal3,
+                            foregroundColor: FirePumpSimColors.textHigh,
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+                            side: BorderSide(color: FirePumpSimColors.steel.withValues(alpha: 0.90)),
+                          ).copyWith(overlayColor: const WidgetStatePropertyAll(Colors.transparent)),
+                          icon: const Icon(Icons.shuffle_rounded, color: FirePumpSimColors.textHigh, size: 18),
+                          label: Text('Apply & Start Random', style: textTheme.labelLarge?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -719,35 +903,15 @@ class _FilterCard extends StatelessWidget {
     required this.activeFilterCount,
     required this.searchController,
     required this.onRandom,
-    required this.typeValue,
-    required this.levelValue,
-    required this.modeValue,
-    required this.sortValue,
-    required this.typeOptions,
-    required this.onTypeChanged,
-    required this.onLevelChanged,
-    required this.onModeChanged,
-    required this.onSortChanged,
+    required this.onOpenFilters,
     required this.onClear,
   });
 
   final int activeFilterCount;
   final TextEditingController searchController;
   final VoidCallback onRandom;
-  final String typeValue;
-  final String levelValue;
-  final String modeValue;
-  final String sortValue;
-  final List<String> typeOptions;
-  final ValueChanged<String> onTypeChanged;
-  final ValueChanged<String> onLevelChanged;
-  final ValueChanged<String> onModeChanged;
-  final ValueChanged<String> onSortChanged;
+  final VoidCallback onOpenFilters;
   final VoidCallback onClear;
-
-  static const _levels = ['All Levels', 'Beginner', 'Intermediate', 'Advanced'];
-  static const _modes = ['All Modes', 'Timed Available', 'Untimed'];
-  static const _sorts = ['Recommended', 'A-Z', 'Beginner First', 'Advanced First'];
 
   @override
   Widget build(BuildContext context) {
@@ -778,72 +942,66 @@ class _FilterCard extends StatelessWidget {
                       ),
                     ),
                     if (activeFilterCount > 0)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: FirePumpSimColors.red.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(999),
-                          border: Border.all(color: FirePumpSimColors.red.withValues(alpha: 0.45)),
-                        ),
-                        child: Text(
-                          '$activeFilterCount active',
-                          style: textTheme.labelSmall?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900),
-                        ),
+                      TextButton(
+                        onPressed: onClear,
+                        style: TextButton.styleFrom(
+                          foregroundColor: FirePumpSimColors.textHigh,
+                          visualDensity: VisualDensity.compact,
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        ).copyWith(overlayColor: const WidgetStatePropertyAll(Colors.transparent)),
+                        child: Text('Reset', style: textTheme.labelLarge?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
                       ),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.md),
                 LayoutBuilder(
                   builder: (context, constraints) {
-                    final stackSearch = constraints.maxWidth < 560;
+                    final stackSearch = constraints.maxWidth < 620;
+                    final actionRow = Row(
+                      children: [
+                        Expanded(child: _RandomButton(onPressed: onRandom)),
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: _FilterSheetButton(
+                            activeFilterCount: activeFilterCount,
+                            onPressed: onOpenFilters,
+                          ),
+                        ),
+                      ],
+                    );
+
                     if (stackSearch) {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           _SearchField(controller: searchController),
                           const SizedBox(height: AppSpacing.sm),
-                          _RandomButton(onPressed: onRandom),
+                          actionRow,
                         ],
                       );
                     }
+
                     return Row(
                       children: [
                         Expanded(child: _SearchField(controller: searchController)),
                         const SizedBox(width: AppSpacing.sm),
-                        SizedBox(width: 170, child: _RandomButton(onPressed: onRandom)),
+                        SizedBox(width: 150, child: _RandomButton(onPressed: onRandom)),
+                        const SizedBox(width: AppSpacing.sm),
+                        SizedBox(
+                          width: activeFilterCount > 0 ? 155 : 130,
+                          child: _FilterSheetButton(activeFilterCount: activeFilterCount, onPressed: onOpenFilters),
+                        ),
                       ],
                     );
                   },
                 ),
-                const SizedBox(height: AppSpacing.sm),
-                _FilterDropdownGrid(
-                  children: [
-                    _DropdownField(
-                      label: 'Category',
-                      value: typeOptions.contains(typeValue) ? typeValue : typeOptions.first,
-                      options: typeOptions,
-                      onChanged: onTypeChanged,
-                    ),
-                    _DropdownField(
-                      label: 'Difficulty',
-                      value: _levels.contains(levelValue) ? levelValue : _levels.first,
-                      options: _levels,
-                      onChanged: onLevelChanged,
-                    ),
-                    _DropdownField(
-                      label: 'Mode',
-                      value: _modes.contains(modeValue) ? modeValue : _modes.first,
-                      options: _modes,
-                      onChanged: onModeChanged,
-                    ),
-                    _DropdownField(
-                      label: 'Sort',
-                      value: _sorts.contains(sortValue) ? sortValue : _sorts.first,
-                      options: _sorts,
-                      onChanged: onSortChanged,
-                    ),
-                  ],
-                ),
+                if (activeFilterCount > 0) ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    '$activeFilterCount active filter${activeFilterCount == 1 ? '' : 's'} applied',
+                    style: textTheme.labelMedium?.copyWith(color: FirePumpSimColors.textMed, fontWeight: FontWeight.w800),
+                  ),
+                ],
               ],
             ),
           ),
@@ -853,39 +1011,27 @@ class _FilterCard extends StatelessWidget {
   }
 }
 
-class _FilterDropdownGrid extends StatelessWidget {
-  const _FilterDropdownGrid({required this.children});
+class _FilterSheetButton extends StatelessWidget {
+  const _FilterSheetButton({required this.activeFilterCount, required this.onPressed});
 
-  final List<Widget> children;
+  final int activeFilterCount;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final width = constraints.maxWidth;
-        if (width < 500) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              for (var i = 0; i < children.length; i++) ...[
-                if (i > 0) const SizedBox(height: AppSpacing.sm),
-                children[i],
-              ],
-            ],
-          );
-        }
-
-        final columns = width >= 820 ? 4 : 2;
-        return GridView.count(
-          crossAxisCount: columns,
-          mainAxisSpacing: AppSpacing.sm,
-          crossAxisSpacing: AppSpacing.sm,
-          childAspectRatio: columns == 4 ? 2.45 : 2.9,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          children: children,
-        );
-      },
+    final textTheme = Theme.of(context).textTheme;
+    final label = activeFilterCount > 0 ? 'Filter ($activeFilterCount)' : 'Filter';
+    return OutlinedButton.icon(
+      onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        foregroundColor: FirePumpSimColors.textHigh,
+        side: BorderSide(color: activeFilterCount > 0 ? FirePumpSimColors.red.withValues(alpha: 0.8) : FirePumpSimColors.steel.withValues(alpha: 0.9)),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+        backgroundColor: activeFilterCount > 0 ? FirePumpSimColors.red.withValues(alpha: 0.10) : FirePumpSimColors.charcoal3,
+      ).copyWith(overlayColor: const WidgetStatePropertyAll(Colors.transparent)),
+      icon: const Icon(Icons.tune_rounded, size: 18, color: FirePumpSimColors.textHigh),
+      label: Text(label, style: textTheme.labelLarge?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
     );
   }
 }
