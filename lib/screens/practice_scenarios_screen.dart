@@ -38,6 +38,16 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
   String _selectedMode = 'All Modes';
   String _selectedSort = 'Recommended';
 
+  List<String> get typeOptions {
+    final set = <String>{};
+    for (final s in _allScenarios) {
+      final t = s.type.trim();
+      if (t.isNotEmpty) set.add(t);
+    }
+    final sorted = set.toList(growable: false)..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    return <String>['All Categories', ...sorted];
+  }
+
   @override
   void initState() {
     super.initState();
