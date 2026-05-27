@@ -47,11 +47,11 @@ class CalculatorOverlaySheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topInset = MediaQuery.viewInsetsOf(context).top;
+    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
     return SafeArea(
       top: false,
       child: Padding(
-        padding: EdgeInsets.only(top: topInset),
+        padding: EdgeInsets.only(bottom: bottomInset),
         child: ClipRRect(
           borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
           child: DecoratedBox(
@@ -523,8 +523,10 @@ class _CalculatorPad extends StatelessWidget {
           Expanded(
             child: LayoutBuilder(
               builder: (context, c) {
-                final spacing = 10.0;
-                final buttonH = ((c.maxHeight - spacing * 4) / 5).clamp(54.0, 74.0);
+                final compact = c.maxHeight < 360;
+                final spacing = compact ? 6.0 : 10.0;
+                final maxButtonH = compact ? 58.0 : 74.0;
+                final buttonH = ((c.maxHeight - spacing * 4) / 5).clamp(40.0, maxButtonH);
                 return Column(
                   children: [
                     Row(
@@ -907,13 +909,11 @@ class _HelperCardFrictionLossState extends State<_HelperCardFrictionLoss> {
       title: 'Friction Loss',
       subtitle: 'FL = C × (GPM/100)² × (ft/100)',
       children: [
-        Row(
+        _ResponsiveFieldRow(
           children: [
-            Expanded(child: _NumField(label: 'C', controller: _c)),
-            const SizedBox(width: 10),
-            Expanded(child: _NumField(label: 'GPM', controller: _gpm)),
-            const SizedBox(width: 10),
-            Expanded(child: _NumField(label: 'Length', controller: _len, suffix: 'ft')),
+            _NumField(label: 'C', controller: _c),
+            _NumField(label: 'GPM', controller: _gpm),
+            _NumField(label: 'Length', controller: _len, suffix: 'ft'),
           ],
         ),
         const SizedBox(height: 10),
@@ -957,11 +957,10 @@ class _HelperCardElevationState extends State<_HelperCardElevation> {
       title: 'Elevation',
       subtitle: 'EP = feet × 0.434 psi/ft (physics)',
       children: [
-        Row(
+        _ResponsiveFieldRow(
           children: [
-            Expanded(child: _NumField(label: 'Feet', controller: _feet, suffix: 'ft')),
-            const SizedBox(width: 10),
-            Expanded(child: _StaticHint(text: 'Uphill adds, downhill subtracts')), 
+            _NumField(label: 'Feet', controller: _feet, suffix: 'ft'),
+            _StaticHint(text: 'Uphill adds, downhill subtracts'),
           ],
         ),
         const SizedBox(height: 10),
@@ -1008,11 +1007,10 @@ class _HelperCardSmoothBoreFlowState extends State<_HelperCardSmoothBoreFlow> {
       title: 'Smooth Bore Flow',
       subtitle: 'GPM = 29.7 × d² × √NP',
       children: [
-        Row(
+        _ResponsiveFieldRow(
           children: [
-            Expanded(child: _NumField(label: 'Tip d', controller: _diameter, suffix: 'in')),
-            const SizedBox(width: 10),
-            Expanded(child: _NumField(label: 'NP', controller: _np, suffix: 'psi')),
+            _NumField(label: 'Tip d', controller: _diameter, suffix: 'in'),
+            _NumField(label: 'NP', controller: _np, suffix: 'psi'),
           ],
         ),
         const SizedBox(height: 10),
@@ -1075,19 +1073,17 @@ class _HelperCardNozzleReactionState extends State<_HelperCardNozzleReaction> {
       ),
       children: [
         if (_mode == 0)
-          Row(
+          _ResponsiveFieldRow(
             children: [
-              Expanded(child: _NumField(label: 'GPM', controller: _gpm)),
-              const SizedBox(width: 10),
-              Expanded(child: _NumField(label: 'NP', controller: _np, suffix: 'psi')),
+              _NumField(label: 'GPM', controller: _gpm),
+              _NumField(label: 'NP', controller: _np, suffix: 'psi'),
             ],
           )
         else
-          Row(
+          _ResponsiveFieldRow(
             children: [
-              Expanded(child: _NumField(label: 'Tip d', controller: _diameter, suffix: 'in')),
-              const SizedBox(width: 10),
-              Expanded(child: _NumField(label: 'NP', controller: _np, suffix: 'psi')),
+              _NumField(label: 'Tip d', controller: _diameter, suffix: 'in'),
+              _NumField(label: 'NP', controller: _np, suffix: 'psi'),
             ],
           ),
         const SizedBox(height: 10),
@@ -1138,11 +1134,10 @@ class _HelperCardRelaySpacingState extends State<_HelperCardRelaySpacing> {
       title: 'Relay Spacing',
       subtitle: 'Distance = usable pressure ÷ FL/100′ × 100',
       children: [
-        Row(
+        _ResponsiveFieldRow(
           children: [
-            Expanded(child: _NumField(label: 'Usable', controller: _usable, suffix: 'psi')),
-            const SizedBox(width: 10),
-            Expanded(child: _NumField(label: 'FL/100′', controller: _flPer100, suffix: 'psi')),
+            _NumField(label: 'Usable', controller: _usable, suffix: 'psi'),
+            _NumField(label: 'FL/100′', controller: _flPer100, suffix: 'psi'),
           ],
         ),
         const SizedBox(height: 10),
@@ -1193,11 +1188,10 @@ class _HelperCardTenderShuttleState extends State<_HelperCardTenderShuttle> {
       title: 'Tender Shuttle',
       subtitle: 'Shuttle GPM = usable gallons ÷ cycle time (min)',
       children: [
-        Row(
+        _ResponsiveFieldRow(
           children: [
-            Expanded(child: _NumField(label: 'Usable', controller: _gal, suffix: 'gal')),
-            const SizedBox(width: 10),
-            Expanded(child: _NumField(label: 'Cycle', controller: _cycle, suffix: 'min')),
+            _NumField(label: 'Usable', controller: _gal, suffix: 'gal'),
+            _NumField(label: 'Cycle', controller: _cycle, suffix: 'min'),
           ],
         ),
         const SizedBox(height: 10),
@@ -1235,13 +1229,41 @@ class _HelperCardShell extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(title, style: textTheme.titleMedium?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
-              ),
-              if (headerTrailing != null) headerTrailing!,
-            ],
+          LayoutBuilder(
+            builder: (context, cst) {
+              final compactHeader = headerTrailing != null && cst.maxWidth < 380;
+              final titleText = Text(
+                title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: textTheme.titleMedium?.copyWith(
+                  color: FirePumpSimColors.textHigh,
+                  fontWeight: FontWeight.w900,
+                ),
+              );
+
+              if (compactHeader) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    titleText,
+                    const SizedBox(height: 8),
+                    Align(alignment: Alignment.centerLeft, child: headerTrailing!),
+                  ],
+                );
+              }
+
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(child: titleText),
+                  if (headerTrailing != null) ...[
+                    const SizedBox(width: 10),
+                    Flexible(child: Align(alignment: Alignment.centerRight, child: headerTrailing!)),
+                  ],
+                ],
+              );
+            },
           ),
           const SizedBox(height: 6),
           Text(subtitle, style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed, height: 1.35)),
@@ -1249,6 +1271,35 @@ class _HelperCardShell extends StatelessWidget {
           ...children,
         ],
       ),
+    );
+  }
+}
+
+class _ResponsiveFieldRow extends StatelessWidget {
+  const _ResponsiveFieldRow({required this.children});
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, cst) {
+        final count = children.length;
+        final columns = cst.maxWidth >= 620
+            ? count
+            : cst.maxWidth >= 420
+                ? math.min(2, count)
+                : 1;
+        final spacing = columns == 1 ? 0.0 : 10.0;
+        final itemWidth = columns == 1 ? cst.maxWidth : (cst.maxWidth - spacing * (columns - 1)) / columns;
+
+        return Wrap(
+          spacing: spacing,
+          runSpacing: 10,
+          children: [
+            for (final child in children) SizedBox(width: itemWidth, child: child),
+          ],
+        );
+      },
     );
   }
 }
@@ -1318,44 +1369,89 @@ class _ComputeRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-            decoration: BoxDecoration(
-              color: FirePumpSimColors.charcoal3.withValues(alpha: 0.65),
-              borderRadius: BorderRadius.circular(AppRadius.lg),
-              border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.55)),
-            ),
-            child: Text(output, style: textTheme.titleSmall?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
-          ),
+
+    Widget outputBox() {
+      return Container(
+        width: double.infinity,
+        constraints: const BoxConstraints(minHeight: 46),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        decoration: BoxDecoration(
+          color: FirePumpSimColors.charcoal3.withValues(alpha: 0.65),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.55)),
         ),
-        const SizedBox(width: 10),
-        SizedBox(
-          height: 46,
-          child: FilledButton(
-            onPressed: onCompute,
-            style: FilledButton.styleFrom(
-              backgroundColor: FirePumpSimColors.red,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.lg)),
-            ).copyWith(overlayColor: const WidgetStatePropertyAll(Colors.transparent)),
-            child: Text('Compute', style: textTheme.labelLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w900)),
-          ),
+        child: Text(
+          output,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: textTheme.titleSmall?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900),
         ),
-        const SizedBox(width: 10),
-        SizedBox(
-          height: 46,
-          child: OutlinedButton(
-            onPressed: onUse,
-            style: OutlinedButton.styleFrom(
-              side: BorderSide(color: FirePumpSimColors.steel.withValues(alpha: 0.7)),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.lg)),
-            ).copyWith(overlayColor: const WidgetStatePropertyAll(Colors.transparent)),
-            child: Text('Use', style: textTheme.labelLarge?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
-          ),
+      );
+    }
+
+    Widget computeButton() {
+      return SizedBox(
+        height: 46,
+        child: FilledButton(
+          onPressed: onCompute,
+          style: FilledButton.styleFrom(
+            backgroundColor: FirePumpSimColors.red,
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            minimumSize: const Size(96, 46),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.lg)),
+          ).copyWith(overlayColor: const WidgetStatePropertyAll(Colors.transparent)),
+          child: Text('Compute', style: textTheme.labelLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w900)),
         ),
-      ],
+      );
+    }
+
+    Widget useButton() {
+      return SizedBox(
+        height: 46,
+        child: OutlinedButton(
+          onPressed: onUse,
+          style: OutlinedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            minimumSize: const Size(76, 46),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            side: BorderSide(color: FirePumpSimColors.steel.withValues(alpha: 0.7)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.lg)),
+          ).copyWith(overlayColor: const WidgetStatePropertyAll(Colors.transparent)),
+          child: Text('Use', style: textTheme.labelLarge?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
+        ),
+      );
+    }
+
+    return LayoutBuilder(
+      builder: (context, cst) {
+        if (cst.maxWidth < 480) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              outputBox(),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(child: computeButton()),
+                  const SizedBox(width: 10),
+                  Expanded(child: useButton()),
+                ],
+              ),
+            ],
+          );
+        }
+
+        return Row(
+          children: [
+            Expanded(child: outputBox()),
+            const SizedBox(width: 10),
+            computeButton(),
+            const SizedBox(width: 10),
+            useButton(),
+          ],
+        );
+      },
     );
   }
 }
@@ -1369,35 +1465,7 @@ class _Row4 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, cst) {
-        final twoRows = cst.maxWidth < 460;
-        if (!twoRows) {
-          return Row(
-            children: [
-              Expanded(child: a),
-              const SizedBox(width: 10),
-              Expanded(child: b),
-              const SizedBox(width: 10),
-              Expanded(child: c),
-              const SizedBox(width: 10),
-              Expanded(child: d),
-            ],
-          );
-        }
-        return Column(
-          children: [
-            Row(
-              children: [Expanded(child: a), const SizedBox(width: 10), Expanded(child: b)],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [Expanded(child: c), const SizedBox(width: 10), Expanded(child: d)],
-            ),
-          ],
-        );
-      },
-    );
+    return _ResponsiveFieldRow(children: [a, b, c, d]);
   }
 }
 
