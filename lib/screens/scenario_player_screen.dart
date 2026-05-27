@@ -28,6 +28,7 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
   bool _hasChecked = false;
   bool _isCorrect = false;
   bool _showExplanation = false;
+  bool _nextInFlight = false;
 
   @override
   void initState() {
@@ -144,6 +145,49 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
     }
   }
 
+  void _goBackToPicker() {
+    // The picker uses context.go(...), so there may not be a route to pop.
+    // Navigate directly back to the picker so the top-left back button always works.
+    context.go('/practice-scenarios');
+  }
+
+  Future<void> _startNextScenario() async {
+    if (_nextInFlight) return;
+    _nextInFlight = true;
+    try {
+      final playable = await _repo.loadPlayableProblems();
+      if (!mounted) return;
+
+      if (playable.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No additional scenarios are available.'),
+            backgroundColor: FirePumpSimColors.charcoal2,
+          ),
+        );
+        return;
+      }
+
+      final currentId = widget.problemId.trim();
+      final currentIndex = playable.indexWhere((p) => p.problemId == currentId);
+      final nextIndex = currentIndex < 0 ? 0 : (currentIndex + 1) % playable.length;
+      final next = playable[nextIndex];
+
+      context.go('/scenario-player?problemId=${Uri.encodeComponent(next.problemId)}');
+    } catch (e) {
+      debugPrint('Failed to start next scenario: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Unable to load the next scenario.'),
+          backgroundColor: FirePumpSimColors.charcoal2,
+        ),
+      );
+    } finally {
+      _nextInFlight = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -173,7 +217,7 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     IconButton(
-                      onPressed: () => context.pop(),
+                      onPressed: _goBackToPicker,
                       icon: const Icon(
                         Icons.arrow_back,
                         color: FirePumpSimColors.textHigh,
@@ -236,7 +280,7 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
                         Row(
                           children: [
                             IconButton(
-                              onPressed: () => context.pop(),
+                              onPressed: _goBackToPicker,
                               icon: const Icon(Icons.arrow_back, color: FirePumpSimColors.textHigh),
                               style: IconButton.styleFrom(
                                 backgroundColor: FirePumpSimColors.charcoal2,
@@ -266,6 +310,8 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
                                 ],
                               ),
                             ),
+                            const SizedBox(width: 8),
+                            _NextScenarioButton(onPressed: _startNextScenario),
                           ],
                         ),
                         const SizedBox(height: 8),
@@ -319,6 +365,40 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
               ),
             );
           },
+        ),
+      ),
+    );
+  }
+}
+
+
+class _NextScenarioButton extends StatelessWidget {
+  const _NextScenarioButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 44),
+      child: TextButton.icon(
+        onPressed: onPressed,
+        icon: const Icon(Icons.skip_next_rounded, size: 20),
+        label: Text(
+          'Next',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
+        ),
+        style: TextButton.styleFrom(
+          foregroundColor: FirePumpSimColors.textHigh,
+          backgroundColor: FirePumpSimColors.red.withValues(alpha: 0.18),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+            side: BorderSide(color: FirePumpSimColors.red.withValues(alpha: 0.65)),
+          ),
         ),
       ),
     );
