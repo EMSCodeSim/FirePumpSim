@@ -44,13 +44,11 @@ class _HomeScreenState extends State<HomeScreen> {
     final screenHeight = MediaQuery.sizeOf(context).height;
     final screenWidth = MediaQuery.sizeOf(context).width;
     final bool isTight = screenHeight < 720;
-    // The banner artwork has important content at the very top (logo/flame).
-    // Even with BoxFit.contain, a too-short header can *feel* like it's cropped.
-    // So we size the header by width (similar to an AspectRatio) with sensible clamps.
-    // Increase the height range so BoxFit.fitWidth never clips the top artwork
-    // on taller-narrow phones.
-    final double heroHeight = (screenWidth / (isTight ? 1.65 : 1.58)).clamp(240.0, 340.0);
-    final double heroTopInset = isTight ? 10 : 12;
+    // The branded banner artwork is a 2:1 image. Size the header close to
+    // that aspect ratio so the image ends cleanly instead of leaving a large
+    // charcoal/black dead area under the banner.
+    final double heroTopInset = isTight ? 6 : 8;
+    final double heroHeight = ((screenWidth / 2.0) + heroTopInset).clamp(182.0, 260.0);
     final double cardHeight = isTight ? 62 : 68;
     const double cardGap = 12;
 
@@ -63,17 +61,17 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             // Add breathing room above the hero so the artwork never feels clipped
             // against the very top edge (even on devices with small safe areas).
-            const SizedBox(height: AppSpacing.sm),
+            const SizedBox(height: 4),
             // Edge-to-edge branded header: no side padding, no outer card styling.
             _HeroHeader(height: heroHeight, topInset: heroTopInset),
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.md, 16, AppSpacing.md, 0),
+                padding: const EdgeInsets.fromLTRB(AppSpacing.md, 8, AppSpacing.md, 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const _SectionLabel('TRAINING'),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 6),
                     _MainMenuCard(
                       height: cardHeight,
                       title: 'Practice Scenarios',
