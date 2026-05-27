@@ -96,48 +96,60 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final width = MediaQuery.sizeOf(context).width;
+    final maxContentWidth = width >= 900 ? 980.0 : double.infinity;
 
     final typeOptions = _buildTypeOptions(_allScenarios);
     final filtered = _filterLocal(_allScenarios);
     final grouped = _groupFilteredByPack(filtered);
 
-    // On small phones, we keep the "button area" (header + filter card + summary)
-    // non-scrollable so it stays in view; only the results list scrolls.
+    Widget pageContent(Widget child) {
+      return Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: maxContentWidth),
+          child: child,
+        ),
+      );
+    }
+
     return Scaffold(
+      backgroundColor: FirePumpSimColors.charcoal,
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
-            _CompactHeader(
-              title: 'Pick Scenario',
-              subtitle: 'Find a pump problem or start random practice',
-              // Locked behavior: Back from Scenario Picker always returns to Home.
-              // (This screen may be opened from multiple entry points, so pop() can be ambiguous.)
-              onBack: () => context.go(AppRoutes.home),
+            pageContent(
+              _CompactHeader(
+                title: 'Practice Scenarios',
+                subtitle: 'Choose a Driver Operator problem, search by topic, or start random practice.',
+                // Locked behavior: Back from Scenario Picker always returns to Home.
+                // (This screen may be opened from multiple entry points, so pop() can be ambiguous.)
+                onBack: () => context.go(AppRoutes.home),
+              ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.md),
-              child: _FilterCard(
-                activeFilterCount: _hasActiveFilters ? _activeFilterCount : 0,
-                searchController: _searchController,
-                onRandom: _startRandomFromCurrentFilters,
-                typeValue: _selectedType,
-                levelValue: _selectedLevel,
-                modeValue: _selectedMode,
-                sortValue: _selectedSort,
-                typeOptions: typeOptions,
-                onTypeChanged: (v) => setState(() => _selectedType = v),
-                onLevelChanged: (v) => setState(() => _selectedLevel = v),
-                onModeChanged: (v) => setState(() => _selectedMode = v),
-                onSortChanged: (v) => setState(() => _selectedSort = v),
-                onClear: _clearAll,
+              padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.md),
+              child: pageContent(
+                _FilterCard(
+                  activeFilterCount: _hasActiveFilters ? _activeFilterCount : 0,
+                  searchController: _searchController,
+                  onRandom: _startRandomFromCurrentFilters,
+                  typeValue: _selectedType,
+                  levelValue: _selectedLevel,
+                  modeValue: _selectedMode,
+                  sortValue: _selectedSort,
+                  typeOptions: typeOptions,
+                  onTypeChanged: (v) => setState(() => _selectedType = v),
+                  onLevelChanged: (v) => setState(() => _selectedLevel = v),
+                  onModeChanged: (v) => setState(() => _selectedMode = v),
+                  onSortChanged: (v) => setState(() => _selectedSort = v),
+                  onClear: _clearAll,
+                ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.sm),
-              child: _ResultsSummary(count: filtered.length, filtered: _hasActiveFilters),
+              child: pageContent(_ResultsSummary(count: filtered.length, filtered: _hasActiveFilters, onClear: _clearAll)),
             ),
             Expanded(
               child: _loading
@@ -145,11 +157,18 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
                   : filtered.isEmpty
                       ? Padding(
                           padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.lg, AppSpacing.md, AppSpacing.lg),
-                          child: _EmptyState(onClear: _clearAll),
+                          child: pageContent(_EmptyState(onClear: _clearAll)),
                         )
                       : ListView(
                           padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.lg),
-                          children: [...grouped, const SizedBox(height: 90)],
+                          children: [
+                            pageContent(
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [...grouped, const SizedBox(height: 90)],
+                              ),
+                            ),
+                          ],
                         ),
             ),
           ],
@@ -157,6 +176,7 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
       ),
     );
   }
+
 
   List<Widget> _groupFilteredByPack(List<PracticeScenario> filtered) {
     if (_unlockedPacks.isEmpty) return const <Widget>[];
@@ -542,45 +562,88 @@ class _CompactHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Padding(
-      // Keep the header visually tight so the first content card (practice box)
-      // sits closer to the banner area.
-      padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.xs, AppSpacing.md, 0),
-      child: Row(
-        children: [
-          IconButton(
-            onPressed: onBack,
-            icon: const Icon(Icons.arrow_back, color: FirePumpSimColors.textHigh),
-            visualDensity: VisualDensity.compact,
-            style: IconButton.styleFrom(
-              backgroundColor: FirePumpSimColors.charcoal2,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-              side: BorderSide(color: FirePumpSimColors.steel.withValues(alpha: 0.8)),
-              padding: const EdgeInsets.all(10),
-              minimumSize: const Size(44, 44),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, 0),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.md),
+        decoration: BoxDecoration(
+          color: FirePumpSimColors.charcoal2,
+          borderRadius: BorderRadius.circular(AppRadius.xl),
+          border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.75)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.22),
+              blurRadius: 18,
+              offset: const Offset(0, 10),
             ),
-          ),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: textTheme.headlineSmall?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed, height: 1.35),
-                ),
-              ],
+          ],
+        ),
+        child: Row(
+          children: [
+            IconButton(
+              onPressed: onBack,
+              icon: const Icon(Icons.arrow_back, color: FirePumpSimColors.textHigh),
+              visualDensity: VisualDensity.compact,
+              style: IconButton.styleFrom(
+                backgroundColor: FirePumpSimColors.charcoal3,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                side: BorderSide(color: FirePumpSimColors.steel.withValues(alpha: 0.85)),
+                padding: const EdgeInsets.all(10),
+                minimumSize: const Size(44, 44),
+              ),
             ),
-          ),
-        ],
+            const SizedBox(width: AppSpacing.md),
+            Container(
+              height: 46,
+              width: 46,
+              decoration: BoxDecoration(
+                color: FirePumpSimColors.red.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: FirePumpSimColors.red.withValues(alpha: 0.45)),
+              ),
+              child: const Icon(Icons.local_fire_department_rounded, color: FirePumpSimColors.red, size: 24),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: textTheme.titleLarge?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900, height: 1.05),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: FirePumpSimColors.charcoal3,
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.75)),
+                        ),
+                        child: Text(
+                          'Starter Pack',
+                          style: textTheme.labelSmall?.copyWith(color: FirePumpSimColors.textMed, fontWeight: FontWeight.w900),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    subtitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed, height: 1.35, fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -689,104 +752,100 @@ class _FilterCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final width = MediaQuery.sizeOf(context).width;
-    final isNarrow = width < 420;
     return Container(
       decoration: BoxDecoration(
         color: FirePumpSimColors.charcoal2,
         borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.85)),
+        border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.80)),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(AppRadius.xl),
         child: Material(
           color: Colors.transparent,
-          child: Column(
-            children: [
-              Padding(
-                // Keep the top of this card tight so the search + Random button sit closer to the page banner.
-                padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.xs),
-                child: Row(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
                   children: [
-                    const Icon(Icons.tune, color: FirePumpSimColors.textHigh, size: 18),
+                    const Icon(Icons.manage_search_rounded, color: FirePumpSimColors.red, size: 20),
                     const SizedBox(width: 10),
-                    Text('Filters', style: textTheme.labelLarge?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
-                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Find a scenario',
+                        style: textTheme.titleSmall?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900),
+                      ),
+                    ),
                     if (activeFilterCount > 0)
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                         decoration: BoxDecoration(
-                          color: FirePumpSimColors.charcoal3,
+                          color: FirePumpSimColors.red.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(999),
-                          border: Border.all(color: FirePumpSimColors.red.withValues(alpha: 0.55)),
+                          border: Border.all(color: FirePumpSimColors.red.withValues(alpha: 0.45)),
                         ),
                         child: Text(
                           '$activeFilterCount active',
                           style: textTheme.labelSmall?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900),
                         ),
                       ),
-                    const Spacer(),
-                    TextButton(
-                      onPressed: onClear,
-                      style: TextButton.styleFrom(foregroundColor: FirePumpSimColors.textMed).copyWith(
-                        overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-                      ),
-                      child: Text('Clear Filters', style: textTheme.labelLarge?.copyWith(color: FirePumpSimColors.textMed, fontWeight: FontWeight.w900)),
-                    ),
                   ],
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.md),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (isNarrow) ...[
-                      _SearchField(controller: searchController),
-                      const SizedBox(height: AppSpacing.sm),
-                      _RandomButton(onPressed: onRandom),
-                    ] else
-                      Row(
+                const SizedBox(height: AppSpacing.md),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final stackSearch = constraints.maxWidth < 560;
+                    if (stackSearch) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Expanded(child: _SearchField(controller: searchController)),
-                          const SizedBox(width: AppSpacing.sm),
-                          SizedBox(width: 160, child: _RandomButton(onPressed: onRandom)),
+                          _SearchField(controller: searchController),
+                          const SizedBox(height: AppSpacing.sm),
+                          _RandomButton(onPressed: onRandom),
                         ],
-                      ),
-                    const SizedBox(height: AppSpacing.sm),
-                    _FilterDropdownGrid(
-                      isNarrow: isNarrow,
+                      );
+                    }
+                    return Row(
                       children: [
-                        _DropdownField(
-                          label: 'Category',
-                          value: typeOptions.contains(typeValue) ? typeValue : typeOptions.first,
-                          options: typeOptions,
-                          onChanged: onTypeChanged,
-                        ),
-                        _DropdownField(
-                          label: 'Difficulty',
-                          value: _levels.contains(levelValue) ? levelValue : _levels.first,
-                          options: _levels,
-                          onChanged: onLevelChanged,
-                        ),
-                        _DropdownField(
-                          label: 'Mode',
-                          value: _modes.contains(modeValue) ? modeValue : _modes.first,
-                          options: _modes,
-                          onChanged: onModeChanged,
-                        ),
-                        _DropdownField(
-                          label: 'Sort',
-                          value: _sorts.contains(sortValue) ? sortValue : _sorts.first,
-                          options: _sorts,
-                          onChanged: onSortChanged,
-                        ),
+                        Expanded(child: _SearchField(controller: searchController)),
+                        const SizedBox(width: AppSpacing.sm),
+                        SizedBox(width: 170, child: _RandomButton(onPressed: onRandom)),
                       ],
+                    );
+                  },
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                _FilterDropdownGrid(
+                  children: [
+                    _DropdownField(
+                      label: 'Category',
+                      value: typeOptions.contains(typeValue) ? typeValue : typeOptions.first,
+                      options: typeOptions,
+                      onChanged: onTypeChanged,
+                    ),
+                    _DropdownField(
+                      label: 'Difficulty',
+                      value: _levels.contains(levelValue) ? levelValue : _levels.first,
+                      options: _levels,
+                      onChanged: onLevelChanged,
+                    ),
+                    _DropdownField(
+                      label: 'Mode',
+                      value: _modes.contains(modeValue) ? modeValue : _modes.first,
+                      options: _modes,
+                      onChanged: onModeChanged,
+                    ),
+                    _DropdownField(
+                      label: 'Sort',
+                      value: _sorts.contains(sortValue) ? sortValue : _sorts.first,
+                      options: _sorts,
+                      onChanged: onSortChanged,
                     ),
                   ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -795,33 +854,38 @@ class _FilterCard extends StatelessWidget {
 }
 
 class _FilterDropdownGrid extends StatelessWidget {
-  const _FilterDropdownGrid({required this.isNarrow, required this.children});
+  const _FilterDropdownGrid({required this.children});
 
-  final bool isNarrow;
   final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
-    if (isNarrow) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          for (var i = 0; i < children.length; i++) ...[
-            if (i > 0) const SizedBox(height: AppSpacing.sm),
-            children[i],
-          ],
-        ],
-      );
-    }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        if (width < 500) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var i = 0; i < children.length; i++) ...[
+                if (i > 0) const SizedBox(height: AppSpacing.sm),
+                children[i],
+              ],
+            ],
+          );
+        }
 
-    return GridView.count(
-      crossAxisCount: 2,
-      mainAxisSpacing: AppSpacing.sm,
-      crossAxisSpacing: AppSpacing.sm,
-      childAspectRatio: 2.65,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      children: children,
+        final columns = width >= 820 ? 4 : 2;
+        return GridView.count(
+          crossAxisCount: columns,
+          mainAxisSpacing: AppSpacing.sm,
+          crossAxisSpacing: AppSpacing.sm,
+          childAspectRatio: columns == 4 ? 2.45 : 2.9,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          children: children,
+        );
+      },
     );
   }
 }
@@ -875,20 +939,35 @@ class _DropdownField extends StatelessWidget {
 }
 
 class _ResultsSummary extends StatelessWidget {
-  const _ResultsSummary({required this.count, required this.filtered});
+  const _ResultsSummary({required this.count, required this.filtered, required this.onClear});
 
   final int count;
   final bool filtered;
+  final VoidCallback onClear;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Row(
       children: [
-        Text(
-          'Showing $count scenarios${filtered ? ' (filtered)' : ''}',
-          style: textTheme.labelLarge?.copyWith(color: FirePumpSimColors.textMed, fontWeight: FontWeight.w800),
+        Icon(Icons.view_list_rounded, size: 16, color: FirePumpSimColors.textMed.withValues(alpha: 0.85)),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            filtered ? '$count matching scenarios' : '$count scenarios ready',
+            style: textTheme.labelLarge?.copyWith(color: FirePumpSimColors.textMed, fontWeight: FontWeight.w800),
+          ),
         ),
+        if (filtered)
+          TextButton(
+            onPressed: onClear,
+            style: TextButton.styleFrom(
+              foregroundColor: FirePumpSimColors.textHigh,
+              visualDensity: VisualDensity.compact,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            ).copyWith(overlayColor: const WidgetStatePropertyAll(Colors.transparent)),
+            child: Text('Reset', style: textTheme.labelLarge?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
+          ),
       ],
     );
   }
@@ -966,19 +1045,23 @@ class _ScenarioListCard extends StatelessWidget {
   final VoidCallback onPreview;
   final VoidCallback onStart;
 
+  String get _problemCountLabel {
+    final count = variations <= 0 ? 1 : variations;
+    return '$count problem${count == 1 ? '' : 's'}';
+  }
+
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     return Container(
       decoration: BoxDecoration(
         color: FirePumpSimColors.charcoal2,
         borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.85)),
+        border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.80)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.25),
-            blurRadius: 10,
-            offset: const Offset(0, 6),
+            color: Colors.black.withValues(alpha: 0.18),
+            blurRadius: 14,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -989,104 +1072,135 @@ class _ScenarioListCard extends StatelessWidget {
           child: InkWell(
             onTap: onPreview,
             splashFactory: NoSplash.splashFactory,
-            highlightColor: Colors.white.withValues(alpha: 0.04),
+            highlightColor: Colors.white.withValues(alpha: 0.035),
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.md),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _ScenarioThumbnail(assetPath: imageAssetPath),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                title,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: textTheme.titleMedium?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900, height: 1.15),
-                              ),
-                            ),
-                            Container(
-                              width: 4,
-                              height: 32,
-                              decoration: BoxDecoration(
-                                color: FirePumpSimColors.red,
-                                borderRadius: BorderRadius.circular(999),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            _Badge(label: chip, icon: Icons.local_fire_department, accent: FirePumpSimColors.red),
-                            _Badge(label: type, icon: Icons.category, accent: FirePumpSimColors.textMed),
-                            _Badge(label: difficulty, icon: Icons.trending_up, accent: FirePumpSimColors.textMed),
-                            _Badge(
-                              label: timedModeAvailable ? 'Timed' : 'Untimed',
-                              icon: timedModeAvailable ? Icons.timer : Icons.timer_off,
-                              accent: FirePumpSimColors.textMed,
-                            ),
-                            if (variations > 0) _Badge(label: '$variations variations', icon: Icons.layers, accent: FirePumpSimColors.textMed),
-                          ],
-                        ),
-                        const SizedBox(height: AppSpacing.sm),
-                        Text(
-                          questionPreview,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed, height: 1.4),
-                        ),
-                        const SizedBox(height: AppSpacing.md),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: FilledButton.icon(
-                                onPressed: onStart,
-                                style: FilledButton.styleFrom(
-                                  backgroundColor: FirePumpSimColors.red,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
-                                ).copyWith(overlayColor: const WidgetStatePropertyAll(Colors.transparent)),
-                                icon: const Icon(Icons.play_arrow, size: 18, color: Colors.white),
-                                label: Text('Start', style: textTheme.labelLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w900)),
-                              ),
-                            ),
-                            const SizedBox(width: AppSpacing.sm),
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed: onPreview,
-                                style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                                  side: BorderSide(color: FirePumpSimColors.steel.withValues(alpha: 0.9)),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
-                                  foregroundColor: FirePumpSimColors.textHigh,
-                                  backgroundColor: FirePumpSimColors.charcoal2,
-                                ).copyWith(overlayColor: const WidgetStatePropertyAll(Colors.transparent)),
-                                icon: const Icon(Icons.visibility, size: 18, color: FirePumpSimColors.textHigh),
-                                label: Text('Preview', style: textTheme.labelLarge?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final compact = constraints.maxWidth < 520;
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _ScenarioThumbnail(assetPath: imageAssetPath, size: compact ? 78 : 96),
+                          const SizedBox(width: AppSpacing.md),
+                          Expanded(child: _ScenarioCardBody(card: this)),
+                        ],
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          if (chip.trim().isNotEmpty) _Badge(label: chip, icon: Icons.local_fire_department, accent: FirePumpSimColors.red),
+                          if (type.trim().isNotEmpty) _Badge(label: type, icon: Icons.category, accent: FirePumpSimColors.textMed),
+                          _Badge(label: difficulty, icon: Icons.trending_up, accent: FirePumpSimColors.textMed),
+                          _Badge(
+                            label: timedModeAvailable ? 'Timed mode' : 'Untimed',
+                            icon: timedModeAvailable ? Icons.timer : Icons.timer_off,
+                            accent: FirePumpSimColors.textMed,
+                          ),
+                          _Badge(label: _problemCountLabel, icon: Icons.layers, accent: FirePumpSimColors.textMed),
+                        ],
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      _ScenarioCardActions(onStart: onStart, onPreview: onPreview),
+                    ],
+                  );
+                },
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ScenarioCardBody extends StatelessWidget {
+  const _ScenarioCardBody({required this.card});
+
+  final _ScenarioListCard card;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (card.type.trim().isNotEmpty) ...[
+          Text(
+            card.type.toUpperCase(),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: textTheme.labelSmall?.copyWith(
+              color: FirePumpSimColors.redSoft,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 0.8,
+            ),
+          ),
+          const SizedBox(height: 4),
+        ],
+        Text(
+          card.title,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: textTheme.titleMedium?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900, height: 1.16),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          card.questionPreview,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed, height: 1.4, fontWeight: FontWeight.w600),
+        ),
+      ],
+    );
+  }
+}
+
+class _ScenarioCardActions extends StatelessWidget {
+  const _ScenarioCardActions({required this.onStart, required this.onPreview});
+
+  final VoidCallback onStart;
+  final VoidCallback onPreview;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: onPreview,
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+              side: BorderSide(color: FirePumpSimColors.steel.withValues(alpha: 0.9)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+              foregroundColor: FirePumpSimColors.textHigh,
+              backgroundColor: FirePumpSimColors.charcoal3.withValues(alpha: 0.55),
+            ).copyWith(overlayColor: const WidgetStatePropertyAll(Colors.transparent)),
+            icon: const Icon(Icons.visibility_rounded, size: 18, color: FirePumpSimColors.textHigh),
+            label: Text('Details', style: textTheme.labelLarge?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
+          ),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(
+          child: FilledButton.icon(
+            onPressed: onStart,
+            style: FilledButton.styleFrom(
+              backgroundColor: FirePumpSimColors.red,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+            ).copyWith(overlayColor: const WidgetStatePropertyAll(Colors.transparent)),
+            icon: const Icon(Icons.play_arrow_rounded, size: 18, color: Colors.white),
+            label: Text('Start', style: textTheme.labelLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w900)),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -1102,6 +1216,7 @@ class _Badge extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Container(
+      constraints: const BoxConstraints(maxWidth: 230),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
       decoration: BoxDecoration(
         color: FirePumpSimColors.charcoal3.withValues(alpha: 0.9),
@@ -1113,9 +1228,13 @@ class _Badge extends StatelessWidget {
         children: [
           Icon(icon, size: 14, color: accent),
           const SizedBox(width: 6),
-          Text(
-            label,
-            style: textTheme.labelSmall?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900),
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: textTheme.labelSmall?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900),
+            ),
           ),
         ],
       ),
@@ -1124,16 +1243,17 @@ class _Badge extends StatelessWidget {
 }
 
 class _ScenarioThumbnail extends StatelessWidget {
-  const _ScenarioThumbnail({required this.assetPath});
+  const _ScenarioThumbnail({required this.assetPath, this.size = 92});
 
   final String assetPath;
+  final double size;
 
   @override
   Widget build(BuildContext context) {
     if (assetPath.trim().isEmpty) {
       return Container(
-        height: 92,
-        width: 92,
+        height: size,
+        width: size,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppRadius.lg),
           border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.8)),
@@ -1143,8 +1263,8 @@ class _ScenarioThumbnail extends StatelessWidget {
       );
     }
     return Container(
-      height: 92,
-      width: 92,
+      height: size,
+      width: size,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppRadius.lg),
         border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.8)),
@@ -1153,7 +1273,7 @@ class _ScenarioThumbnail extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(AppRadius.lg),
         child: ColorFiltered(
-          colorFilter: ColorFilter.mode(FirePumpSimColors.charcoal.withValues(alpha: 0.55), BlendMode.darken),
+          colorFilter: ColorFilter.mode(FirePumpSimColors.charcoal.withValues(alpha: 0.28), BlendMode.darken),
           child: Image.asset(
             assetPath,
             fit: BoxFit.cover,
