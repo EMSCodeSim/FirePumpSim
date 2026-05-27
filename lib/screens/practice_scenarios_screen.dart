@@ -38,16 +38,6 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
   String _selectedMode = 'All Modes';
   String _selectedSort = 'Recommended';
 
-  List<String> get typeOptions {
-    final set = <String>{};
-    for (final s in _allScenarios) {
-      final t = s.type.trim();
-      if (t.isNotEmpty) set.add(t);
-    }
-    final sorted = set.toList(growable: false)..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
-    return <String>['All Categories', ...sorted];
-  }
-
   @override
   void initState() {
     super.initState();
@@ -499,9 +489,18 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
   }
 
   Future<void> _startRandomFromCurrentFilters() async {
-    // Random should only come from the currently unlocked packs.
+    // Random should prefer the current unlocked starter-pack pool and the user's
+    // active search/filter settings. If filters are too narrow, fall back to the
+    // unlocked pool instead of doing nothing. This keeps the Random button useful
+    // from the clean picker screen.
     final unlockedFiles = _unlockedPacks.expand((p) => p.scenarioFiles).toList(growable: false);
-    final playablePool = await _repo.loadPlayableProblemsFromScenarioFiles(unlockedFiles);
+
+    var playablePool = unlockedFiles.isEmpty
+        ? await _repo.loadPlayableProblems()
+        : await _repo.loadPlayableProblemsFromScenarioFiles(unlockedFiles);
+
+    // Safety fallback for app-start timing or storage issues.
+    if (playablePool.isEmpty) playablePool = await _repo.loadPlayableProblems();
 
     bool typeOk(PlayableScenarioProblem p) {
       if (_selectedType == 'All Categories' || _selectedType == 'All Types') return true;
@@ -530,21 +529,35 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
       return matches && typeOk(p) && levelOk(p) && modeOk(p);
     }).toList(growable: false);
 
-    final playable = filtered.isEmpty ? null : filtered[Random().nextInt(filtered.length)];
+    // Prefer filtered results; if none match, use the available unlocked pool so
+    // Random always starts a scenario instead of appearing broken.
+    final randomPool = filtered.isNotEmpty ? filtered : playablePool;
+    final playable = randomPool.isEmpty ? null : randomPool[Random().nextInt(randomPool.length)];
 
     if (!mounted) return;
 
     if (playable == null) {
-      debugPrint('Random requested but no playable problems matched current search/filters.');
+      debugPrint('Random requested but no playable problems were available.');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('No matching scenarios found.'),
+          content: Text('No scenarios are available yet.'),
           backgroundColor: FirePumpSimColors.charcoal2,
         ),
       );
       return;
     }
-    await _goToPlayer(playable.problemId);
+
+    if (filtered.isEmpty && _hasActiveFilters) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No exact filter match. Starting a random available scenario.'),
+          backgroundColor: FirePumpSimColors.charcoal2,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+
+    _goToPlayer(playable.problemId);
   }
 
   void _clearAll() {
@@ -609,10 +622,9 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
 
     debugPrint('Navigating to Scenario Player. problemId=$problemId');
     try {
-      await context.push('${AppRoutes.scenarioPlayer}?problemId=${Uri.encodeComponent(problemId)}');
+      context.go('${AppRoutes.scenarioPlayer}?problemId=${Uri.encodeComponent(problemId)}');
     } catch (e) {
       debugPrint('Failed to navigate to Scenario Player: $e');
-    } finally {
       _navInFlight = false;
     }
   }

@@ -1,5 +1,4 @@
 import 'package:firepumpsim/models/scenario_models.dart';
-import 'package:firepumpsim/screens/calculator_screen.dart';
 import 'package:firepumpsim/services/scenario_repository.dart';
 import 'package:firepumpsim/theme.dart';
 import 'dart:math' as math;
@@ -151,15 +150,6 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
     const pageHPad = 12.0;
 
     return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: FloatingActionButton.small(
-        heroTag: 'scenario_calc_fab_${widget.problemId}',
-        backgroundColor: FirePumpSimColors.red,
-        foregroundColor: Colors.white,
-        onPressed: () => showCalculatorOverlay(context),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: const Icon(Icons.calculate, color: Colors.white, size: 20),
-      ),
       body: SafeArea(
         bottom: true,
         child: FutureBuilder<PlayableScenarioProblem?>(
