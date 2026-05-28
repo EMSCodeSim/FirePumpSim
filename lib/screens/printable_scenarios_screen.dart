@@ -203,8 +203,6 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    final unlocked = _allPacks.where(_isUnlocked).toList(growable: false);
-
     return Scaffold(
       backgroundColor: FirePumpSimColors.charcoal,
       body: SafeArea(
@@ -214,7 +212,7 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
             SliverToBoxAdapter(
               child: _PrintableHeader(
                 title: 'Printable Scenarios',
-                subtitle: 'Print branded FirePumpSim training pages. Starter Pack is included. More printable packs are coming soon.',
+                subtitle: 'Only the 2 free printable starter sheets are shown in this build.',
                 onBack: () => context.go(AppRoutes.home),
               ),
             ),
@@ -230,79 +228,19 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.md),
-              sliver: SliverToBoxAdapter(
-                child: _CardShell(
-                  titleIcon: Icons.collections_bookmark_outlined,
-                  title: 'Printable Packs',
-                  subtitle: 'Select a pack to preview and print. The free Starter Pack includes 10 pages.',
-                  child: _loading
-                      ? const Center(child: Padding(padding: EdgeInsets.symmetric(vertical: 10), child: CircularProgressIndicator(color: FirePumpSimColors.red)))
-                      : Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text('Free Printable Starter Pack — included', style: (textTheme.bodyMedium ?? const TextStyle(fontSize: 14)).copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
-                            const SizedBox(height: 10),
-                            for (final p in unlocked.where((p) => p.isFree))
-                              _PrintablePackTile(pack: p, selected: p.packId == _selectedPack.packId, unlocked: true, onTap: () => _selectPack(p)),
-                            const SizedBox(height: 16),
-                            Text('Printable Pack Library — coming soon', style: (textTheme.bodyMedium ?? const TextStyle(fontSize: 14)).copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
-                            const SizedBox(height: 10),
-                            Container(
-                              padding: const EdgeInsets.all(14),
-                              decoration: BoxDecoration(
-                                color: FirePumpSimColors.charcoal3.withValues(alpha: 0.65),
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(color: FirePumpSimColors.printGreen.withValues(alpha: 0.45)),
-                              ),
-                              child: Text(
-                                'Additional printable worksheet packs will be added after the content is created. No paid printable packs are active in this build.',
-                                style: (textTheme.bodySmall ?? const TextStyle(fontSize: 12)).copyWith(color: FirePumpSimColors.textMed, height: 1.35),
-                              ),
-                            ),
-                          ],
-                        ),
-                ),
-              ),
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.md),
-              sliver: SliverToBoxAdapter(
-                child: _CardShell(
-                  titleIcon: Icons.print_outlined,
-                  title: 'Print Options',
-                  subtitle: 'This pack prints as 10 pages (one scenario per page).',
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      SwitchListTile.adaptive(
-                        value: _includeAnswerKey,
-                        onChanged: (v) => setState(() => _includeAnswerKey = v),
-                        contentPadding: EdgeInsets.zero,
-                        activeColor: FirePumpSimColors.red,
-                        title: Text('Include answer key', style: (textTheme.bodyMedium ?? const TextStyle(fontSize: 14)).copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w800)),
-                        subtitle: Text('Adds an answer key page + math at the end', style: (textTheme.bodySmall ?? const TextStyle(fontSize: 12)).copyWith(color: FirePumpSimColors.textMed, height: 1.35)),
-                      ),
-                      const SizedBox(height: 10),
-                      _SecondaryActionButton(label: _printing ? 'Preparing PDF…' : 'Print / Save PDF', icon: Icons.picture_as_pdf_outlined, onTap: _printing ? null : _handlePrint),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            SliverPadding(
               padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.lg),
               sliver: SliverToBoxAdapter(
-                child: _PreviewCard(
-                  worksheetTitle: _selectedPack.title,
-                  department: 'FirePumpSim Training',
-                  scenarios: _scenarios,
-                  includeAnswerKey: _includeAnswerKey,
-                  previewMode: _previewMode,
-                  printing: _printing,
-                  onPreviewWorksheet: () => setState(() => _previewMode = _PreviewMode.worksheet),
-                  onPreviewAnswerKey: _includeAnswerKey ? () => setState(() => _previewMode = _PreviewMode.answerKey) : null,
-                  onPrint: _printing ? null : _handlePrint,
+                child: _CardShell(
+                  titleIcon: Icons.info_outline,
+                  title: 'Included in this build',
+                  subtitle: 'The printable screen now only shows the top 2 free starter sheets.',
+                  child: Text(
+                    'Use the two starter page buttons above to preview, print, or save the free sheets. The larger printable pack list and bottom worksheet previews have been removed from this Android build.',
+                    style: (textTheme.bodyMedium ?? const TextStyle(fontSize: 14)).copyWith(
+                      color: FirePumpSimColors.textMed,
+                      height: 1.4,
+                    ),
+                  ),
                 ),
               ),
             ),
