@@ -1,4 +1,4 @@
-package com.mycompany.CounterApp
+package com.fireopssim.firepumpsim
 
 import io.flutter.embedding.android.FlutterActivity
 
