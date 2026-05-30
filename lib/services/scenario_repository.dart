@@ -415,6 +415,9 @@ class ScenarioRepository {
     for (final rawPack in packs) {
       if (rawPack is! Map) continue;
       final pack = Map<String, dynamic>.from(rawPack);
+      final unlocked = pack['isFree'] == true || pack['isPurchased'] == true;
+      if (!unlocked) continue;
+
       final rawFiles = pack['scenarioFiles'];
       if (rawFiles is! List) continue;
       for (final rawFile in rawFiles) {
