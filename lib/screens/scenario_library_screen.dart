@@ -1,6 +1,7 @@
 import 'package:firepumpsim/models/scenario_pack.dart';
 import 'package:firepumpsim/nav.dart';
 import 'package:firepumpsim/services/scenario_pack_repository.dart';
+import 'package:firepumpsim/services/scenario_pack_storage.dart';
 import 'package:firepumpsim/theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -14,8 +15,11 @@ class ScenarioLibraryScreen extends StatefulWidget {
 }
 
 class _ScenarioLibraryScreenState extends State<ScenarioLibraryScreen> {
+  final ScenarioPackStorage _packStorage = ScenarioPackStorage();
+
   bool _loading = true;
-  List<ScenarioPack> _freePacks = const [];
+  List<ScenarioPack> _includedPacks = const [];
+  List<ScenarioPack> _paidPacks = const [];
 
   @override
   void initState() {
@@ -26,10 +30,11 @@ class _ScenarioLibraryScreenState extends State<ScenarioLibraryScreen> {
   Future<void> _load() async {
     setState(() => _loading = true);
     try {
-      final packs = await const ScenarioPackRepository().loadPacks();
+      final packs = await ScenarioPackRepository(storage: _packStorage).loadPacks();
       if (!mounted) return;
       setState(() {
-        _freePacks = packs.where((p) => p.isFree || p.packId == 'free_starter_pack').toList(growable: false);
+        _includedPacks = packs.where((p) => p.isFree).toList(growable: false);
+        _paidPacks = packs.where((p) => !p.isFree).toList(growable: false);
       });
     } catch (e) {
       debugPrint('ScenarioLibrary load failed: $e');
@@ -68,7 +73,7 @@ class _ScenarioLibraryScreenState extends State<ScenarioLibraryScreen> {
               Text('Scenario Library', style: textTheme.headlineSmall?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
               const SizedBox(height: 6),
               Text(
-                'The current app includes the Free Starter Pack. More digital scenario packs and printable worksheet packs are planned, but paid packs are not active yet.',
+                'Browse included scenarios and paid add-on packs. Purchased packs appear in Practice Scenarios after they are unlocked.',
                 style: textTheme.bodyMedium?.copyWith(color: FirePumpSimColors.textMed, height: 1.35),
               ),
               const SizedBox(height: AppSpacing.md),
@@ -77,42 +82,38 @@ class _ScenarioLibraryScreenState extends State<ScenarioLibraryScreen> {
               else ...[
                 _SectionHeader(title: 'Included Now', subtitle: 'Ready for practice', icon: Icons.verified_outlined),
                 const SizedBox(height: AppSpacing.sm),
-                if (_freePacks.isEmpty)
-                  const _InfoCard(text: 'Free Starter Pack is not configured yet. Check assets/scenarios/scenario-packs.json.')
+                if (_includedPacks.isEmpty)
+                  const _InfoCard(text: 'No included packs are configured yet. Check assets/scenarios/scenario-packs.json.')
                 else
-                  for (final p in _freePacks) ...[
-                    _IncludedPackCard(
+                  for (final p in _includedPacks) ...[
+                    _PackCard(
                       pack: p,
-                      onOpen: () => context.go(AppRoutes.practiceScenarios),
+                      statusLabel: p.isFree ? 'FREE' : 'UNLOCKED',
+                      statusColor: p.isFree ? FirePumpSimColors.printGreen : FirePumpSimColors.libraryPurple,
+                      buttonLabel: 'Open Practice Scenarios',
+                      buttonIcon: Icons.play_arrow,
+                      onPressed: () => context.go(AppRoutes.practiceScenarios),
                     ),
                     const SizedBox(height: AppSpacing.sm),
                   ],
                 const SizedBox(height: AppSpacing.md),
-                _SectionHeader(title: 'Coming Soon', subtitle: 'Not available yet', icon: Icons.upcoming_outlined),
+                _SectionHeader(title: 'Paid Add-On Packs', subtitle: 'One-time unlocks', icon: Icons.workspace_premium_outlined),
                 const SizedBox(height: AppSpacing.sm),
-                _ComingSoonCard(
-                  title: 'Digital Scenario Packs',
-                  subtitle: 'Additional pump operator problems for standpipe, relay, master stream, water supply, wildland, and specialty operations.',
-                  icon: Icons.local_fire_department_outlined,
-                  accent: FirePumpSimColors.libraryPurple,
-                  bullets: const [
-                    'No paid digital packs are active in this build.',
-                    'Future packs can be added after the scenario content is ready.',
-                    'Practice Scenarios currently uses the included starter content.',
+                if (_paidPacks.isEmpty)
+                  const _InfoCard(text: 'No paid scenario packs are configured yet.')
+                else
+                  for (final p in _paidPacks) ...[
+                    _PackCard(
+                      pack: p,
+                      statusLabel: p.isPurchased ? 'UNLOCKED' : 'LOCKED',
+                      statusColor: p.isPurchased ? FirePumpSimColors.printGreen : FirePumpSimColors.libraryPurple,
+                      buttonLabel: p.isPurchased ? 'Open Practice Scenarios' : 'Available after purchase',
+                      buttonIcon: p.isPurchased ? Icons.play_arrow : Icons.lock_outline,
+                      onPressed: p.isPurchased ? () => context.go(AppRoutes.practiceScenarios) : null,
+                      lockedNote: p.isPurchased ? null : 'Connect this pack to the non-consumable in-app purchase firepumpsim.pump_ops_pack_01.',
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
                   ],
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                _ComingSoonCard(
-                  title: 'Printable Scenario Packs',
-                  subtitle: 'Branded worksheet sets for company drills, engineer practice, and instructor-led pump training.',
-                  icon: Icons.picture_as_pdf_outlined,
-                  accent: FirePumpSimColors.printGreen,
-                  bullets: const [
-                    'The starter printable tools remain available.',
-                    'Additional printable packs will be added later.',
-                    'No fake unlock or test-purchase buttons are shown.',
-                  ],
-                ),
               ],
             ],
           ),
@@ -143,21 +144,36 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
-class _IncludedPackCard extends StatelessWidget {
-  const _IncludedPackCard({required this.pack, required this.onOpen});
+class _PackCard extends StatelessWidget {
+  const _PackCard({
+    required this.pack,
+    required this.statusLabel,
+    required this.statusColor,
+    required this.buttonLabel,
+    required this.buttonIcon,
+    required this.onPressed,
+    this.lockedNote,
+  });
 
   final ScenarioPack pack;
-  final VoidCallback onOpen;
+  final String statusLabel;
+  final Color statusColor;
+  final String buttonLabel;
+  final IconData buttonIcon;
+  final VoidCallback? onPressed;
+  final String? lockedNote;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final locked = onPressed == null;
+
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: FirePumpSimColors.charcoal2,
         borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(color: FirePumpSimColors.red.withValues(alpha: 0.55)),
+        border: Border.all(color: statusColor.withValues(alpha: 0.55)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -168,11 +184,11 @@ class _IncludedPackCard extends StatelessWidget {
                 height: 42,
                 width: 42,
                 decoration: BoxDecoration(
-                  color: FirePumpSimColors.red.withValues(alpha: 0.14),
+                  color: statusColor.withValues(alpha: 0.14),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: FirePumpSimColors.red.withValues(alpha: 0.5)),
+                  border: Border.all(color: statusColor.withValues(alpha: 0.5)),
                 ),
-                child: const Icon(Icons.safety_check, color: FirePumpSimColors.red),
+                child: Icon(locked ? Icons.lock_outline : Icons.safety_check, color: statusColor),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -181,98 +197,32 @@ class _IncludedPackCard extends StatelessWidget {
                   children: [
                     Text(pack.title, style: textTheme.titleMedium?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
                     const SizedBox(height: 3),
-                    Text('${pack.scenarioCount} scenarios • Included', style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed)),
+                    Text('${pack.scenarioCount} scenarios • ${pack.difficulty.isEmpty ? 'Mixed difficulty' : pack.difficulty}', style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed)),
                   ],
                 ),
               ),
-              _StatusPill(label: 'FREE', color: FirePumpSimColors.printGreen),
+              _StatusPill(label: statusLabel, color: statusColor),
             ],
           ),
           const SizedBox(height: 12),
           Text(pack.description, style: textTheme.bodyMedium?.copyWith(color: FirePumpSimColors.textMed, height: 1.4)),
+          if (lockedNote != null) ...[
+            const SizedBox(height: 10),
+            Text(lockedNote!, style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed, height: 1.35)),
+          ],
           const SizedBox(height: AppSpacing.md),
           FilledButton.icon(
-            onPressed: onOpen,
+            onPressed: onPressed,
             style: FilledButton.styleFrom(
-              backgroundColor: FirePumpSimColors.red,
+              backgroundColor: locked ? FirePumpSimColors.charcoal3 : FirePumpSimColors.red,
+              disabledBackgroundColor: FirePumpSimColors.charcoal3,
+              disabledForegroundColor: FirePumpSimColors.textMed,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.lg)),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             ).copyWith(overlayColor: const WidgetStatePropertyAll(Colors.transparent)),
-            icon: const Icon(Icons.play_arrow, color: Colors.white),
-            label: Text('Open Practice Scenarios', style: textTheme.titleSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w900)),
+            icon: Icon(buttonIcon, color: locked ? FirePumpSimColors.textMed : Colors.white),
+            label: Text(buttonLabel, style: textTheme.titleSmall?.copyWith(color: locked ? FirePumpSimColors.textMed : Colors.white, fontWeight: FontWeight.w900)),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ComingSoonCard extends StatelessWidget {
-  const _ComingSoonCard({required this.title, required this.subtitle, required this.icon, required this.accent, required this.bullets});
-
-  final String title;
-  final String subtitle;
-  final IconData icon;
-  final Color accent;
-  final List<String> bullets;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: FirePumpSimColors.charcoal2,
-        borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(color: accent.withValues(alpha: 0.55)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                height: 42,
-                width: 42,
-                decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.14),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: accent.withValues(alpha: 0.5)),
-                ),
-                child: Icon(icon, color: accent),
-              ),
-              const SizedBox(width: 12),
-              Expanded(child: Text(title, style: textTheme.titleMedium?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900))),
-              _StatusPill(label: 'COMING SOON', color: accent),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(subtitle, style: textTheme.bodyMedium?.copyWith(color: FirePumpSimColors.textMed, height: 1.4)),
-          const SizedBox(height: 12),
-          for (final bullet in bullets) _FeatureRow(text: bullet, accent: accent),
-        ],
-      ),
-    );
-  }
-}
-
-class _FeatureRow extends StatelessWidget {
-  const _FeatureRow({required this.text, required this.accent});
-
-  final String text;
-  final Color accent;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 7),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(Icons.check_circle_outline, size: 16, color: accent),
-          const SizedBox(width: 8),
-          Expanded(child: Text(text, style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed, height: 1.35))),
         ],
       ),
     );

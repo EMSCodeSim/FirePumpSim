@@ -1,4 +1,6 @@
 import 'package:firepumpsim/models/scenario_models.dart';
+import 'package:firepumpsim/services/scenario_pack_repository.dart';
+import 'package:firepumpsim/services/scenario_pack_storage.dart';
 import 'package:firepumpsim/services/scenario_repository.dart';
 import 'package:firepumpsim/theme.dart';
 import 'dart:math' as math;
@@ -20,6 +22,7 @@ class ScenarioPlayerScreen extends StatefulWidget {
 
 class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
   final ScenarioRepository _repo = ScenarioRepository();
+  final ScenarioPackStorage _packStorage = ScenarioPackStorage();
 
   final TextEditingController _answerController = TextEditingController();
 
@@ -136,9 +139,21 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
   }
 
   Future<PlayableScenarioProblem?> _loadProblem(String problemId) async {
-    if (problemId.trim().isEmpty) return null;
+    final id = problemId.trim();
+    if (id.isEmpty) return null;
     try {
-      return await _repo.findPlayableByProblemId(problemId);
+      final packsRepo = ScenarioPackRepository(storage: _packStorage);
+      final unlockedFiles = (await packsRepo.loadUnlockedPacks()).expand((p) => p.scenarioFiles).toList(growable: false);
+
+      if (unlockedFiles.isNotEmpty) {
+        final unlockedPlayable = await _repo.loadPlayableProblemsFromScenarioFiles(unlockedFiles);
+        for (final p in unlockedPlayable) {
+          if (p.problemId == id) return p;
+        }
+      }
+
+      // Fallback for older free scenarios that are still bundled through the legacy manifest.
+      return await _repo.findPlayableByProblemId(id);
     } catch (e) {
       debugPrint('Failed to load playable problemId=$problemId: $e');
       return null;
@@ -155,7 +170,12 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
     if (_nextInFlight) return;
     _nextInFlight = true;
     try {
-      final playable = await _repo.loadPlayableProblems();
+      final packsRepo = ScenarioPackRepository(storage: _packStorage);
+      final unlockedFiles = (await packsRepo.loadUnlockedPacks()).expand((p) => p.scenarioFiles).toList(growable: false);
+      var playable = unlockedFiles.isEmpty
+          ? await _repo.loadPlayableProblems()
+          : await _repo.loadPlayableProblemsFromScenarioFiles(unlockedFiles);
+      if (playable.isEmpty) playable = await _repo.loadPlayableProblems();
       if (!mounted) return;
 
       if (playable.isEmpty) {

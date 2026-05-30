@@ -58,8 +58,9 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
     setState(() => _loading = true);
     try {
       final packsRepo = ScenarioPackRepository(storage: _packStorage);
-      // Per app rules: Practice Scenarios should only use the Free Starter Pack.
-      final unlocked = (await packsRepo.loadUnlockedPacks()).where((p) => p.packId == 'free_starter_pack').toList(growable: false);
+      // Practice Scenarios uses every unlocked pack. Free packs are always unlocked;
+      // paid packs appear here only after the in-app purchase unlock is saved.
+      final unlocked = await packsRepo.loadUnlockedPacks();
 
       final byPack = <String, List<PracticeScenario>>{};
       final all = <PracticeScenario>[];
@@ -612,6 +613,27 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
     await _goToPlayer(playable.problemId);
   }
 
+  Future<void> _startRandomProblemForScenario(PracticeScenario scenario) async {
+    final unlockedFiles = _unlockedPacks.expand((p) => p.scenarioFiles).toList(growable: false);
+    final playablePool = await _repo.loadPlayableProblemsFromScenarioFiles(unlockedFiles);
+    final variations = playablePool.where((p) => p.scenarioId == scenario.id && p.isVariation).toList(growable: false);
+
+    if (!mounted) return;
+    if (variations.isEmpty) {
+      debugPrint('Failed to start random variation from preview. scenarioId=${scenario.id}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No additional problems available for this scenario.'),
+          backgroundColor: FirePumpSimColors.charcoal2,
+        ),
+      );
+      return;
+    }
+
+    final playable = variations[Random().nextInt(variations.length)];
+    await _goToPlayer(playable.problemId);
+  }
+
   Future<void> _goToPlayer(String problemId) async {
     if (problemId.trim().isEmpty) {
       debugPrint('Attempted to navigate to Scenario Player with empty problemId.');
@@ -709,20 +731,8 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
                             icon: Icons.play_arrow,
                             label: scenario.variations.isEmpty ? 'Start Scenario' : 'Start First Problem',
                             onPressed: () async {
-                              final playable = await _repo.startBaseProblem(scenario.id);
-                              if (!context.mounted) return;
-                              if (playable == null) {
-                                debugPrint('Failed to start base scenario from preview. scenarioId=${scenario.id}');
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: const Text('Unable to start this scenario.'),
-                                    backgroundColor: FirePumpSimColors.charcoal2,
-                                  ),
-                                );
-                                return;
-                              }
                               context.pop();
-                               await _goToPlayer(playable.problemId);
+                              await _startBaseScenario(scenario);
                             },
                           ),
                         ),
@@ -737,20 +747,8 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
                             label: 'Start Random Problem',
                             enabled: scenario.variations.length > 1,
                             onPressed: () async {
-                              final playable = await _repo.startRandomVariation(scenario.id);
-                              if (!context.mounted) return;
-                              if (playable == null) {
-                                debugPrint('Failed to start random variation from preview. scenarioId=${scenario.id}');
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: const Text('No additional problems available for this scenario.'),
-                                    backgroundColor: FirePumpSimColors.charcoal2,
-                                  ),
-                                );
-                                return;
-                              }
                               context.pop();
-                               await _goToPlayer(playable.problemId);
+                              await _startRandomProblemForScenario(scenario);
                             },
                           ),
                         ),
@@ -842,7 +840,7 @@ class _CompactHeader extends StatelessWidget {
                           border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.75)),
                         ),
                         child: Text(
-                          'Starter Pack',
+                          'Scenario Packs',
                           style: textTheme.labelSmall?.copyWith(color: FirePumpSimColors.textMed, fontWeight: FontWeight.w900),
                         ),
                       ),
