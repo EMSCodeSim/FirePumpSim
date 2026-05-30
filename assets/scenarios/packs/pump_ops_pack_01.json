@@ -1,0 +1,1182 @@
+{
+  "packId": "pump_ops_pack_01",
+  "title": "Pump Operations Pack 1",
+  "description": "Premium driver/operator scenarios covering attack lines, wye operations, portable monitor master streams, and standpipe pumping.",
+  "isFree": false,
+  "isPurchased": false,
+  "storeProductId": "firepumpsim.pump_ops_pack_01",
+  "priceText": "$1.99",
+  "imageRatio": "4:7",
+  "recommendedImageSize": "1080x1890",
+  "scenarioCount": 4,
+  "problemCount": 17,
+  "categories": [
+    "master_stream",
+    "single_line",
+    "standpipe",
+    "wye"
+  ],
+  "difficulties": [
+    "advanced",
+    "intermediate"
+  ],
+  "scenarios": [
+    {
+      "id": "single_attack_line_premium",
+      "title": "Single Attack Line Operation",
+      "difficulty": "intermediate",
+      "category": "single_line",
+      "type": "single_line",
+      "image": "assets/images/single_attack_line_premium.png",
+      "imageRatio": "4:7",
+      "recommendedImageSize": "1080x1890",
+      "sceneElements": {
+        "engine": "Engine 181",
+        "hoses": [
+          "5-inch LDH supply line from hydrant outlet to Engine 181 intake",
+          "200-foot 1¾-inch attack line from Engine 181 pump panel discharge to front door"
+        ],
+        "nozzles": [
+          "ChiefXD 185 fog nozzle, 185 GPM @ 50 PSI"
+        ],
+        "appliances": [],
+        "elevation": "Grade-level entry, 0 PSI elevation correction"
+      },
+      "problems": [
+        {
+          "id": "single_attack_line_premium_p1",
+          "title": "Total Flow Requirement",
+          "question": "What is the total flow requirement for the operation shown?",
+          "answerLabel": "Total Flow",
+          "answerUnit": "GPM",
+          "inputLabel": "Enter total flow",
+          "inputPlaceholder": "GPM",
+          "answerValue": 185,
+          "correctPP": 0,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 105,
+            "nozzlePressure": 50,
+            "elevation": 0,
+            "applianceLoss": 0,
+            "totalGpm": 185,
+            "pumpPressure": 0,
+            "tolerance": 5
+          },
+          "overlays": [
+            {
+              "label": "Hydrant",
+              "x": 8,
+              "y": 67
+            },
+            {
+              "label": "Engine 181",
+              "x": 32,
+              "y": 52
+            },
+            {
+              "label": "Line A",
+              "x": 58,
+              "y": 58
+            },
+            {
+              "label": "Nozzle",
+              "x": 78,
+              "y": 49
+            }
+          ],
+          "formulaBreakdown": [
+            "Total flow = number of flowing attack lines × flow per line.",
+            "Total flow = 1 × 185 GPM.",
+            "Total flow = 185 GPM."
+          ],
+          "instructorExplanation": "The operation has one flowing attack line. The ChiefXD 185 line requires 185 GPM, so the total flow requirement is 185 GPM.",
+          "explainMistake": "Do not add hydrant supply flow separately. The supply line provides water to the engine; the flow requirement is based on the attack line being supplied."
+        },
+        {
+          "id": "single_attack_line_premium_p2",
+          "title": "Pump Discharge Pressure",
+          "question": "Determine the required pump discharge pressure for the attack operation shown.",
+          "answerLabel": "Pump Pressure",
+          "answerUnit": "PSI",
+          "inputLabel": "Enter pump discharge pressure",
+          "inputPlaceholder": "PSI",
+          "answerValue": 155,
+          "correctPP": 155,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 105,
+            "nozzlePressure": 50,
+            "elevation": 0,
+            "applianceLoss": 0,
+            "totalGpm": 185,
+            "pumpPressure": 155,
+            "tolerance": 5
+          },
+          "overlays": [
+            {
+              "label": "Hydrant",
+              "x": 8,
+              "y": 67
+            },
+            {
+              "label": "Engine 181",
+              "x": 32,
+              "y": 52
+            },
+            {
+              "label": "Line A",
+              "x": 58,
+              "y": 58
+            },
+            {
+              "label": "Nozzle",
+              "x": 78,
+              "y": 49
+            }
+          ],
+          "formulaBreakdown": [
+            "PP = FL + NP + elevation + appliance loss.",
+            "FL = C × (GPM / 100)^2 × hose length in hundreds.",
+            "FL = 15.5 × (185 / 100)^2 × 2.",
+            "FL = 15.5 × 3.4225 × 2 = 106.1 PSI.",
+            "Round FL to nearest 5 PSI: 105 PSI.",
+            "PP = 105 + 50 + 0 + 0 = 155 PSI."
+          ],
+          "instructorExplanation": "The attack line friction loss rounds to 105 PSI. Adding the 50 PSI nozzle pressure gives a required pump discharge pressure of 155 PSI.",
+          "explainMistake": "A common mistake is stopping at friction loss only. Pump discharge pressure must include nozzle pressure after friction loss is calculated."
+        },
+        {
+          "id": "single_attack_line_premium_p3",
+          "title": "Attack Line Friction Loss",
+          "question": "How much friction loss is present in the attack line?",
+          "answerLabel": "Friction Loss",
+          "answerUnit": "PSI",
+          "inputLabel": "Enter friction loss",
+          "inputPlaceholder": "PSI",
+          "answerValue": 105,
+          "correctPP": 0,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 105,
+            "nozzlePressure": 50,
+            "elevation": 0,
+            "applianceLoss": 0,
+            "totalGpm": 185,
+            "pumpPressure": 0,
+            "tolerance": 5
+          },
+          "overlays": [
+            {
+              "label": "Hydrant",
+              "x": 8,
+              "y": 67
+            },
+            {
+              "label": "Engine 181",
+              "x": 32,
+              "y": 52
+            },
+            {
+              "label": "Line A",
+              "x": 58,
+              "y": 58
+            },
+            {
+              "label": "Nozzle",
+              "x": 78,
+              "y": 49
+            }
+          ],
+          "formulaBreakdown": [
+            "FL = C × (GPM / 100)^2 × hose length in hundreds.",
+            "FL = 15.5 × (185 / 100)^2 × 2.",
+            "FL = 106.1 PSI.",
+            "Round to nearest 5 PSI: 105 PSI."
+          ],
+          "instructorExplanation": "Using the 1¾-inch hose coefficient and the listed flow, the attack line friction loss is 106.1 PSI, rounded to 105 PSI.",
+          "explainMistake": "Do not add nozzle pressure when the question asks only for friction loss. Friction loss is calculated before nozzle pressure is added."
+        },
+        {
+          "id": "single_attack_line_premium_p4",
+          "title": "Nozzle Pressure",
+          "question": "What pressure is required at the nozzle?",
+          "answerLabel": "Nozzle Pressure",
+          "answerUnit": "PSI",
+          "inputLabel": "Enter nozzle pressure",
+          "inputPlaceholder": "PSI",
+          "answerValue": 50,
+          "correctPP": 0,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 105,
+            "nozzlePressure": 50,
+            "elevation": 0,
+            "applianceLoss": 0,
+            "totalGpm": 185,
+            "pumpPressure": 0,
+            "tolerance": 5
+          },
+          "overlays": [
+            {
+              "label": "Hydrant",
+              "x": 8,
+              "y": 67
+            },
+            {
+              "label": "Engine 181",
+              "x": 32,
+              "y": 52
+            },
+            {
+              "label": "Line A",
+              "x": 58,
+              "y": 58
+            },
+            {
+              "label": "Nozzle",
+              "x": 78,
+              "y": 49
+            }
+          ],
+          "formulaBreakdown": [
+            "ChiefXD 185 nozzle pressure = 50 PSI.",
+            "Nozzle pressure answer = 50 PSI."
+          ],
+          "instructorExplanation": "The scenario information panel identifies the nozzle package. The ChiefXD 185 operates at 50 PSI nozzle pressure.",
+          "explainMistake": "Do not confuse pump discharge pressure with nozzle pressure. Nozzle pressure is only the pressure required at the nozzle."
+        },
+        {
+          "id": "single_attack_line_premium_p5",
+          "title": "Hydrant Pressure Drop",
+          "question": "The hydrant static pressure is 70 PSI and the residual pressure is 60 PSI while supplying the current operation. Based on the pressure drop, how many additional equivalent attack lines could be supplied?",
+          "answerLabel": "Additional Equivalent Lines",
+          "answerUnit": "lines",
+          "inputLabel": "Enter additional equivalent lines",
+          "inputPlaceholder": "whole number",
+          "answerValue": 2,
+          "correctPP": 0,
+          "tolerance": 0,
+          "answers": {
+            "frictionLoss": 0,
+            "nozzlePressure": 0,
+            "elevation": 0,
+            "applianceLoss": 0,
+            "totalGpm": 185,
+            "pumpPressure": 0,
+            "tolerance": 0
+          },
+          "overlays": [
+            {
+              "label": "Hydrant",
+              "x": 8,
+              "y": 67
+            },
+            {
+              "label": "Engine 181",
+              "x": 32,
+              "y": 52
+            },
+            {
+              "label": "Line A",
+              "x": 58,
+              "y": 58
+            }
+          ],
+          "formulaBreakdown": [
+            "Pressure drop = static pressure − residual pressure.",
+            "Pressure drop = 70 − 60 = 10 PSI.",
+            "Percent drop = pressure drop ÷ static pressure × 100.",
+            "Percent drop = 10 ÷ 70 × 100 = 14.3%.",
+            "Driver Operator hydrant rule: 10–15% drop supports 2 additional equivalent lines.",
+            "Additional equivalent lines = 2."
+          ],
+          "instructorExplanation": "The pressure drop is 14.3% of static pressure. Under the standard hydrant pressure-drop rule, that indicates the hydrant can supply two additional equivalent attack lines.",
+          "explainMistake": "Do not use the 10 PSI drop as a 10% drop. The percentage must be based on static pressure: 10 divided by 70 equals 14.3%."
+        },
+        {
+          "id": "single_attack_line_premium_p6",
+          "title": "Second Identical Attack Line",
+          "question": "If a second identical attack line is deployed, what would the new total flow requirement be?",
+          "answerLabel": "New Total Flow",
+          "answerUnit": "GPM",
+          "inputLabel": "Enter new total flow",
+          "inputPlaceholder": "GPM",
+          "answerValue": 370,
+          "correctPP": 0,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 105,
+            "nozzlePressure": 50,
+            "elevation": 0,
+            "applianceLoss": 0,
+            "totalGpm": 370,
+            "pumpPressure": 0,
+            "tolerance": 5
+          },
+          "overlays": [
+            {
+              "label": "Hydrant",
+              "x": 8,
+              "y": 67
+            },
+            {
+              "label": "Engine 181",
+              "x": 32,
+              "y": 52
+            },
+            {
+              "label": "Line A",
+              "x": 58,
+              "y": 58
+            },
+            {
+              "label": "Nozzle",
+              "x": 78,
+              "y": 49
+            }
+          ],
+          "formulaBreakdown": [
+            "New total flow = flow per attack line × number of identical attack lines.",
+            "New total flow = 185 GPM × 2.",
+            "New total flow = 370 GPM."
+          ],
+          "instructorExplanation": "A second identical attack line doubles the flow demand. Two 185 GPM lines require a total of 370 GPM.",
+          "explainMistake": "Do not double the pump pressure to find total flow. Flow is added by line; pressure is calculated separately."
+        },
+        {
+          "id": "single_attack_line_premium_p7",
+          "title": "Extended Attack Line Pump Pressure",
+          "question": "If the attack line is extended by one additional 50-foot section, what would the new required pump discharge pressure be?",
+          "answerLabel": "New Pump Pressure",
+          "answerUnit": "PSI",
+          "inputLabel": "Enter new pump discharge pressure",
+          "inputPlaceholder": "PSI",
+          "answerValue": 185,
+          "correctPP": 185,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 135,
+            "nozzlePressure": 50,
+            "elevation": 0,
+            "applianceLoss": 0,
+            "totalGpm": 185,
+            "pumpPressure": 185,
+            "tolerance": 5
+          },
+          "overlays": [
+            {
+              "label": "Hydrant",
+              "x": 8,
+              "y": 67
+            },
+            {
+              "label": "Engine 181",
+              "x": 32,
+              "y": 52
+            },
+            {
+              "label": "Line A",
+              "x": 58,
+              "y": 58
+            },
+            {
+              "label": "Nozzle",
+              "x": 78,
+              "y": 49
+            }
+          ],
+          "formulaBreakdown": [
+            "Extended hose length = 200 ft + 50 ft = 250 ft.",
+            "Hose length in hundreds = 2.5.",
+            "FL = C × (GPM / 100)^2 × hose length in hundreds.",
+            "FL = 15.5 × (185 / 100)^2 × 2.5.",
+            "FL = 132.6 PSI.",
+            "Round FL to nearest 5 PSI: 135 PSI.",
+            "PP = FL + NP + elevation + appliance loss.",
+            "PP = 135 + 50 + 0 + 0 = 185 PSI."
+          ],
+          "instructorExplanation": "Adding 50 feet increases the friction loss. The new rounded friction loss is 135 PSI, and adding 50 PSI nozzle pressure gives a new pump discharge pressure of 185 PSI.",
+          "explainMistake": "Do not add a flat pressure amount for the extension. Recalculate friction loss using the new total hose length, then add nozzle pressure."
+        },
+        {
+          "id": "single_attack_line_premium_p8",
+          "title": "Apparatus Positioning",
+          "question": "How far should Engine 181 be positioned from the structure for this type of residential fire attack?",
+          "answerLabel": "Engine Setback",
+          "answerUnit": "ft",
+          "inputLabel": "Enter distance",
+          "inputPlaceholder": "feet",
+          "answerValue": 30,
+          "correctPP": 0,
+          "tolerance": 0,
+          "answers": {
+            "frictionLoss": 0,
+            "nozzlePressure": 0,
+            "elevation": 0,
+            "applianceLoss": 0,
+            "totalGpm": 0,
+            "pumpPressure": 0,
+            "tolerance": 0
+          },
+          "overlays": [
+            {
+              "label": "Hydrant",
+              "x": 8,
+              "y": 67
+            },
+            {
+              "label": "Engine 181",
+              "x": 32,
+              "y": 52
+            },
+            {
+              "label": "Structure",
+              "x": 78,
+              "y": 30
+            }
+          ],
+          "formulaBreakdown": [
+            "Recommended minimum engine setback = 30 ft.",
+            "Engine 181 should be positioned at least 30 ft from the structure when practical."
+          ],
+          "instructorExplanation": "For this FirePumpSim residential attack scenario, Engine 181 should be positioned at least 30 ft from the structure when practical. This keeps the apparatus close enough for an efficient attack stretch while maintaining a safer setback from heat, smoke, falling debris, and collapse hazards.",
+          "explainMistake": "Do not position the engine directly against the structure. Leaving setback space protects the crew and apparatus and keeps the front of the building accessible for hose movement, ladders, and other operations."
+        }
+      ],
+      "tags": [
+        "single_line",
+        "attack_line",
+        "hydrant_supply",
+        "engine_181",
+        "driver_operator",
+        "premium_questions",
+        "apparatus_positioning"
+      ],
+      "packId": "firepumpsim_premium_pack_01",
+      "isPremium": true,
+      "originalImage": "original_images/single_attack_line_premium.png",
+      "scene": "assets/images/single_attack_line_premium.png",
+      "details": [
+        {
+          "label": "Apparatus",
+          "value": "Engine 181"
+        },
+        {
+          "label": "Hose layout",
+          "value": "5-inch LDH supply line from hydrant outlet to Engine 181 intake; 200-foot 1¾-inch attack line from Engine 181 pump panel discharge to front door"
+        },
+        {
+          "label": "Nozzle package",
+          "value": "ChiefXD 185 fog nozzle, 185 GPM @ 50 PSI"
+        },
+        {
+          "label": "Elevation",
+          "value": "Grade-level entry, 0 PSI elevation correction"
+        }
+      ],
+      "timedModeAvailable": true
+    },
+    {
+      "id": "residential_wye_operation",
+      "title": "Residential Structure Fire – Wye Operation",
+      "difficulty": "intermediate",
+      "category": "wye",
+      "type": "wye",
+      "image": "assets/images/residential_wye_operation.png",
+      "imageRatio": "4:7",
+      "recommendedImageSize": "1080x1890",
+      "sceneElements": {
+        "engine": "Engine 181",
+        "hoses": [
+          "Supply: Hydrant to Engine 181 intake",
+          "Main line: 200 ft of 2.5-inch hose from Engine 181 discharge to wye",
+          "Branch A: 150 ft of 1.75-inch hose from wye to front door nozzle",
+          "Branch B: 200 ft of 1.75-inch hose from wye to Alpha-side nozzle"
+        ],
+        "nozzles": [
+          "Branch A: ChiefXD 185 fog nozzle, 185 GPM @ 50 PSI",
+          "Branch B: ChiefXD 185 fog nozzle, 185 GPM @ 50 PSI"
+        ],
+        "appliances": [
+          "Wye appliance, 10 PSI appliance loss"
+        ],
+        "elevation": "Grade-level operation, 0 PSI elevation correction"
+      },
+      "problems": [
+        {
+          "id": "residential_wye_operation_p1",
+          "title": "Branch A Friction Loss",
+          "question": "What is the friction loss in Branch A?",
+          "answerLabel": "Branch A Friction Loss",
+          "answerUnit": "PSI",
+          "inputLabel": "Enter Branch A friction loss",
+          "inputPlaceholder": "PSI",
+          "answerValue": 80,
+          "correctPP": 0,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 80,
+            "nozzlePressure": 50,
+            "elevation": 0,
+            "applianceLoss": 10,
+            "totalGpm": 185,
+            "pumpPressure": 0,
+            "tolerance": 5
+          },
+          "overlays": [
+            {
+              "label": "Engine 181",
+              "x": 30,
+              "y": 61
+            },
+            {
+              "label": "Wye",
+              "x": 63,
+              "y": 58
+            },
+            {
+              "label": "Branch A",
+              "x": 58,
+              "y": 44
+            },
+            {
+              "label": "Front door",
+              "x": 56,
+              "y": 36
+            }
+          ],
+          "formulaBreakdown": [
+            "FL = C × (GPM / 100)^2 × hose length in hundreds.",
+            "Branch A uses 1.75-inch hose, so C = 15.5.",
+            "Branch A flow = 185 GPM.",
+            "Branch A hose length = 150 ft = 1.5 hundreds.",
+            "FL = 15.5 × (185 / 100)^2 × 1.5.",
+            "FL = 15.5 × 3.4225 × 1.5.",
+            "FL = 79.6 PSI.",
+            "Round to nearest 5 PSI: 80 PSI."
+          ],
+          "instructorExplanation": "Branch A is calculated independently from the wye to the nozzle. Using 150 ft of 1.75-inch hose at 185 GPM gives 79.6 PSI, which rounds to 80 PSI.",
+          "explainMistake": "Do not include the main line friction loss or the wye appliance loss when the question asks only for Branch A friction loss. Calculate Branch A by itself from the wye to the nozzle."
+        },
+        {
+          "id": "residential_wye_operation_p2",
+          "title": "Branch B Friction Loss",
+          "question": "What is the friction loss in Branch B?",
+          "answerLabel": "Branch B Friction Loss",
+          "answerUnit": "PSI",
+          "inputLabel": "Enter Branch B friction loss",
+          "inputPlaceholder": "PSI",
+          "answerValue": 105,
+          "correctPP": 0,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 105,
+            "nozzlePressure": 50,
+            "elevation": 0,
+            "applianceLoss": 10,
+            "totalGpm": 185,
+            "pumpPressure": 0,
+            "tolerance": 5
+          },
+          "overlays": [
+            {
+              "label": "Engine 181",
+              "x": 30,
+              "y": 61
+            },
+            {
+              "label": "Wye",
+              "x": 63,
+              "y": 58
+            },
+            {
+              "label": "Branch B",
+              "x": 78,
+              "y": 47
+            },
+            {
+              "label": "Alpha side",
+              "x": 84,
+              "y": 39
+            }
+          ],
+          "formulaBreakdown": [
+            "FL = C × (GPM / 100)^2 × hose length in hundreds.",
+            "Branch B uses 1.75-inch hose, so C = 15.5.",
+            "Branch B flow = 185 GPM.",
+            "Branch B hose length = 200 ft = 2 hundreds.",
+            "FL = 15.5 × (185 / 100)^2 × 2.",
+            "FL = 15.5 × 3.4225 × 2.",
+            "FL = 106.1 PSI.",
+            "Round to nearest 5 PSI: 105 PSI."
+          ],
+          "instructorExplanation": "Branch B is the longer branch line. At 200 ft of 1.75-inch hose flowing 185 GPM, the friction loss is 106.1 PSI, which rounds to 105 PSI.",
+          "explainMistake": "Do not use the Branch A length for Branch B. Each branch must be calculated separately, and the longer branch will have more friction loss at the same flow."
+        },
+        {
+          "id": "residential_wye_operation_p3",
+          "title": "Main Line Friction Loss",
+          "question": "What is the friction loss in the main line supplying the wye?",
+          "answerLabel": "Main Line Friction Loss",
+          "answerUnit": "PSI",
+          "inputLabel": "Enter main line friction loss",
+          "inputPlaceholder": "PSI",
+          "answerValue": 55,
+          "correctPP": 0,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 55,
+            "nozzlePressure": 0,
+            "elevation": 0,
+            "applianceLoss": 10,
+            "totalGpm": 370,
+            "pumpPressure": 0,
+            "tolerance": 5
+          },
+          "overlays": [
+            {
+              "label": "Engine 181",
+              "x": 30,
+              "y": 61
+            },
+            {
+              "label": "Main line",
+              "x": 47,
+              "y": 63
+            },
+            {
+              "label": "Wye",
+              "x": 63,
+              "y": 58
+            },
+            {
+              "label": "Two branches",
+              "x": 72,
+              "y": 49
+            }
+          ],
+          "formulaBreakdown": [
+            "FL = C × (GPM / 100)^2 × hose length in hundreds.",
+            "Main line uses 2.5-inch hose, so C = 2.",
+            "Main line supplies both branches.",
+            "Total main line flow = 185 GPM + 185 GPM = 370 GPM.",
+            "Main line hose length = 200 ft = 2 hundreds.",
+            "FL = 2 × (370 / 100)^2 × 2.",
+            "FL = 2 × 13.69 × 2.",
+            "FL = 54.8 PSI.",
+            "Round to nearest 5 PSI: 55 PSI."
+          ],
+          "instructorExplanation": "The main line carries the combined flow of both branches. Since each branch flows 185 GPM, the main line flow is 370 GPM. Using 200 ft of 2.5-inch hose gives 54.8 PSI, rounded to 55 PSI.",
+          "explainMistake": "Do not calculate the main line using only one branch flow. The main line supplies the wye, so it carries the total flow of both Branch A and Branch B."
+        }
+      ],
+      "tags": [
+        "wye",
+        "branch_a",
+        "branch_b",
+        "main_line",
+        "friction_loss",
+        "engine_181",
+        "residential_fire",
+        "driver_operator"
+      ],
+      "packId": "firepumpsim_premium_pack_01",
+      "isPremium": true,
+      "originalImage": "original_images/residential_wye_operation.png",
+      "scene": "assets/images/residential_wye_operation.png",
+      "details": [
+        {
+          "label": "Apparatus",
+          "value": "Engine 181"
+        },
+        {
+          "label": "Hose layout",
+          "value": "Supply: Hydrant to Engine 181 intake; Main line: 200 ft of 2.5-inch hose from Engine 181 discharge to wye; Branch A: 150 ft of 1.75-inch hose from wye to front door nozzle; Branch B: 200 ft of 1.75-inch hose from wye to Alpha-side nozzle"
+        },
+        {
+          "label": "Nozzle package",
+          "value": "Branch A: ChiefXD 185 fog nozzle, 185 GPM @ 50 PSI; Branch B: ChiefXD 185 fog nozzle, 185 GPM @ 50 PSI"
+        },
+        {
+          "label": "Appliances",
+          "value": "Wye appliance, 10 PSI appliance loss"
+        },
+        {
+          "label": "Elevation",
+          "value": "Grade-level operation, 0 PSI elevation correction"
+        }
+      ],
+      "timedModeAvailable": true
+    },
+    {
+      "id": "portable_monitor_operation",
+      "title": "Portable Monitor Operation",
+      "difficulty": "advanced",
+      "category": "master_stream",
+      "type": "master_stream",
+      "image": "assets/images/portable_monitor_operation.png",
+      "imageRatio": "4:7",
+      "recommendedImageSize": "1080x1890",
+      "sceneElements": {
+        "engine": "Engine 181",
+        "hoses": [
+          "Supply line from hydrant to Engine 181 intake",
+          "Line A: 200 ft of 2.5-inch hose from Engine 181 discharge to portable monitor",
+          "Line B: 200 ft of 2.5-inch hose from Engine 181 discharge to portable monitor"
+        ],
+        "nozzles": [
+          "Portable monitor with 1 3/4-inch smooth bore tip",
+          "Master stream nozzle pressure: 80 PSI"
+        ],
+        "appliances": [
+          "Portable monitor appliance loss: 25 PSI"
+        ],
+        "elevation": "Level parking lot operation, 0 PSI elevation correction"
+      },
+      "problems": [
+        {
+          "id": "portable_monitor_operation_p1",
+          "title": "Master Stream Flow",
+          "question": "Given the portable monitor setup shown, determine the master stream flow.",
+          "answerLabel": "Master Stream Flow",
+          "answerUnit": "GPM",
+          "inputLabel": "Enter master stream flow",
+          "inputPlaceholder": "GPM",
+          "answerValue": 815,
+          "correctPP": 0,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 65,
+            "nozzlePressure": 80,
+            "elevation": 0,
+            "applianceLoss": 25,
+            "totalGpm": 815,
+            "pumpPressure": 0,
+            "tolerance": 5
+          },
+          "overlays": [
+            {
+              "label": "Hydrant",
+              "x": 11,
+              "y": 72
+            },
+            {
+              "label": "Engine 181",
+              "x": 28,
+              "y": 62
+            },
+            {
+              "label": "Monitor",
+              "x": 72,
+              "y": 49
+            },
+            {
+              "label": "Fire",
+              "x": 82,
+              "y": 31
+            }
+          ],
+          "formulaBreakdown": [
+            "Smooth bore flow formula: GPM = 29.7 × d² × √NP.",
+            "Tip diameter = 1.75 inches.",
+            "Master stream nozzle pressure = 80 PSI.",
+            "GPM = 29.7 × 1.75² × √80.",
+            "GPM = 29.7 × 3.0625 × 8.944.",
+            "GPM = 813.6.",
+            "Rounded master stream flow = 815 GPM."
+          ],
+          "instructorExplanation": "The portable monitor is using a smooth bore tip. Smooth bore flow is calculated using tip diameter and nozzle pressure. A 1 3/4-inch tip at 80 PSI produces approximately 815 GPM.",
+          "explainMistake": "Do not use handline fog nozzle flow values for this question. A portable monitor with a smooth bore tip uses the smooth bore flow formula."
+        },
+        {
+          "id": "portable_monitor_operation_p2",
+          "title": "Line A Flow",
+          "question": "How much water is flowing through Line A while supplying the portable monitor?",
+          "answerLabel": "Line A Flow",
+          "answerUnit": "GPM",
+          "inputLabel": "Enter Line A flow",
+          "inputPlaceholder": "GPM",
+          "answerValue": 408,
+          "correctPP": 0,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 65,
+            "nozzlePressure": 80,
+            "elevation": 0,
+            "applianceLoss": 25,
+            "totalGpm": 815,
+            "pumpPressure": 0,
+            "tolerance": 5
+          },
+          "overlays": [
+            {
+              "label": "Engine 181",
+              "x": 28,
+              "y": 62
+            },
+            {
+              "label": "Line A",
+              "x": 58,
+              "y": 65
+            },
+            {
+              "label": "Line B",
+              "x": 66,
+              "y": 72
+            },
+            {
+              "label": "Monitor",
+              "x": 72,
+              "y": 49
+            }
+          ],
+          "formulaBreakdown": [
+            "Total monitor flow = 815 GPM.",
+            "The monitor is supplied by two equal supply lines.",
+            "Line A flow = total monitor flow ÷ number of supply lines.",
+            "Line A flow = 815 ÷ 2.",
+            "Line A flow = 407.5 GPM.",
+            "Rounded Line A flow = 408 GPM."
+          ],
+          "instructorExplanation": "The portable monitor flow is divided between two equal supply lines. Line A carries half of the total monitor flow.",
+          "explainMistake": "Do not place the full monitor flow in Line A. Because the monitor is supplied by two equal lines, each line carries one-half of the total flow."
+        },
+        {
+          "id": "portable_monitor_operation_p3",
+          "title": "Pump Discharge Pressure",
+          "question": "Determine the required pump discharge pressure for the portable monitor operation shown.",
+          "answerLabel": "Pump Pressure",
+          "answerUnit": "PSI",
+          "inputLabel": "Enter pump discharge pressure",
+          "inputPlaceholder": "PSI",
+          "answerValue": 170,
+          "correctPP": 170,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 65,
+            "nozzlePressure": 80,
+            "elevation": 0,
+            "applianceLoss": 25,
+            "totalGpm": 815,
+            "pumpPressure": 170,
+            "tolerance": 5
+          },
+          "overlays": [
+            {
+              "label": "Hydrant",
+              "x": 11,
+              "y": 72
+            },
+            {
+              "label": "Engine 181",
+              "x": 28,
+              "y": 62
+            },
+            {
+              "label": "Line A",
+              "x": 58,
+              "y": 65
+            },
+            {
+              "label": "Line B",
+              "x": 66,
+              "y": 72
+            },
+            {
+              "label": "Monitor",
+              "x": 72,
+              "y": 49
+            }
+          ],
+          "formulaBreakdown": [
+            "PP = FL + NP + elevation + appliance loss.",
+            "Total monitor flow = 815 GPM.",
+            "Flow is split between two equal supply lines.",
+            "Flow per line = 815 ÷ 2 = 407.5 GPM.",
+            "FL = C × (GPM / 100)^2 × hose length in hundreds.",
+            "Line A and Line B use 2.5-inch hose, so C = 2.",
+            "Each supply line length = 200 ft = 2 hundreds.",
+            "FL = 2 × (407.5 / 100)^2 × 2.",
+            "FL = 66.4 PSI.",
+            "Round FL to nearest 5 PSI: 65 PSI.",
+            "Nozzle pressure = 80 PSI.",
+            "Elevation = 0 PSI.",
+            "Portable monitor appliance loss = 25 PSI.",
+            "PP = 65 + 80 + 0 + 25.",
+            "PP = 170 PSI."
+          ],
+          "instructorExplanation": "For a portable monitor supplied by two equal lines, calculate the friction loss for one supply line using half of the total monitor flow. Since both lines are equal, either line gives the governing friction loss. Add nozzle pressure and appliance loss to get the required pump discharge pressure.",
+          "explainMistake": "Do not calculate friction loss using the full monitor flow through one hose. The total flow is split between Line A and Line B before reaching the portable monitor."
+        }
+      ],
+      "tags": [
+        "portable_monitor",
+        "master_stream",
+        "smooth_bore",
+        "line_a",
+        "line_b",
+        "pump_pressure",
+        "engine_181",
+        "warehouse_fire"
+      ],
+      "packId": "firepumpsim_premium_pack_01",
+      "isPremium": true,
+      "originalImage": "original_images/portable_monitor_operation.png",
+      "scene": "assets/images/portable_monitor_operation.png",
+      "details": [
+        {
+          "label": "Apparatus",
+          "value": "Engine 181"
+        },
+        {
+          "label": "Hose layout",
+          "value": "Supply line from hydrant to Engine 181 intake; Line A: 200 ft of 2.5-inch hose from Engine 181 discharge to portable monitor; Line B: 200 ft of 2.5-inch hose from Engine 181 discharge to portable monitor"
+        },
+        {
+          "label": "Nozzle package",
+          "value": "Portable monitor with 1 3/4-inch smooth bore tip; Master stream nozzle pressure: 80 PSI"
+        },
+        {
+          "label": "Appliances",
+          "value": "Portable monitor appliance loss: 25 PSI"
+        },
+        {
+          "label": "Elevation",
+          "value": "Level parking lot operation, 0 PSI elevation correction"
+        }
+      ],
+      "timedModeAvailable": true
+    },
+    {
+      "id": "mid_rise_standpipe_operation",
+      "title": "Mid-Rise Apartment Building Standpipe Operation",
+      "difficulty": "advanced",
+      "category": "standpipe",
+      "type": "standpipe",
+      "image": "assets/images/mid_rise_standpipe_operation.png",
+      "imageRatio": "4:7",
+      "recommendedImageSize": "1080x1890",
+      "sceneElements": {
+        "engine": "Engine 181",
+        "hoses": [
+          "Supply line from hydrant to Engine 181 intake",
+          "100 ft of 2.5-inch hose from Engine 181 discharge to FDC",
+          "150 ft of 2.5-inch attack line from standpipe outlet to nozzle"
+        ],
+        "nozzles": [
+          "1 1/8-inch smooth bore nozzle, 265 GPM @ 50 PSI"
+        ],
+        "appliances": [
+          "FDC / standpipe system"
+        ],
+        "elevation": "Fire attack operating on the 5th floor"
+      },
+      "problems": [
+        {
+          "id": "mid_rise_standpipe_operation_p1",
+          "title": "Standpipe System Pressure Change",
+          "question": "What pump pressure change is required for the standpipe system in this operation?",
+          "answerLabel": "Standpipe System Loss",
+          "answerUnit": "PSI",
+          "inputLabel": "Enter pressure change",
+          "inputPlaceholder": "PSI",
+          "answerValue": 25,
+          "correctPP": 0,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 0,
+            "nozzlePressure": 0,
+            "elevation": 0,
+            "applianceLoss": 25,
+            "totalGpm": 265,
+            "pumpPressure": 0,
+            "tolerance": 5
+          },
+          "overlays": [
+            {
+              "label": "Engine 181",
+              "x": 20,
+              "y": 60
+            },
+            {
+              "label": "FDC",
+              "x": 70,
+              "y": 55
+            },
+            {
+              "label": "Standpipe",
+              "x": 68,
+              "y": 42
+            },
+            {
+              "label": "Attack crew",
+              "x": 72,
+              "y": 28
+            }
+          ],
+          "formulaBreakdown": [
+            "FirePumpSim standard FDC / standpipe system loss applies.",
+            "Standpipe system pressure change = 25 PSI."
+          ],
+          "instructorExplanation": "The standpipe system adds a standard 25 PSI system loss. This pressure is added to the pump discharge pressure along with friction loss, nozzle pressure, and elevation.",
+          "explainMistake": "Do not treat the standpipe system as zero loss. The FDC / standpipe system adds pressure demand before the attack line and nozzle are supplied."
+        },
+        {
+          "id": "mid_rise_standpipe_operation_p2",
+          "title": "Elevation Pressure Change",
+          "question": "What pump pressure change is required due to elevation for the fifth-floor fire attack?",
+          "answerLabel": "Elevation Pressure Change",
+          "answerUnit": "PSI",
+          "inputLabel": "Enter elevation pressure",
+          "inputPlaceholder": "PSI",
+          "answerValue": 20,
+          "correctPP": 0,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 0,
+            "nozzlePressure": 0,
+            "elevation": 20,
+            "applianceLoss": 0,
+            "totalGpm": 265,
+            "pumpPressure": 0,
+            "tolerance": 5
+          },
+          "overlays": [
+            {
+              "label": "Engine 181",
+              "x": 20,
+              "y": 60
+            },
+            {
+              "label": "FDC",
+              "x": 70,
+              "y": 55
+            },
+            {
+              "label": "Fire floor",
+              "x": 74,
+              "y": 25
+            },
+            {
+              "label": "Attack crew",
+              "x": 72,
+              "y": 28
+            }
+          ],
+          "formulaBreakdown": [
+            "Floor rule: 1st floor = 0 ft.",
+            "Each floor above the 1st floor adds 10 ft of elevation.",
+            "5th floor elevation = 40 ft above grade.",
+            "Elevation pressure = 0.5 PSI per foot.",
+            "Elevation pressure = 40 × 0.5.",
+            "Elevation pressure = 20 PSI."
+          ],
+          "instructorExplanation": "The fire attack is operating on the 5th floor. Using the FirePumpSim floor rule, that is 40 ft above grade, which requires 20 PSI of elevation pressure.",
+          "explainMistake": "Do not count the 1st floor as 10 ft of elevation. In this rule, the 1st floor is grade level, so the 5th floor is 40 ft above grade."
+        },
+        {
+          "id": "mid_rise_standpipe_operation_p3",
+          "title": "Total Pump Discharge Pressure",
+          "question": "Determine the total pump discharge pressure required for the standpipe operation shown.",
+          "answerLabel": "Pump Pressure",
+          "answerUnit": "PSI",
+          "inputLabel": "Enter pump discharge pressure",
+          "inputPlaceholder": "PSI",
+          "answerValue": 130,
+          "correctPP": 130,
+          "tolerance": 5,
+          "answers": {
+            "frictionLoss": 35,
+            "nozzlePressure": 50,
+            "elevation": 20,
+            "applianceLoss": 25,
+            "totalGpm": 265,
+            "pumpPressure": 130,
+            "tolerance": 5
+          },
+          "overlays": [
+            {
+              "label": "Hydrant",
+              "x": 12,
+              "y": 69
+            },
+            {
+              "label": "Engine 181",
+              "x": 20,
+              "y": 60
+            },
+            {
+              "label": "FDC",
+              "x": 70,
+              "y": 55
+            },
+            {
+              "label": "Fire floor",
+              "x": 74,
+              "y": 25
+            },
+            {
+              "label": "Attack crew",
+              "x": 72,
+              "y": 28
+            }
+          ],
+          "formulaBreakdown": [
+            "PP = FL + NP + elevation + appliance loss.",
+            "FDC supply hose FL = C × (GPM / 100)^2 × hose length in hundreds.",
+            "FDC supply hose FL = 2 × (265 / 100)^2 × 1.",
+            "FDC supply hose FL = 14.0 PSI, rounded to 15 PSI.",
+            "Interior attack line FL = 2 × (265 / 100)^2 × 1.5.",
+            "Interior attack line FL = 21.1 PSI, rounded to 20 PSI.",
+            "Total friction loss = 15 + 20 = 35 PSI.",
+            "Nozzle pressure = 50 PSI.",
+            "Elevation pressure = 20 PSI.",
+            "FDC / standpipe system loss = 25 PSI.",
+            "PP = 35 + 50 + 20 + 25.",
+            "PP = 130 PSI."
+          ],
+          "instructorExplanation": "The pump must overcome the FDC supply hose friction loss, the interior attack line friction loss, nozzle pressure, elevation to the fire floor, and the standpipe system loss. Added together, the required pump discharge pressure is 130 PSI.",
+          "explainMistake": "Do not calculate only the attack line. A standpipe operation also requires the FDC supply hose, elevation, and standpipe system loss to be included in the final pump discharge pressure."
+        }
+      ],
+      "tags": [
+        "standpipe",
+        "fdc",
+        "mid_rise",
+        "apartment_fire",
+        "engine_181",
+        "elevation",
+        "pump_pressure",
+        "driver_operator"
+      ],
+      "packId": "firepumpsim_premium_pack_01",
+      "isPremium": true,
+      "originalImage": "original_images/mid_rise_standpipe_operation.png",
+      "scene": "assets/images/mid_rise_standpipe_operation.png",
+      "details": [
+        {
+          "label": "Apparatus",
+          "value": "Engine 181"
+        },
+        {
+          "label": "Hose layout",
+          "value": "Supply line from hydrant to Engine 181 intake; 100 ft of 2.5-inch hose from Engine 181 discharge to FDC; 150 ft of 2.5-inch attack line from standpipe outlet to nozzle"
+        },
+        {
+          "label": "Nozzle package",
+          "value": "1 1/8-inch smooth bore nozzle, 265 GPM @ 50 PSI"
+        },
+        {
+          "label": "Appliances",
+          "value": "FDC / standpipe system"
+        },
+        {
+          "label": "Elevation",
+          "value": "Fire attack operating on the 5th floor"
+        }
+      ],
+      "timedModeAvailable": true
+    }
+  ]
+}
