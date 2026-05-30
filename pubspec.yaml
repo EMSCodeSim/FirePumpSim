@@ -29,6 +29,7 @@ flutter:
     - assets/icons/
     - assets/images/
     - assets/scenarios/
+    - assets/scenarios/packs/
     - assets/printable/
 
 flutter_launcher_icons:
