@@ -7,7 +7,7 @@
   "image": "assets/images/advanced_standpipe_floor5.png",
   "scene": {
     "engine": "Engine 181",
-    "description": "Engine 181 is pumping a standpipe operation at a 5-story apartment building. Crews are operating from the 5th-floor standpipe outlet, which is 40 feet above pump level using the floor-height rule (1st floor = 0 feet, each floor above adds 10 feet). The crew has 150’ of 2½” hose and a 1⅛” smooth bore nozzle flowing 265 GPM at 50 PSI. Add 25 PSI for standpipe/FDC system loss. What pump pressure should the driver/operator set?",
+    "description": "Engine 181 is pumping a standpipe operation at a 5-story apartment building. Crews are operating from the 5th-floor standpipe outlet. Use the elevation formula: height = (floor number - 1) × 10 ft, and elevation pressure = height × 0.5 PSI/ft. The crew has 150’ of 2½” hose and a 1⅛” smooth bore nozzle flowing 265 GPM at 50 PSI. Add 25 PSI for standpipe/FDC system loss. What pump discharge pressure should the driver/operator set?",
     "baseOverlays": []
   },
   "sceneElements": {
@@ -30,10 +30,10 @@
     {
       "id": "advanced_standpipe_floor5_q1",
       "title": "Advanced Standpipe Floor 5",
-      "question": "Engine 181 is supplying a 5th-floor standpipe operation through 100 ft of 2½-inch hose to the FDC. Crews have 150 ft of 2½-inch hose from the 5th-floor standpipe outlet to a 1⅛-inch smooth bore nozzle flowing 265 GPM at 50 PSI. The 5th-floor outlet is 40 ft above pump level, so add 20 PSI elevation. Add 25 PSI for standpipe/FDC system loss. What pump discharge pressure should the driver/operator set?",
-      "answerLabel": "Pump Pressure",
+      "question": "Engine 181 is supplying a 5th-floor standpipe operation through 100 ft of 2½-inch hose to the FDC. Crews have 150 ft of 2½-inch hose from the 5th-floor standpipe outlet to a 1⅛-inch smooth bore nozzle flowing 265 GPM at 50 PSI. Use the elevation formula: height = (floor number - 1) × 10 ft, and elevation pressure = height × 0.5 PSI/ft. Add 25 PSI for standpipe/FDC system loss. What pump discharge pressure should the driver/operator set?",
+      "answerLabel": "Pump Discharge Pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Enter pump pressure",
+      "inputLabel": "Enter PDP",
       "inputPlaceholder": "PSI",
       "answerValue": 130,
       "correctPP": 130,

@@ -7,7 +7,7 @@
   "image": "assets/images/advanced_portable_monitor_dual_supply.png",
   "scene": {
     "engine": "Engine 181",
-    "description": "Engine 181 is supplying a portable monitor at a commercial strip fire. The monitor is fed by two 200’ 2½” supply lines. The monitor is flowing 500 GPM at 80 PSI. Use a 10 PSI appliance loss for the portable monitor. No elevation change. What pump pressure should the driver/operator set?",
+    "description": "Engine 181 is supplying a portable monitor at a commercial strip fire. The monitor is fed by two 200’ 2½” supply lines. The monitor is flowing 500 GPM at 80 PSI. Use a 10 PSI appliance loss for the portable monitor. No elevation change. What pump discharge pressure should the driver/operator set?",
     "baseOverlays": []
   },
   "sceneElements": {
@@ -28,10 +28,10 @@
     {
       "id": "advanced_portable_monitor_dual_supply_q1",
       "title": "Advanced Portable Monitor Dual Supply",
-      "question": "Engine 181 is supplying a portable monitor at a commercial strip fire. The monitor is fed by two 200’ 2½” supply lines. The monitor is flowing 500 GPM at 80 PSI. Use a 10 PSI appliance loss for the portable monitor. No elevation change. What pump pressure should the driver/operator set?",
-      "answerLabel": "Pump Pressure",
+      "question": "Engine 181 is supplying a portable monitor at a commercial strip fire. The monitor is fed by two 200’ 2½” supply lines. The monitor is flowing 500 GPM at 80 PSI. Use a 10 PSI appliance loss for the portable monitor. No elevation change. What pump discharge pressure should the driver/operator set?",
+      "answerLabel": "Pump Discharge Pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Enter pump pressure",
+      "inputLabel": "Enter PDP",
       "inputPlaceholder": "PSI",
       "answerValue": 115,
       "correctPP": 115,
@@ -102,9 +102,9 @@
         "Elevation = 0 PSI",
         "Appliance loss = 10 PSI",
         "PP = 25 + 80 + 0 + 10 = 115 PSI",
-        "Rounded final pump pressure = 115 PSI"
+        "Rounded final pump discharge pressure = 115 PSI"
       ],
-      "instructorExplanation": "This is an advanced portable master stream problem. The driver/operator must split the 500 GPM monitor flow between the two 2½” supply lines before calculating friction loss. Each line carries 250 GPM, so the governing line friction loss is 25 PSI. Add 80 PSI nozzle pressure and 10 PSI appliance loss for a final pump pressure of 115 PSI.",
+      "instructorExplanation": "This is an advanced portable master stream problem. The driver/operator must split the 500 GPM monitor flow between the two 2½” supply lines before calculating friction loss. Each line carries 250 GPM, so the governing line friction loss is 25 PSI. Add 80 PSI nozzle pressure and 10 PSI appliance loss for a final pump discharge pressure of 115 PSI.",
       "explainMistake": "Common mistakes include using 500 GPM for each supply line, adding both friction losses together, forgetting the portable monitor appliance loss, using 50 PSI handline nozzle pressure instead of 80 PSI master stream pressure, or adding elevation when none is present."
     }
   ],

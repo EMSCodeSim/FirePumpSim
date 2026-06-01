@@ -21,63 +21,10 @@
   },
   "problems": [
     {
-      "id": "single_attack_line_premium_p1",
-      "title": "Total Flow Requirement",
-      "question": "Engine 181 has one ChiefXD 185 attack line flowing and a second identical ChiefXD 185 attack line is placed in service. Each line flows 185 GPM. What is the new total flow requirement?",
-      "answerLabel": "Total Flow",
-      "answerUnit": "GPM",
-      "inputLabel": "Enter total flow",
-      "inputPlaceholder": "GPM",
-      "answerValue": 370,
-      "correctPP": 0,
-      "tolerance": 5,
-      "answers": {
-        "frictionLoss": 0,
-        "nozzlePressure": 50,
-        "elevation": 0,
-        "applianceLoss": 0,
-        "totalGpm": 370,
-        "pumpPressure": 0,
-        "tolerance": 5,
-        "answerValue": 370,
-        "correctAnswer": 370,
-        "value": 370
-      },
-      "overlays": [
-        {
-          "label": "Hydrant",
-          "x": 8,
-          "y": 67
-        },
-        {
-          "label": "Engine 181",
-          "x": 32,
-          "y": 52
-        },
-        {
-          "label": "Line A",
-          "x": 58,
-          "y": 58
-        },
-        {
-          "label": "Nozzle",
-          "x": 78,
-          "y": 49
-        }
-      ],
-      "formulaBreakdown": [
-        "Line 1 flow = 185 GPM.",
-        "Line 2 flow = 185 GPM.",
-        "Total flow = 185 + 185 = 370 GPM."
-      ],
-      "instructorExplanation": "Total flow is the sum of all flowing attack lines.",
-      "explainMistake": "Do not answer for only one line once the second identical line is placed in service."
-    },
-    {
       "id": "single_attack_line_premium_p2",
       "title": "Pump Discharge Pressure",
-      "question": "Engine 181 is supplying one 200 ft 1.75-inch attack line flowing 185 GPM through a ChiefXD 185 fog nozzle at 50 PSI. Use C = 15.5, no elevation, and no appliance loss. What pump discharge pressure is required?",
-      "answerLabel": "Pump Pressure",
+      "question": "Engine 181 is supplying one 200 ft 1¾-inch attack line flowing 185 GPM through a ChiefXD 185 fog nozzle at 50 PSI. Use C = 15.5, no elevation, and no appliance loss. What pump discharge pressure is required?",
+      "answerLabel": "Pump Discharge Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
       "inputPlaceholder": "PSI",
@@ -129,7 +76,7 @@
     {
       "id": "single_attack_line_premium_p3",
       "title": "Attack Line Friction Loss",
-      "question": "The attack line is 200 ft of 1.75-inch hose flowing 185 GPM. Using C = 15.5, how much friction loss is present in the attack line?",
+      "question": "The attack line is 200 ft of 1¾-inch hose flowing 185 GPM. Using C = 15.5, how much friction loss is present in the attack line?",
       "answerLabel": "Friction Loss",
       "answerUnit": "PSI",
       "inputLabel": "Enter friction loss",
@@ -178,58 +125,9 @@
       "explainMistake": "Do not add nozzle pressure when the question asks only for friction loss. Friction loss is calculated before nozzle pressure is added."
     },
     {
-      "id": "single_attack_line_premium_p4",
-      "title": "Nozzle Pressure",
-      "question": "The ChiefXD 185 fog nozzle is operating at its rated nozzle pressure. What nozzle pressure is required at the nozzle?",
-      "answerLabel": "Nozzle Pressure",
-      "answerUnit": "PSI",
-      "inputLabel": "Enter nozzle pressure",
-      "inputPlaceholder": "PSI",
-      "answerValue": 50,
-      "correctPP": 0,
-      "tolerance": 5,
-      "answers": {
-        "frictionLoss": 105,
-        "nozzlePressure": 50,
-        "elevation": 0,
-        "applianceLoss": 0,
-        "totalGpm": 185,
-        "pumpPressure": 0,
-        "tolerance": 5
-      },
-      "overlays": [
-        {
-          "label": "Hydrant",
-          "x": 8,
-          "y": 67
-        },
-        {
-          "label": "Engine 181",
-          "x": 32,
-          "y": 52
-        },
-        {
-          "label": "Line A",
-          "x": 58,
-          "y": 58
-        },
-        {
-          "label": "Nozzle",
-          "x": 78,
-          "y": 49
-        }
-      ],
-      "formulaBreakdown": [
-        "ChiefXD 185 nozzle pressure = 50 PSI.",
-        "Nozzle pressure answer = 50 PSI."
-      ],
-      "instructorExplanation": "The scenario information panel identifies the nozzle package. The ChiefXD 185 operates at 50 PSI nozzle pressure.",
-      "explainMistake": "Do not confuse pump discharge pressure with nozzle pressure. Nozzle pressure is only the pressure required at the nozzle."
-    },
-    {
       "id": "single_attack_line_premium_p5",
       "title": "Hydrant Pressure Drop",
-      "question": "The hydrant static pressure is 70 PSI and residual pressure is 60 PSI while supplying one 185 GPM attack line. Using the FirePumpSim hydrant-drop rule, how many additional equivalent 185 GPM attack lines could be supplied?",
+      "question": "The hydrant static pressure is 70 PSI and residual pressure is 60 PSI while supplying one 185 GPM attack line. Use the hydrant flow chart: pressure drop % = (static - residual) ÷ static × 100. Chart: 0-10% drop = 3 more equivalent lines, 10-15% = 2, 15-25% = 1, over 25% = 0. How many additional equivalent 185 GPM attack lines could be supplied?",
       "answerLabel": "Additional Equivalent Lines",
       "answerUnit": "lines",
       "inputLabel": "Enter additional equivalent lines",
@@ -268,67 +166,17 @@
         "Pressure drop = 70 − 60 = 10 PSI.",
         "Percent drop = pressure drop ÷ static pressure × 100.",
         "Percent drop = 10 ÷ 70 × 100 = 14.3%.",
-        "Driver Operator hydrant rule: 10–15% drop supports 2 additional equivalent lines.",
+        "Hydrant flow chart: 10–15% drop supports 2 additional equivalent lines.",
         "Additional equivalent lines = 2."
       ],
-      "instructorExplanation": "The pressure drop is 14.3% of static pressure. Under the standard hydrant pressure-drop rule, that indicates the hydrant can supply two additional equivalent attack lines.",
+      "instructorExplanation": "The pressure drop is 14.3% of static pressure. Using the hydrant flow chart, that indicates the hydrant can supply two additional equivalent attack lines.",
       "explainMistake": "Do not use the 10 PSI drop as a 10% drop. The percentage must be based on static pressure: 10 divided by 70 equals 14.3%."
     },
     {
-      "id": "single_attack_line_premium_p6",
-      "title": "Second Identical Attack Line",
-      "question": "If a second identical ChiefXD 185 attack line is deployed, the first line flows 185 GPM and the second line flows 185 GPM. What is the new total flow requirement?",
-      "answerLabel": "New Total Flow",
-      "answerUnit": "GPM",
-      "inputLabel": "Enter new total flow",
-      "inputPlaceholder": "GPM",
-      "answerValue": 370,
-      "correctPP": 0,
-      "tolerance": 5,
-      "answers": {
-        "frictionLoss": 105,
-        "nozzlePressure": 50,
-        "elevation": 0,
-        "applianceLoss": 0,
-        "totalGpm": 370,
-        "pumpPressure": 0,
-        "tolerance": 5
-      },
-      "overlays": [
-        {
-          "label": "Hydrant",
-          "x": 8,
-          "y": 67
-        },
-        {
-          "label": "Engine 181",
-          "x": 32,
-          "y": 52
-        },
-        {
-          "label": "Line A",
-          "x": 58,
-          "y": 58
-        },
-        {
-          "label": "Nozzle",
-          "x": 78,
-          "y": 49
-        }
-      ],
-      "formulaBreakdown": [
-        "New total flow = flow per attack line × number of identical attack lines.",
-        "New total flow = 185 GPM × 2.",
-        "New total flow = 370 GPM."
-      ],
-      "instructorExplanation": "A second identical attack line doubles the flow demand. Two 185 GPM lines require a total of 370 GPM.",
-      "explainMistake": "Do not double the pump pressure to find total flow. Flow is added by line; pressure is calculated separately."
-    },
-    {
       "id": "single_attack_line_premium_p7",
-      "title": "Extended Attack Line Pump Pressure",
-      "question": "The original attack line is 200 ft of 1.75-inch hose flowing 185 GPM at 50 PSI. If the line is extended by two additional 50 ft sections, the total length becomes 300 ft. Use C = 15.5, no elevation, and no appliance loss. What pump discharge pressure is required?",
-      "answerLabel": "New Pump Pressure",
+      "title": "Extended Attack Line Pump Discharge Pressure",
+      "question": "The original attack line is 200 ft of 1¾-inch hose flowing 185 GPM at 50 PSI. If the line is extended by two additional 50 ft sections, the total length becomes 300 ft. Use C = 15.5, no elevation, and no appliance loss. What pump discharge pressure is required?",
+      "answerLabel": "New Pump Discharge Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter new pump discharge pressure",
       "inputPlaceholder": "PSI",
@@ -383,8 +231,8 @@
     },
     {
       "id": "single_attack_line_premium_p8",
-      "title": "Second-Floor Attack Line Pump Pressure",
-      "question": "The same 200 ft 1.75-inch ChiefXD 185 attack line is moved to a second-floor fire area. The nozzle flows 185 GPM at 50 PSI. Use C = 15.5 and add 5 PSI elevation for one floor above the pump. No appliance loss. What pump discharge pressure is required?",
+      "title": "Second-Floor Attack Line Pump Discharge Pressure",
+      "question": "The same 200 ft 1¾-inch ChiefXD 185 attack line is moved to a second-floor fire area. The nozzle flows 185 GPM at 50 PSI. Use C = 15.5 and add 5 PSI elevation for one floor above the pump. No appliance loss. What pump discharge pressure is required?",
       "answerLabel": "Engine Setback",
       "answerUnit": "PSI",
       "inputLabel": "Enter distance",
@@ -430,7 +278,7 @@
         "PP = 105 + 50 + 5 + 0 = 160 PSI."
       ],
       "instructorExplanation": "Moving the same line to the second floor adds 5 PSI for elevation. The hose friction loss and nozzle pressure stay the same.",
-      "explainMistake": "Do not leave the pump pressure at the ground-level setting. Add the elevation pressure for the second-floor operation."
+      "explainMistake": "Do not leave the pump discharge pressure at the ground-level setting. Add the elevation pressure for the second-floor operation."
     }
   ],
   "tags": [

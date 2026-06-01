@@ -4,7 +4,7 @@
   "difficulty": "intermediate",
   "category": "standpipe",
   "type": "pump",
-  "image": "assets/images/starter_sprinkler_support_011.png",
+  "image": "assets/images/commercial_sprinkler_system_support.png",
   "imageRatio": "4:7",
   "recommendedImageSize": "1080x1890",
   "sceneElements": {
@@ -23,9 +23,9 @@
   "problems": [
     {
       "id": "commercial_sprinkler_system_support_p1",
-      "title": "Sprinkler FDC Pump Pressure With Supply Hose",
-      "question": "Engine 181 is supplying a sprinkler-only FDC support operation. Use a 150 PSI base sprinkler support setting. The FDC is supplied through 200 ft of 2.5-inch hose carrying 250 GPM. Use C = 2, no elevation, and no appliance loss. What pump discharge pressure should be set?",
-      "answerLabel": "Pump Pressure",
+      "title": "Sprinkler FDC Pump Discharge Pressure With Unknown Flow",
+      "question": "Engine 181 is supplying a sprinkler-only FDC support operation through 200 ft of 2½-inch hose. The sprinkler system flowing GPM is unknown, so do not calculate hose friction loss from an assumed flow. Use a 150 PSI base sprinkler support setting and add a 25 PSI FDC/system allowance. No elevation is added. What pump discharge pressure should be set?",
+      "answerLabel": "Pump Discharge Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
       "inputPlaceholder": "PSI",
@@ -33,17 +33,20 @@
       "correctPP": 175,
       "tolerance": 5,
       "answers": {
-        "frictionLoss": 25,
+        "frictionLoss": 0,
         "nozzlePressure": 150,
         "elevation": 0,
-        "applianceLoss": 0,
-        "totalGpm": 250,
+        "applianceLoss": 25,
+        "totalGpm": 0,
         "pumpPressure": 175,
         "tolerance": 5,
         "answerValue": 175,
         "correctAnswer": 175,
         "value": 175,
-        "pp": 175
+        "pp": 175,
+        "answerUnit": "PSI",
+        "unit": "PSI",
+        "answerLabel": "Pump Discharge Pressure"
       },
       "overlays": [
         {
@@ -68,21 +71,23 @@
         }
       ],
       "formulaBreakdown": [
-        "FL = 2 × (250 / 100)^2 × 2 = 25 PSI.",
-        "Pump pressure = base sprinkler setting 150 + supply hose FL 25 = 175 PSI."
+        "Sprinkler flowing GPM is unknown, so do not calculate hose friction loss from a made-up flow.",
+        "Pump discharge pressure = base sprinkler support setting + FDC/system allowance.",
+        "Pump discharge pressure = 150 + 25.",
+        "Pump discharge pressure = 175 PSI."
       ],
-      "instructorExplanation": "When a sprinkler FDC support line has a meaningful supply stretch, add that hose friction loss to the base sprinkler support pressure.",
-      "explainMistake": "Do not ignore the supply hose between the engine and FDC when the problem gives a length and flow."
+      "instructorExplanation": "For sprinkler FDC support, actual flowing GPM may not be known at the pump panel. This problem uses the stated base sprinkler support setting plus the stated FDC/system allowance, without inventing a flow for friction loss.",
+      "explainMistake": "Do not use a guessed sprinkler flow to calculate friction loss. The question says sprinkler GPM is unknown, so use the stated pressure method."
     },
     {
       "id": "commercial_sprinkler_system_support_p2",
-      "title": "Flow Per Sprinkler FDC Inlet",
-      "question": "The sprinkler FDC support operation is supplied by two equal FDC inlets. If the target support flow is 500 GPM total, how much flow is carried by each FDC inlet?",
+      "title": "Sprinkler FDC Inlet Setup With Unknown Flow",
+      "question": "The sprinkler system flowing GPM is unknown, so do not divide an assumed flow between FDC inlets. Based on the sprinkler-support setup, how many separate sprinkler FDC supply lines are being used?",
       "answerLabel": "FDC Inlets Supplied",
-      "answerUnit": "GPM",
-      "inputLabel": "Enter number of inlets",
-      "inputPlaceholder": "GPM",
-      "answerValue": 250,
+      "answerUnit": "inlets",
+      "inputLabel": "Enter number of supplied FDC inlets",
+      "inputPlaceholder": "inlets",
+      "answerValue": 2,
       "correctPP": 0,
       "tolerance": 0,
       "answers": {
@@ -90,16 +95,15 @@
         "nozzlePressure": 0,
         "elevation": 0,
         "applianceLoss": 0,
-        "totalGpm": 500,
+        "totalGpm": 0,
         "pumpPressure": 0,
-        "tolerance": 5,
-        "answerValue": 250,
-        "correctAnswer": 250,
-        "value": 250,
-        "pp": 250,
-        "answerUnit": "GPM",
-        "unit": "GPM",
-        "answerLabel": "Flow Per Inlet"
+        "tolerance": 0,
+        "answerValue": 2,
+        "correctAnswer": 2,
+        "value": 2,
+        "answerUnit": "inlets",
+        "unit": "inlets",
+        "answerLabel": "FDC Inlets Supplied"
       },
       "overlays": [
         {
@@ -108,14 +112,9 @@
           "y": 58
         },
         {
-          "label": "Line A",
-          "x": 57,
-          "y": 59
-        },
-        {
-          "label": "Line B",
-          "x": 61,
-          "y": 63
+          "label": "FDC supply",
+          "x": 59,
+          "y": 60
         },
         {
           "label": "FDC",
@@ -124,18 +123,19 @@
         }
       ],
       "formulaBreakdown": [
-        "Flow per inlet = total sprinkler support flow ÷ number of equal FDC inlets.",
-        "Flow per inlet = 500 ÷ 2.",
-        "Flow per inlet = 250 GPM."
+        "The sprinkler flowing GPM is unknown.",
+        "Do not divide an assumed sprinkler GPM between FDC inlets.",
+        "Count the separate blue FDC supply lines/inlets being used in the scene.",
+        "FDC inlets supplied = 2."
       ],
-      "instructorExplanation": "When two equal FDC inlets are supplied, the total target flow is split evenly between them.",
-      "explainMistake": "Do not count the two FDC hoses as two separate 500 GPM flows. The total flow is split between the equal inlets."
+      "instructorExplanation": "The key decision is setup and isolation of sprinkler support, not a flow split. With sprinkler GPM unknown, count the supplied FDC inlets/lines visible in the scene rather than assigning a GPM per inlet.",
+      "explainMistake": "Do not enter 250 GPM or any other divided flow. The sprinkler system flow is unknown in this version of the scenario."
     },
     {
       "id": "commercial_sprinkler_system_support_p3",
       "title": "Third-Floor Sprinkler Support Pressure",
-      "question": "The sprinkler-only FDC support base setting is 150 PSI. If the supplied sprinkler area is on the 3rd floor, use 1st floor = 0 ft and 3rd floor = 20 ft, adding 0.5 PSI per foot. What pump discharge pressure should be set?",
-      "answerLabel": "Pump Pressure",
+      "question": "The sprinkler-only FDC support base setting is 150 PSI. The sprinkler system flowing GPM is unknown, so do not calculate hose friction loss from an assumed flow. If the supplied sprinkler area is on the 3rd floor, use height = (floor number - 1) × 10 ft and elevation pressure = height × 0.5 PSI/ft. What pump discharge pressure should be set?",
+      "answerLabel": "Pump Discharge Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
       "inputPlaceholder": "PSI",
@@ -174,16 +174,17 @@
         }
       ],
       "formulaBreakdown": [
+        "Sprinkler flowing GPM is unknown, so no hose friction loss is calculated from flow.",
         "Base sprinkler support pressure = 150 PSI.",
-        "Floor rule: 1st floor = 0 ft, 3rd floor = 20 ft.",
+        "Elevation formula: height = (floor number - 1) × 10 ft; elevation pressure = height × 0.5 PSI/ft.",
         "Elevation pressure = 0.5 PSI per foot.",
         "Elevation pressure = 20 × 0.5 = 10 PSI.",
-        "Pump pressure = base sprinkler support pressure + elevation.",
-        "Pump pressure = 150 + 10.",
-        "Pump pressure = 160 PSI."
+        "Pump discharge pressure = base sprinkler support pressure + elevation.",
+        "Pump discharge pressure = 150 + 10.",
+        "Pump discharge pressure = 160 PSI."
       ],
-      "instructorExplanation": "The base FirePumpSim sprinkler support pressure is 150 PSI. Because the sprinkler area is on the third floor, add 10 PSI for elevation, giving a pump discharge pressure of 160 PSI.",
-      "explainMistake": "Do not leave the pressure at 150 PSI when the supplied sprinkler area is known to be above grade. Add the elevation pressure for the third floor."
+      "instructorExplanation": "Use the department sprinkler/FDC guideline: PDP = 150 PSI base + elevation pressure. For the 3rd floor, elevation pressure = (3 - 1) × 10 ft × 0.5 PSI/ft = 10 PSI. No sprinkler GPM is supplied, so no flow-based friction-loss calculation is used.",
+      "explainMistake": "Do not invent a sprinkler flow or leave the pressure at 150 PSI. Add the stated elevation pressure only."
     }
   ],
   "tags": [

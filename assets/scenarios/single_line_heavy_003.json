@@ -7,7 +7,7 @@
   "image": "assets/images/single_line_heavy_003.png",
   "scene": {
     "engine": "Engine 181",
-    "description": "Engine 181 is supplying a 250' 2½\" attack line to the corner of a commercial strip. The nozzle is a 1⅛\" smooth bore flowing about 265 GPM at 50 PSI. No elevation and no appliance loss. What pump pressure should you set?",
+    "description": "Engine 181 is supplying a 250' 2½\" attack line to the corner of a commercial strip. The nozzle is a 1⅛\" smooth bore flowing about 265 GPM at 50 PSI. No elevation and no appliance loss. What pump discharge pressure should you set?",
     "baseOverlays": []
   },
   "sceneElements": {
@@ -36,10 +36,10 @@
     {
       "id": "single_line_heavy_003_q1",
       "title": "Heavy 2½ Smooth Bore Attack Line",
-      "question": "Engine 181 is supplying a 250 ft 2.5-inch attack line with a 1⅛-inch smooth bore nozzle flowing 265 GPM at 50 PSI. No elevation and no appliance loss. Use C = 2. What pump pressure should you set?",
+      "question": "Engine 181 is supplying a 250 ft 2½-inch attack line with a 1⅛-inch smooth bore nozzle flowing 265 GPM at 50 PSI. No elevation and no appliance loss. Use C = 2. What pump discharge pressure should you set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Your pump pressure answer",
+      "inputLabel": "Your PDP answer",
       "inputPlaceholder": "Enter PSI",
       "answerValue": 85,
       "correctPP": 85,
@@ -89,16 +89,16 @@
         "FL ≈ 35 PSI.",
         "PP = 35 + 50 + 0 + 0 = 85 PSI."
       ],
-      "instructorExplanation": "This heavy-line variation uses 250 ft of 2.5-inch hose at 265 GPM. Calculate friction loss with C = 2, then add nozzle pressure and elevation.",
-      "explainMistake": "Do not use the same answer for every 2.5-inch line problem. Hose length and elevation can change the final pump pressure."
+      "instructorExplanation": "This heavy-line variation uses 250 ft of 2½-inch hose at 265 GPM. Calculate friction loss with C = 2, then add nozzle pressure and elevation.",
+      "explainMistake": "Do not use the same answer for every 2½-inch line problem. Hose length and elevation can change the final pump discharge pressure."
     },
     {
       "id": "single_line_heavy_003_q2",
       "title": "Heavy 2½ Smooth Bore Attack Line",
-      "question": "Engine 181 is supplying a 200 ft 2.5-inch attack line with a 1⅛-inch smooth bore nozzle flowing 265 GPM at 50 PSI. No elevation and no appliance loss. Use C = 2. What pump pressure should you set?",
+      "question": "Engine 181 is supplying a 200 ft 2½-inch attack line with a 1⅛-inch smooth bore nozzle flowing 265 GPM at 50 PSI. No elevation and no appliance loss. Use C = 2. What pump discharge pressure should you set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Your pump pressure answer",
+      "inputLabel": "Your PDP answer",
       "inputPlaceholder": "Enter PSI",
       "answerValue": 78,
       "correctPP": 78,
@@ -148,16 +148,16 @@
         "FL ≈ 28 PSI.",
         "PP = 28 + 50 + 0 + 0 = 78 PSI."
       ],
-      "instructorExplanation": "This heavy-line variation uses 200 ft of 2.5-inch hose at 265 GPM. Calculate friction loss with C = 2, then add nozzle pressure and elevation.",
-      "explainMistake": "Do not use the same answer for every 2.5-inch line problem. Hose length and elevation can change the final pump pressure."
+      "instructorExplanation": "This heavy-line variation uses 200 ft of 2½-inch hose at 265 GPM. Calculate friction loss with C = 2, then add nozzle pressure and elevation.",
+      "explainMistake": "Do not use the same answer for every 2½-inch line problem. Hose length and elevation can change the final pump discharge pressure."
     },
     {
       "id": "single_line_heavy_003_q3",
       "title": "Heavy 2½ Smooth Bore Attack Line",
-      "question": "Engine 181 is supplying a 150 ft 2.5-inch attack line with a 1⅛-inch smooth bore nozzle flowing 265 GPM at 50 PSI. No elevation and no appliance loss. Use C = 2. What pump pressure should you set?",
+      "question": "Engine 181 is supplying a 150 ft 2½-inch attack line with a 1⅛-inch smooth bore nozzle flowing 265 GPM at 50 PSI. No elevation and no appliance loss. Use C = 2. What pump discharge pressure should you set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Your pump pressure answer",
+      "inputLabel": "Your PDP answer",
       "inputPlaceholder": "Enter PSI",
       "answerValue": 71,
       "correctPP": 71,
@@ -207,16 +207,16 @@
         "FL ≈ 21 PSI.",
         "PP = 21 + 50 + 0 + 0 = 71 PSI."
       ],
-      "instructorExplanation": "This heavy-line variation uses 150 ft of 2.5-inch hose at 265 GPM. Calculate friction loss with C = 2, then add nozzle pressure and elevation.",
-      "explainMistake": "Do not use the same answer for every 2.5-inch line problem. Hose length and elevation can change the final pump pressure."
+      "instructorExplanation": "This heavy-line variation uses 150 ft of 2½-inch hose at 265 GPM. Calculate friction loss with C = 2, then add nozzle pressure and elevation.",
+      "explainMistake": "Do not use the same answer for every 2½-inch line problem. Hose length and elevation can change the final pump discharge pressure."
     },
     {
       "id": "single_line_heavy_003_q4",
       "title": "Heavy 2½ Smooth Bore Attack Line",
-      "question": "Engine 181 is supplying a 250 ft 2.5-inch attack line with a 1⅛-inch smooth bore nozzle flowing 265 GPM at 50 PSI. Add 5 PSI elevation and no appliance loss. Use C = 2. What pump pressure should you set?",
+      "question": "Engine 181 is supplying a 250 ft 2½-inch attack line with a 1⅛-inch smooth bore nozzle flowing 265 GPM at 50 PSI. The nozzle is one floor above the pump; use height = (floor number - 1) × 10 ft and elevation pressure = height × 0.5 PSI/ft. Use C = 2 and no appliance loss. What pump discharge pressure should be set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Your pump pressure answer",
+      "inputLabel": "Your PDP answer",
       "inputPlaceholder": "Enter PSI",
       "answerValue": 90,
       "correctPP": 90,
@@ -266,8 +266,8 @@
         "FL ≈ 35 PSI.",
         "PP = 35 + 50 + 5 + 0 = 90 PSI."
       ],
-      "instructorExplanation": "This heavy-line variation uses 250 ft of 2.5-inch hose at 265 GPM. Calculate friction loss with C = 2, then add nozzle pressure and elevation.",
-      "explainMistake": "Do not use the same answer for every 2.5-inch line problem. Hose length and elevation can change the final pump pressure."
+      "instructorExplanation": "This heavy-line variation uses 250 ft of 2½-inch hose at 265 GPM. Calculate friction loss with C = 2, then add nozzle pressure and elevation.",
+      "explainMistake": "Do not use the same answer for every 2½-inch line problem. Hose length and elevation can change the final pump discharge pressure."
     }
   ],
   "tags": [

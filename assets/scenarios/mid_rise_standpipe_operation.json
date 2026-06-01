@@ -4,18 +4,18 @@
   "difficulty": "advanced",
   "category": "standpipe",
   "type": "pump",
-  "image": "assets/images/standpipe-engine181.png",
+  "image": "assets/images/mid_rise_standpipe_operation.png",
   "imageRatio": "4:7",
   "recommendedImageSize": "1080x1890",
   "sceneElements": {
     "engine": "Engine 181",
     "hoses": [
       "Supply line from hydrant to Engine 181 intake",
-      "100 ft of 2.5-inch hose from Engine 181 discharge to FDC",
-      "150 ft of 2.5-inch attack line from standpipe outlet to nozzle"
+      "100 ft of 2½-inch hose from Engine 181 discharge to FDC",
+      "150 ft of 2½-inch attack line from standpipe outlet to nozzle"
     ],
     "nozzles": [
-      "1 1/8-inch smooth bore nozzle, 265 GPM @ 50 PSI"
+      "1⅛-inch smooth bore nozzle, 265 GPM @ 50 PSI"
     ],
     "appliances": [
       "FDC / standpipe system"
@@ -26,7 +26,7 @@
     {
       "id": "mid_rise_standpipe_operation_p1",
       "title": "Sixth-Floor Standpipe Elevation",
-      "question": "The standpipe attack is operating on the 6th floor. Use the FirePumpSim floor rule: 1st floor = 0 ft, each floor above the 1st adds 10 ft, and elevation adds 0.5 PSI per foot. What elevation pressure must be added?",
+      "question": "The standpipe attack is operating on the 6th floor. Use the elevation formula: height = (floor number - 1) × 10 ft, and elevation pressure = height × 0.5 PSI/ft. What elevation pressure must be added?",
       "answerLabel": "Standpipe System Loss",
       "answerUnit": "PSI",
       "inputLabel": "Enter pressure change",
@@ -75,12 +75,12 @@
         "Elevation pressure = 50 × 0.5 = 25 PSI."
       ],
       "instructorExplanation": "Use the number of floors above the first floor, then multiply by 10 ft and 0.5 PSI per foot.",
-      "explainMistake": "Do not use the floor number as the elevation height. The first floor counts as 0 ft in this rule."
+      "explainMistake": "Do not use the floor number as the elevation height. Use the formula height = (floor number - 1) × 10 ft because the first floor is grade level."
     },
     {
       "id": "mid_rise_standpipe_operation_p2",
       "title": "Elevation Pressure Change",
-      "question": "The attack is operating from the 5th floor. Using the floor-height rule, 1st floor = 0 ft and 5th floor = 40 ft. At 0.5 PSI per foot, what elevation pressure must be added?",
+      "question": "The attack is operating from the 5th floor. Use the elevation formula: height = (floor number - 1) × 10 ft, and elevation pressure = height × 0.5 PSI/ft. What elevation pressure must be added?",
       "answerLabel": "Elevation Pressure Change",
       "answerUnit": "PSI",
       "inputLabel": "Enter elevation pressure",
@@ -120,21 +120,21 @@
         }
       ],
       "formulaBreakdown": [
-        "Floor rule: 1st floor = 0 ft.",
+        "Elevation formula: height = (floor number - 1) × 10 ft; elevation pressure = height × 0.5 PSI/ft.",
         "Each floor above the 1st floor adds 10 ft of elevation.",
         "5th floor elevation = 40 ft above grade.",
         "Elevation pressure = 0.5 PSI per foot.",
         "Elevation pressure = 40 × 0.5.",
         "Elevation pressure = 20 PSI."
       ],
-      "instructorExplanation": "The fire attack is operating on the 5th floor. Using the FirePumpSim floor rule, that is 40 ft above grade, which requires 20 PSI of elevation pressure.",
-      "explainMistake": "Do not count the 1st floor as 10 ft of elevation. In this rule, the 1st floor is grade level, so the 5th floor is 40 ft above grade."
+      "instructorExplanation": "The fire attack is operating on the 5th floor. Using the elevation formula, height = (5 - 1) × 10 ft = 40 ft, and elevation pressure = 40 × 0.5 = 20 PSI.",
+      "explainMistake": "Do not count the 1st floor as 10 ft of elevation. Use the formula height = (floor number - 1) × 10 ft because the 1st floor is grade level."
     },
     {
       "id": "mid_rise_standpipe_operation_p3",
       "title": "Total Pump Discharge Pressure",
-      "question": "Engine 181 is supplying a 5th-floor standpipe operation through 100 ft of 2.5-inch hose to the FDC and 150 ft of 2.5-inch attack hose from the outlet to a 1⅛-inch smooth bore nozzle flowing 265 GPM at 50 PSI. Add 20 PSI elevation and 25 PSI standpipe/FDC system loss. What pump discharge pressure is required?",
-      "answerLabel": "Pump Pressure",
+      "question": "Engine 181 is supplying a 5th-floor standpipe operation through 100 ft of 2½-inch hose to the FDC and 150 ft of 2½-inch attack hose from the outlet to a 1⅛-inch smooth bore nozzle flowing 265 GPM at 50 PSI. Use height = (floor number - 1) × 10 ft and elevation pressure = height × 0.5 PSI/ft. Add 25 PSI standpipe/FDC system loss. What pump discharge pressure is required?",
+      "answerLabel": "Pump Discharge Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
       "inputPlaceholder": "PSI",

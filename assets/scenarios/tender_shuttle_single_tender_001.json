@@ -83,14 +83,14 @@
         }
       ],
       "formulaBreakdown": [
-        "This is a water-supply scenario. The final answer is sustained shuttle flow in GPM, not pump pressure.",
+        "This is a water-supply scenario. The final answer is sustained shuttle flow in GPM, not pump discharge pressure.",
         "Tender Shuttle GPM = usable water delivered per trip ÷ total shuttle cycle time in minutes.",
         "Usable water = 2,500 gallons × 0.90 = 2,250 gallons.",
         "Cycle time = fill time + travel to scene + dump time + return travel.",
         "Cycle time = 4 + 6 + 3 + 6 = 19 minutes.",
         "Sustained flow = 2,250 ÷ 19 = 118.4 GPM.",
         "Round to 120 GPM.",
-        "Pump pressure fields are 0 because this scenario is not asking for pump discharge pressure."
+        "Pump discharge pressure fields are 0 because this scenario is not asking for pump discharge pressure."
       ],
       "instructorExplanation": "This problem estimates sustained water supply from a single tender shuttle by dividing usable gallons per trip by the full round-trip cycle time.",
       "explainMistake": "Common mistakes: using full tank capacity instead of usable water, forgetting fill time, forgetting dump time, only counting one-way travel, or calculating gallons per trip but not dividing by cycle time.",
@@ -170,7 +170,7 @@
         "Cycle time = fill 4 + travel to scene 6 + dump 3 + return 6 = 19 minutes.",
         "Sustained flow = 2,700 ÷ 19 = 142.1 GPM.",
         "Rounded answer = 140 GPM.",
-        "Pump pressure fields are 0 because this scenario asks for sustained water supply, not PDP."
+        "Pump discharge pressure fields are 0 because this scenario asks for sustained water supply, not PDP."
       ],
       "instructorExplanation": "This problem estimates sustained water supply from a single tender shuttle by dividing usable gallons per trip by the full round-trip cycle time.",
       "explainMistake": "Common mistakes: using full tank capacity instead of usable water, forgetting fill time, forgetting dump time, only counting one-way travel, or calculating gallons per trip but not dividing by cycle time.",
@@ -250,7 +250,7 @@
         "Cycle time = fill 4 + travel to scene 8 + dump 3 + return 6 = 21 minutes.",
         "Sustained flow = 2,250 ÷ 21 = 107.1 GPM.",
         "Rounded answer = 105 GPM.",
-        "Pump pressure fields are 0 because this scenario asks for sustained water supply, not PDP."
+        "Pump discharge pressure fields are 0 because this scenario asks for sustained water supply, not PDP."
       ],
       "instructorExplanation": "This problem estimates sustained water supply from a single tender shuttle by dividing usable gallons per trip by the full round-trip cycle time.",
       "explainMistake": "Common mistakes: using full tank capacity instead of usable water, forgetting fill time, forgetting dump time, only counting one-way travel, or calculating gallons per trip but not dividing by cycle time.",
@@ -330,7 +330,7 @@
         "Cycle time = fill 4 + travel to scene 6 + dump 5 + return 6 = 21 minutes.",
         "Sustained flow = 2,250 ÷ 21 = 107.1 GPM.",
         "Rounded answer = 105 GPM.",
-        "Pump pressure fields are 0 because this scenario asks for sustained water supply, not PDP."
+        "Pump discharge pressure fields are 0 because this scenario asks for sustained water supply, not PDP."
       ],
       "instructorExplanation": "This problem estimates sustained water supply from a single tender shuttle by dividing usable gallons per trip by the full round-trip cycle time.",
       "explainMistake": "Common mistakes: using full tank capacity instead of usable water, forgetting fill time, forgetting dump time, only counting one-way travel, or calculating gallons per trip but not dividing by cycle time.",

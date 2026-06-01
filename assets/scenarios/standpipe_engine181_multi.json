@@ -7,7 +7,7 @@
   "image": "assets/images/standpipe-engine181.png",
   "scene": {
     "engine": "Engine 181",
-    "description": "Engine 181 is supplying a standpipe/FDC operation at a multi-story apartment building. A 100′ section of 2½″ hose runs from Engine 181 to the FDC. The standpipe carries water vertically to the fire floor. Use the corrected floor-height rule: 1st floor = 0′, each floor above adds 10′, and elevation pressure is 0.5 PSI per foot. On the fire floor, a separate 2½″ attack hose is connected to the standpipe outlet and advanced to the nozzle.",
+    "description": "Engine 181 is supplying a standpipe/FDC operation at a multi-story apartment building. A 100′ section of 2½″ hose runs from Engine 181 to the FDC. The standpipe carries water vertically to the fire floor. Use the elevation formula: height = (floor number - 1) × 10 ft, and elevation pressure = height × 0.5 PSI/ft. On the fire floor, a separate 2½″ attack hose is connected to the standpipe outlet and advanced to the nozzle.",
     "baseOverlays": []
   },
   "sceneElements": {
@@ -44,16 +44,16 @@
         "loss": 25
       }
     ],
-    "elevation": "Varies by problem. Floor height rule: elevation feet = (floor - 1) × 10; elevation PSI = feet × 0.5."
+    "elevation": "Varies by problem. Elevation formula: height = (floor number - 1) × 10 ft; elevation pressure = height × 0.5 PSI/ft."
   },
   "problems": [
     {
       "id": "standpipe_engine181_multi_q1",
       "title": "Standpipe Operation — Engine Hose and Attack Hose",
-      "question": "Engine 181 is supplying the FDC with 100′ of 2½″ hose. The standpipe rises to Floor 3, and the 3rd floor outlet is 20 feet above pump level using the floor-height rule: 1st floor = 0 feet and each floor above adds 10 feet. A 150′ section of 2½″ attack hose is connected to the 3rd floor standpipe outlet and ends in a 1⅛″ smooth bore nozzle flowing 265 GPM at 50 PSI. Add 25 PSI for standpipe/FDC system loss. What pump pressure should you set?",
+      "question": "Engine 181 is supplying the FDC with 100′ of 2½″ hose. The standpipe rises to Floor 3. Use the elevation formula: height = (floor number - 1) × 10 ft, and elevation pressure = height × 0.5 PSI/ft. A 150′ section of 2½″ attack hose is connected to the 3rd floor standpipe outlet and ends in a 1⅛″ smooth bore nozzle flowing 265 GPM at 50 PSI. Add 25 PSI for standpipe/FDC system loss. What pump discharge pressure should be set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Your pump pressure answer",
+      "inputLabel": "Your PDP answer",
       "inputPlaceholder": "Enter PSI",
       "answerValue": 120,
       "correctPP": 120,
@@ -132,27 +132,27 @@
       "formulaBreakdown": [
         "Engine-to-FDC hose = 100′ of 2½″ hose",
         "Attack hose after standpipe = 150′ of 2½″ hose connected at the Floor 3 outlet",
-        "Nozzle after standpipe = 1⅛″ smooth bore nozzle flowing 265 gpm at 50 psi NP",
+        "Nozzle after standpipe = 1⅛″ smooth bore nozzle flowing 265 GPM at 50 PSI NP",
         "FL per 100′ = C × (GPM ÷ 100)^2",
-        "Supply hose FL = 2 × (265 ÷ 100)^2 × 1 = 14 psi",
-        "Attack hose FL = 2 × (265 ÷ 100)^2 × 1.5 = 21 psi",
-        "Total FL = 14 + 21 = 35 psi",
-        "Floor-height rule: 1st floor = 0′ and each floor above adds 10′",
+        "Supply hose FL = 2 × (265 ÷ 100)^2 × 1 = 14 PSI",
+        "Attack hose FL = 2 × (265 ÷ 100)^2 × 1.5 = 21 PSI",
+        "Total FL = 14 + 21 = 35 PSI",
+        "Elevation formula: height = (floor number - 1) × 10 ft; elevation pressure = height × 0.5 PSI/ft",
         "Floor 3 height = (3 - 1) × 10′ = 20′",
-        "Elevation = 20′ × 0.5 psi/ft = 10 psi",
+        "Elevation = 20′ × 0.5 PSI/ft = 10 PSI",
         "PP = 35 FL + 50 NP + 10 elevation + 25 system loss",
-        "PP = 120 psi"
+        "PP = 120 PSI"
       ],
-      "instructorExplanation": "Use the corrected floor-height rule: the first floor is pump level/0′, and each floor above adds 10′ of elevation. For Floor 3, elevation is 20′ × 0.5 = 10 PSI. Then add the Engine-to-FDC hose friction loss, attack hose friction loss, nozzle pressure, and 25 PSI standpipe/FDC system loss.",
-      "explainMistake": "Common mistakes are treating the fire floor number as the number of floor rises, forgetting the Engine-to-FDC hose, only calculating the attack hose after the standpipe, forgetting the 25 psi standpipe system loss, using the wrong C value for 2½″ hose, or missing the corrected elevation pressure for the fire floor."
+      "instructorExplanation": "Use the elevation formula: height = (floor number - 1) × 10 ft, and elevation pressure = height × 0.5 PSI/ft. For Floor 3, elevation is 20′ × 0.5 = 10 PSI. Then add the Engine-to-FDC hose friction loss, attack hose friction loss, nozzle pressure, and 25 PSI standpipe/FDC system loss.",
+      "explainMistake": "Common mistakes are treating the fire floor number as the number of floor rises, forgetting the Engine-to-FDC hose, only calculating the attack hose after the standpipe, forgetting the 25 PSI standpipe system loss, using the wrong C value for 2½″ hose, or missing the corrected elevation pressure for the fire floor."
     },
     {
       "id": "standpipe_engine181_multi_q2",
       "title": "Standpipe Operation — Engine Hose and Attack Hose",
-      "question": "Engine 181 is supplying the FDC with 100′ of 2½″ hose. The standpipe rises to Floor 3, and the 3rd floor outlet is 20 feet above pump level using the floor-height rule: 1st floor = 0 feet and each floor above adds 10 feet. A 200′ section of 2½″ attack hose is connected to the 3rd floor standpipe outlet and ends in a 1⅛″ smooth bore nozzle flowing 265 GPM at 50 PSI. Add 25 PSI for standpipe/FDC system loss. What pump pressure should you set?",
+      "question": "Engine 181 is supplying the FDC with 100′ of 2½″ hose. The standpipe rises to Floor 3. Use the elevation formula: height = (floor number - 1) × 10 ft, and elevation pressure = height × 0.5 PSI/ft. A 200′ section of 2½″ attack hose is connected to the 3rd floor standpipe outlet and ends in a 1⅛″ smooth bore nozzle flowing 265 GPM at 50 PSI. Add 25 PSI for standpipe/FDC system loss. What pump discharge pressure should be set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Your pump pressure answer",
+      "inputLabel": "Your PDP answer",
       "inputPlaceholder": "Enter PSI",
       "answerValue": 127,
       "correctPP": 127,
@@ -231,27 +231,27 @@
       "formulaBreakdown": [
         "Engine-to-FDC hose = 100′ of 2½″ hose",
         "Attack hose after standpipe = 200′ of 2½″ hose connected at the Floor 3 outlet",
-        "Nozzle after standpipe = 1⅛″ smooth bore nozzle flowing 265 gpm at 50 psi NP",
+        "Nozzle after standpipe = 1⅛″ smooth bore nozzle flowing 265 GPM at 50 PSI NP",
         "FL per 100′ = C × (GPM ÷ 100)^2",
-        "Supply hose FL = 2 × (265 ÷ 100)^2 × 1 = 14 psi",
-        "Attack hose FL = 2 × (265 ÷ 100)^2 × 2 = 28 psi",
-        "Total FL = 14 + 28 = 42 psi",
-        "Floor-height rule: 1st floor = 0′ and each floor above adds 10′",
+        "Supply hose FL = 2 × (265 ÷ 100)^2 × 1 = 14 PSI",
+        "Attack hose FL = 2 × (265 ÷ 100)^2 × 2 = 28 PSI",
+        "Total FL = 14 + 28 = 42 PSI",
+        "Elevation formula: height = (floor number - 1) × 10 ft; elevation pressure = height × 0.5 PSI/ft",
         "Floor 3 height = (3 - 1) × 10′ = 20′",
-        "Elevation = 20′ × 0.5 psi/ft = 10 psi",
+        "Elevation = 20′ × 0.5 PSI/ft = 10 PSI",
         "PP = 42 FL + 50 NP + 10 elevation + 25 system loss",
-        "PP = 127 psi"
+        "PP = 127 PSI"
       ],
-      "instructorExplanation": "Use the corrected floor-height rule: the first floor is pump level/0′, and each floor above adds 10′ of elevation. For Floor 3, elevation is 20′ × 0.5 = 10 PSI. Then add the Engine-to-FDC hose friction loss, attack hose friction loss, nozzle pressure, and 25 PSI standpipe/FDC system loss.",
-      "explainMistake": "Common mistakes are treating the fire floor number as the number of floor rises, forgetting the Engine-to-FDC hose, only calculating the attack hose after the standpipe, forgetting the 25 psi standpipe system loss, using the wrong C value for 2½″ hose, or missing the corrected elevation pressure for the fire floor."
+      "instructorExplanation": "Use the elevation formula: height = (floor number - 1) × 10 ft, and elevation pressure = height × 0.5 PSI/ft. For Floor 3, elevation is 20′ × 0.5 = 10 PSI. Then add the Engine-to-FDC hose friction loss, attack hose friction loss, nozzle pressure, and 25 PSI standpipe/FDC system loss.",
+      "explainMistake": "Common mistakes are treating the fire floor number as the number of floor rises, forgetting the Engine-to-FDC hose, only calculating the attack hose after the standpipe, forgetting the 25 PSI standpipe system loss, using the wrong C value for 2½″ hose, or missing the corrected elevation pressure for the fire floor."
     },
     {
       "id": "standpipe_engine181_multi_q3",
       "title": "Standpipe Operation — Engine Hose and Attack Hose",
-      "question": "Engine 181 is supplying the FDC with 100′ of 2½″ hose. The standpipe rises to Floor 5, and the 5th floor outlet is 40 feet above pump level using the floor-height rule: 1st floor = 0 feet and each floor above adds 10 feet. A 150′ section of 2½″ attack hose is connected to the 5th floor standpipe outlet and ends in a 1⅛″ smooth bore nozzle flowing 265 GPM at 50 PSI. Add 25 PSI for standpipe/FDC system loss. What pump pressure should you set?",
+      "question": "Engine 181 is supplying the FDC with 100′ of 2½″ hose. The standpipe rises to Floor 5. Use the elevation formula: height = (floor number - 1) × 10 ft, and elevation pressure = height × 0.5 PSI/ft. A 150′ section of 2½″ attack hose is connected to the 5th floor standpipe outlet and ends in a 1⅛″ smooth bore nozzle flowing 265 GPM at 50 PSI. Add 25 PSI for standpipe/FDC system loss. What pump discharge pressure should be set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Your pump pressure answer",
+      "inputLabel": "Your PDP answer",
       "inputPlaceholder": "Enter PSI",
       "answerValue": 130,
       "correctPP": 130,
@@ -330,27 +330,27 @@
       "formulaBreakdown": [
         "Engine-to-FDC hose = 100′ of 2½″ hose",
         "Attack hose after standpipe = 150′ of 2½″ hose connected at the Floor 5 outlet",
-        "Nozzle after standpipe = 1⅛″ smooth bore nozzle flowing 265 gpm at 50 psi NP",
+        "Nozzle after standpipe = 1⅛″ smooth bore nozzle flowing 265 GPM at 50 PSI NP",
         "FL per 100′ = C × (GPM ÷ 100)^2",
-        "Supply hose FL = 2 × (265 ÷ 100)^2 × 1 = 14 psi",
-        "Attack hose FL = 2 × (265 ÷ 100)^2 × 1.5 = 21 psi",
-        "Total FL = 14 + 21 = 35 psi",
-        "Floor-height rule: 1st floor = 0′ and each floor above adds 10′",
+        "Supply hose FL = 2 × (265 ÷ 100)^2 × 1 = 14 PSI",
+        "Attack hose FL = 2 × (265 ÷ 100)^2 × 1.5 = 21 PSI",
+        "Total FL = 14 + 21 = 35 PSI",
+        "Elevation formula: height = (floor number - 1) × 10 ft; elevation pressure = height × 0.5 PSI/ft",
         "Floor 5 height = (5 - 1) × 10′ = 40′",
-        "Elevation = 40′ × 0.5 psi/ft = 20 psi",
+        "Elevation = 40′ × 0.5 PSI/ft = 20 PSI",
         "PP = 35 FL + 50 NP + 20 elevation + 25 system loss",
-        "PP = 130 psi"
+        "PP = 130 PSI"
       ],
-      "instructorExplanation": "Use the corrected floor-height rule: the first floor is pump level/0′, and each floor above adds 10′ of elevation. For Floor 5, elevation is 40′ × 0.5 = 20 PSI. Then add the Engine-to-FDC hose friction loss, attack hose friction loss, nozzle pressure, and 25 PSI standpipe/FDC system loss.",
-      "explainMistake": "Common mistakes are treating the fire floor number as the number of floor rises, forgetting the Engine-to-FDC hose, only calculating the attack hose after the standpipe, forgetting the 25 psi standpipe system loss, using the wrong C value for 2½″ hose, or missing the corrected elevation pressure for the fire floor."
+      "instructorExplanation": "Use the elevation formula: height = (floor number - 1) × 10 ft, and elevation pressure = height × 0.5 PSI/ft. For Floor 5, elevation is 40′ × 0.5 = 20 PSI. Then add the Engine-to-FDC hose friction loss, attack hose friction loss, nozzle pressure, and 25 PSI standpipe/FDC system loss.",
+      "explainMistake": "Common mistakes are treating the fire floor number as the number of floor rises, forgetting the Engine-to-FDC hose, only calculating the attack hose after the standpipe, forgetting the 25 PSI standpipe system loss, using the wrong C value for 2½″ hose, or missing the corrected elevation pressure for the fire floor."
     },
     {
       "id": "standpipe_engine181_multi_q4",
       "title": "Standpipe Operation — Engine Hose and Attack Hose",
-      "question": "Engine 181 is supplying the FDC with 100′ of 2½″ hose. The standpipe rises to Floor 3, and the 3rd floor outlet is 20 feet above pump level using the floor-height rule: 1st floor = 0 feet and each floor above adds 10 feet. A 150′ section of 2½″ attack hose is connected to the 3rd floor standpipe outlet and ends in a 15/16″ smooth bore nozzle flowing 185 GPM at 50 PSI. Add 25 PSI for standpipe/FDC system loss. What pump pressure should you set?",
+      "question": "Engine 181 is supplying the FDC with 100′ of 2½″ hose. The standpipe rises to Floor 3. Use the elevation formula: height = (floor number - 1) × 10 ft, and elevation pressure = height × 0.5 PSI/ft. A 150′ section of 2½″ attack hose is connected to the 3rd floor standpipe outlet and ends in a 15/16″ smooth bore nozzle flowing 185 GPM at 50 PSI. Add 25 PSI for standpipe/FDC system loss. What pump discharge pressure should be set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Your pump pressure answer",
+      "inputLabel": "Your PDP answer",
       "inputPlaceholder": "Enter PSI",
       "answerValue": 102,
       "correctPP": 102,
@@ -429,27 +429,27 @@
       "formulaBreakdown": [
         "Engine-to-FDC hose = 100′ of 2½″ hose",
         "Attack hose after standpipe = 150′ of 2½″ hose connected at the Floor 3 outlet",
-        "Nozzle after standpipe = 15/16″ smooth bore nozzle flowing 185 gpm at 50 psi NP",
+        "Nozzle after standpipe = 15/16″ smooth bore nozzle flowing 185 GPM at 50 PSI NP",
         "FL per 100′ = C × (GPM ÷ 100)^2",
-        "Supply hose FL = 2 × (185 ÷ 100)^2 × 1 = 7 psi",
-        "Attack hose FL = 2 × (185 ÷ 100)^2 × 1.5 = 10 psi",
-        "Total FL = 7 + 10 = 17 psi",
-        "Floor-height rule: 1st floor = 0′ and each floor above adds 10′",
+        "Supply hose FL = 2 × (185 ÷ 100)^2 × 1 = 7 PSI",
+        "Attack hose FL = 2 × (185 ÷ 100)^2 × 1.5 = 10 PSI",
+        "Total FL = 7 + 10 = 17 PSI",
+        "Elevation formula: height = (floor number - 1) × 10 ft; elevation pressure = height × 0.5 PSI/ft",
         "Floor 3 height = (3 - 1) × 10′ = 20′",
-        "Elevation = 20′ × 0.5 psi/ft = 10 psi",
+        "Elevation = 20′ × 0.5 PSI/ft = 10 PSI",
         "PP = 17 FL + 50 NP + 10 elevation + 25 system loss",
-        "PP = 102 psi"
+        "PP = 102 PSI"
       ],
-      "instructorExplanation": "Use the corrected floor-height rule: the first floor is pump level/0′, and each floor above adds 10′ of elevation. For Floor 3, elevation is 20′ × 0.5 = 10 PSI. Then add the Engine-to-FDC hose friction loss, attack hose friction loss, nozzle pressure, and 25 PSI standpipe/FDC system loss.",
-      "explainMistake": "Common mistakes are treating the fire floor number as the number of floor rises, forgetting the Engine-to-FDC hose, only calculating the attack hose after the standpipe, forgetting the 25 psi standpipe system loss, using the wrong C value for 2½″ hose, or missing the corrected elevation pressure for the fire floor."
+      "instructorExplanation": "Use the elevation formula: height = (floor number - 1) × 10 ft, and elevation pressure = height × 0.5 PSI/ft. For Floor 3, elevation is 20′ × 0.5 = 10 PSI. Then add the Engine-to-FDC hose friction loss, attack hose friction loss, nozzle pressure, and 25 PSI standpipe/FDC system loss.",
+      "explainMistake": "Common mistakes are treating the fire floor number as the number of floor rises, forgetting the Engine-to-FDC hose, only calculating the attack hose after the standpipe, forgetting the 25 PSI standpipe system loss, using the wrong C value for 2½″ hose, or missing the corrected elevation pressure for the fire floor."
     },
     {
       "id": "standpipe_engine181_multi_q5",
       "title": "Standpipe Operation — Engine Hose and Attack Hose",
-      "question": "Engine 181 is supplying the FDC with 150′ of 2½″ hose. The standpipe rises to Floor 3, and the 3rd floor outlet is 20 feet above pump level using the floor-height rule: 1st floor = 0 feet and each floor above adds 10 feet. A 150′ section of 2½″ attack hose is connected to the 3rd floor standpipe outlet and ends in a 1⅛″ smooth bore nozzle flowing 265 GPM at 50 PSI. Add 25 PSI for standpipe/FDC system loss. What pump pressure should you set?",
+      "question": "Engine 181 is supplying the FDC with 150′ of 2½″ hose. The standpipe rises to Floor 3. Use the elevation formula: height = (floor number - 1) × 10 ft, and elevation pressure = height × 0.5 PSI/ft. A 150′ section of 2½″ attack hose is connected to the 3rd floor standpipe outlet and ends in a 1⅛″ smooth bore nozzle flowing 265 GPM at 50 PSI. Add 25 PSI for standpipe/FDC system loss. What pump discharge pressure should be set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Your pump pressure answer",
+      "inputLabel": "Your PDP answer",
       "inputPlaceholder": "Enter PSI",
       "answerValue": 127,
       "correctPP": 127,
@@ -528,19 +528,19 @@
       "formulaBreakdown": [
         "Engine-to-FDC hose = 150′ of 2½″ hose",
         "Attack hose after standpipe = 150′ of 2½″ hose connected at the Floor 3 outlet",
-        "Nozzle after standpipe = 1⅛″ smooth bore nozzle flowing 265 gpm at 50 psi NP",
+        "Nozzle after standpipe = 1⅛″ smooth bore nozzle flowing 265 GPM at 50 PSI NP",
         "FL per 100′ = C × (GPM ÷ 100)^2",
-        "Supply hose FL = 2 × (265 ÷ 100)^2 × 1.5 = 21 psi",
-        "Attack hose FL = 2 × (265 ÷ 100)^2 × 1.5 = 21 psi",
-        "Total FL = 21 + 21 = 42 psi",
-        "Floor-height rule: 1st floor = 0′ and each floor above adds 10′",
+        "Supply hose FL = 2 × (265 ÷ 100)^2 × 1.5 = 21 PSI",
+        "Attack hose FL = 2 × (265 ÷ 100)^2 × 1.5 = 21 PSI",
+        "Total FL = 21 + 21 = 42 PSI",
+        "Elevation formula: height = (floor number - 1) × 10 ft; elevation pressure = height × 0.5 PSI/ft",
         "Floor 3 height = (3 - 1) × 10′ = 20′",
-        "Elevation = 20′ × 0.5 psi/ft = 10 psi",
+        "Elevation = 20′ × 0.5 PSI/ft = 10 PSI",
         "PP = 42 FL + 50 NP + 10 elevation + 25 system loss",
-        "PP = 127 psi"
+        "PP = 127 PSI"
       ],
-      "instructorExplanation": "Use the corrected floor-height rule: the first floor is pump level/0′, and each floor above adds 10′ of elevation. For Floor 3, elevation is 20′ × 0.5 = 10 PSI. Then add the Engine-to-FDC hose friction loss, attack hose friction loss, nozzle pressure, and 25 PSI standpipe/FDC system loss.",
-      "explainMistake": "Common mistakes are treating the fire floor number as the number of floor rises, forgetting the Engine-to-FDC hose, only calculating the attack hose after the standpipe, forgetting the 25 psi standpipe system loss, using the wrong C value for 2½″ hose, or missing the corrected elevation pressure for the fire floor."
+      "instructorExplanation": "Use the elevation formula: height = (floor number - 1) × 10 ft, and elevation pressure = height × 0.5 PSI/ft. For Floor 3, elevation is 20′ × 0.5 = 10 PSI. Then add the Engine-to-FDC hose friction loss, attack hose friction loss, nozzle pressure, and 25 PSI standpipe/FDC system loss.",
+      "explainMistake": "Common mistakes are treating the fire floor number as the number of floor rises, forgetting the Engine-to-FDC hose, only calculating the attack hose after the standpipe, forgetting the 25 PSI standpipe system loss, using the wrong C value for 2½″ hose, or missing the corrected elevation pressure for the fire floor."
     }
   ],
   "tags": []

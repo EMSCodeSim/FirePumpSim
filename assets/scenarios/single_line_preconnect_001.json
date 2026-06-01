@@ -7,7 +7,7 @@
   "image": "assets/images/single_line_preconnect_001.png",
   "scene": {
     "engine": "Engine 181",
-    "description": "Engine 181 is stretching a 200' 1¾\" preconnect to the front door of a single-family dwelling. The fog nozzle is flowing 150 GPM at 50 PSI. No elevation and no appliance loss. What pump pressure should you set?",
+    "description": "Engine 181 is stretching a 200' 1¾\" preconnect to the front door of a single-family dwelling. The fog nozzle is flowing 150 GPM at 50 PSI. No elevation and no appliance loss. What pump discharge pressure should you set?",
     "baseOverlays": []
   },
   "sceneElements": {
@@ -35,10 +35,10 @@
     {
       "id": "single_line_preconnect_001_q1",
       "title": "Basic 1¾ Preconnect to Front Door",
-      "question": "Engine 181 is stretching 200 ft of 1.75-inch preconnect to the front door. The fog nozzle is flowing 150 GPM at 50 PSI. Use C = 15.5, no elevation, and no appliance loss. What pump pressure should you set?",
+      "question": "Engine 181 is stretching 200 ft of 1¾-inch preconnect to the front door. The fog nozzle is flowing 150 GPM at 50 PSI. Use C = 15.5, no elevation, and no appliance loss. What pump discharge pressure should you set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Your pump pressure answer",
+      "inputLabel": "Your PDP answer",
       "inputPlaceholder": "Enter PSI",
       "answerValue": 120,
       "correctPP": 120,
@@ -88,16 +88,16 @@
         "FL ≈ 70 PSI.",
         "PP = 70 + 50 + 0 + 0 = 120 PSI."
       ],
-      "instructorExplanation": "This variation uses 200 ft of 1.75-inch hose flowing 150 GPM. Calculate the line friction loss, then add 50 PSI nozzle pressure.",
+      "instructorExplanation": "This variation uses 200 ft of 1¾-inch hose flowing 150 GPM. Calculate the line friction loss, then add 50 PSI nozzle pressure.",
       "explainMistake": "Do not reuse another variation’s answer. The hose length and/or flow may change even though the picture looks similar."
     },
     {
       "id": "single_line_preconnect_001_q2",
       "title": "Basic 1¾ Preconnect to Front Door",
-      "question": "Engine 181 is stretching 150 ft of 1.75-inch preconnect to the front door. The fog nozzle is flowing 150 GPM at 50 PSI. Use C = 15.5, no elevation, and no appliance loss. What pump pressure should you set?",
+      "question": "Engine 181 is stretching 150 ft of 1¾-inch preconnect to the front door. The fog nozzle is flowing 150 GPM at 50 PSI. Use C = 15.5, no elevation, and no appliance loss. What pump discharge pressure should you set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Your pump pressure answer",
+      "inputLabel": "Your PDP answer",
       "inputPlaceholder": "Enter PSI",
       "answerValue": 102,
       "correctPP": 102,
@@ -147,16 +147,16 @@
         "FL ≈ 52 PSI.",
         "PP = 52 + 50 + 0 + 0 = 102 PSI."
       ],
-      "instructorExplanation": "This variation uses 150 ft of 1.75-inch hose flowing 150 GPM. Calculate the line friction loss, then add 50 PSI nozzle pressure.",
+      "instructorExplanation": "This variation uses 150 ft of 1¾-inch hose flowing 150 GPM. Calculate the line friction loss, then add 50 PSI nozzle pressure.",
       "explainMistake": "Do not reuse another variation’s answer. The hose length and/or flow may change even though the picture looks similar."
     },
     {
       "id": "single_line_preconnect_001_q3",
       "title": "Basic 1¾ Preconnect to Front Door",
-      "question": "Engine 181 is stretching 200 ft of 1.75-inch preconnect to the front door. The fog nozzle is flowing 185 GPM at 50 PSI. Use C = 15.5, no elevation, and no appliance loss. What pump pressure should you set?",
+      "question": "Engine 181 is stretching 200 ft of 1¾-inch preconnect to the front door. The fog nozzle is flowing 185 GPM at 50 PSI. Use C = 15.5, no elevation, and no appliance loss. What pump discharge pressure should you set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Your pump pressure answer",
+      "inputLabel": "Your PDP answer",
       "inputPlaceholder": "Enter PSI",
       "answerValue": 156,
       "correctPP": 156,
@@ -206,16 +206,16 @@
         "FL ≈ 106 PSI.",
         "PP = 106 + 50 + 0 + 0 = 156 PSI."
       ],
-      "instructorExplanation": "This variation uses 200 ft of 1.75-inch hose flowing 185 GPM. Calculate the line friction loss, then add 50 PSI nozzle pressure.",
+      "instructorExplanation": "This variation uses 200 ft of 1¾-inch hose flowing 185 GPM. Calculate the line friction loss, then add 50 PSI nozzle pressure.",
       "explainMistake": "Do not reuse another variation’s answer. The hose length and/or flow may change even though the picture looks similar."
     },
     {
       "id": "single_line_preconnect_001_q4",
       "title": "Basic 1¾ Preconnect to Front Door",
-      "question": "Engine 181 is stretching 200 ft of 1.75-inch preconnect to the front door. The fog nozzle is flowing 175 GPM at 50 PSI. Use C = 15.5, no elevation, and no appliance loss. What pump pressure should you set?",
+      "question": "Engine 181 is stretching 200 ft of 1¾-inch preconnect to the front door. The fog nozzle is flowing 175 GPM at 50 PSI. Use C = 15.5, no elevation, and no appliance loss. What pump discharge pressure should you set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Your pump pressure answer",
+      "inputLabel": "Your PDP answer",
       "inputPlaceholder": "Enter PSI",
       "answerValue": 145,
       "correctPP": 145,
@@ -265,7 +265,7 @@
         "FL ≈ 95 PSI.",
         "PP = 95 + 50 + 0 + 0 = 145 PSI."
       ],
-      "instructorExplanation": "This variation uses 200 ft of 1.75-inch hose flowing 175 GPM. Calculate the line friction loss, then add 50 PSI nozzle pressure.",
+      "instructorExplanation": "This variation uses 200 ft of 1¾-inch hose flowing 175 GPM. Calculate the line friction loss, then add 50 PSI nozzle pressure.",
       "explainMistake": "Do not reuse another variation’s answer. The hose length and/or flow may change even though the picture looks similar."
     }
   ],

@@ -7,7 +7,7 @@
   "image": "assets/images/single_line_extended_002.png",
   "scene": {
     "engine": "Engine 181",
-    "description": "Engine 181 has a 250' 1¾\" line stretched to a second-floor apartment fire. The fog nozzle is flowing 185 GPM at 50 PSI. Add 5 PSI for the floor above the pump. No appliance loss. What pump pressure should you set?",
+    "description": "Engine 181 has a 250' 1¾\" line stretched to a second-floor apartment fire. The fog nozzle is flowing 185 GPM at 50 PSI. Add 5 PSI for the floor above the pump. No appliance loss. What pump discharge pressure should you set?",
     "baseOverlays": []
   },
   "sceneElements": {
@@ -35,10 +35,10 @@
     {
       "id": "single_line_extended_002_q1",
       "title": "Extended 1¾ Line to Second Floor",
-      "question": "Engine 181 has a 250 ft 1.75-inch line stretched to a second-floor apartment fire. The fog nozzle is flowing 185 GPM at 50 PSI. Add 5 PSI elevation for the floor above the pump. No appliance loss. Use C = 15.5. What pump pressure should you set?",
+      "question": "Engine 181 has a 250 ft 1¾-inch line stretched to a second-floor apartment fire. The fog nozzle is flowing 185 GPM at 50 PSI. The nozzle is on the second floor; use height = (floor number - 1) × 10 ft and elevation pressure = height × 0.5 PSI/ft. No appliance loss. Use C = 15.5. What pump discharge pressure should you set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Your pump pressure answer",
+      "inputLabel": "Your PDP answer",
       "inputPlaceholder": "Enter PSI",
       "answerValue": 188,
       "correctPP": 188,
@@ -88,16 +88,16 @@
         "FL ≈ 133 PSI.",
         "PP = 133 + 50 + 5 + 0 = 188 PSI."
       ],
-      "instructorExplanation": "This variation uses 250 ft of 1.75-inch hose, 185 GPM, 5 PSI elevation, and 0 PSI appliance loss. Add those values after calculating friction loss.",
+      "instructorExplanation": "This variation uses 250 ft of 1¾-inch hose, 185 GPM, 5 PSI elevation, and 0 PSI appliance loss. Add those values after calculating friction loss.",
       "explainMistake": "Do not use the same answer for every similar-looking single-line problem. Check length, flow, elevation, and appliance loss in the question."
     },
     {
       "id": "single_line_extended_002_q2",
       "title": "Extended 1¾ Line to Second Floor",
-      "question": "Engine 181 has a 200 ft 1.75-inch line stretched to a second-floor apartment fire. The fog nozzle is flowing 185 GPM at 50 PSI. Add 5 PSI elevation for the floor above the pump. No appliance loss. Use C = 15.5. What pump pressure should you set?",
+      "question": "Engine 181 has a 200 ft 1¾-inch line stretched to a second-floor apartment fire. The fog nozzle is flowing 185 GPM at 50 PSI. The nozzle is on the second floor; use height = (floor number - 1) × 10 ft and elevation pressure = height × 0.5 PSI/ft. No appliance loss. Use C = 15.5. What pump discharge pressure should you set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Your pump pressure answer",
+      "inputLabel": "Your PDP answer",
       "inputPlaceholder": "Enter PSI",
       "answerValue": 161,
       "correctPP": 161,
@@ -147,16 +147,16 @@
         "FL ≈ 106 PSI.",
         "PP = 106 + 50 + 5 + 0 = 161 PSI."
       ],
-      "instructorExplanation": "This variation uses 200 ft of 1.75-inch hose, 185 GPM, 5 PSI elevation, and 0 PSI appliance loss. Add those values after calculating friction loss.",
+      "instructorExplanation": "This variation uses 200 ft of 1¾-inch hose, 185 GPM, 5 PSI elevation, and 0 PSI appliance loss. Add those values after calculating friction loss.",
       "explainMistake": "Do not use the same answer for every similar-looking single-line problem. Check length, flow, elevation, and appliance loss in the question."
     },
     {
       "id": "single_line_extended_002_q3",
       "title": "Extended 1¾ Line to Second Floor",
-      "question": "Engine 181 has a 250 ft 1.75-inch line stretched to a second-floor apartment fire. The fog nozzle is flowing 150 GPM at 50 PSI. Add 5 PSI elevation for the floor above the pump. No appliance loss. Use C = 15.5. What pump pressure should you set?",
+      "question": "Engine 181 has a 250 ft 1¾-inch line stretched to a second-floor apartment fire. The fog nozzle is flowing 150 GPM at 50 PSI. The nozzle is on the second floor; use height = (floor number - 1) × 10 ft and elevation pressure = height × 0.5 PSI/ft. No appliance loss. Use C = 15.5. What pump discharge pressure should you set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Your pump pressure answer",
+      "inputLabel": "Your PDP answer",
       "inputPlaceholder": "Enter PSI",
       "answerValue": 142,
       "correctPP": 142,
@@ -206,16 +206,16 @@
         "FL ≈ 87 PSI.",
         "PP = 87 + 50 + 5 + 0 = 142 PSI."
       ],
-      "instructorExplanation": "This variation uses 250 ft of 1.75-inch hose, 150 GPM, 5 PSI elevation, and 0 PSI appliance loss. Add those values after calculating friction loss.",
+      "instructorExplanation": "This variation uses 250 ft of 1¾-inch hose, 150 GPM, 5 PSI elevation, and 0 PSI appliance loss. Add those values after calculating friction loss.",
       "explainMistake": "Do not use the same answer for every similar-looking single-line problem. Check length, flow, elevation, and appliance loss in the question."
     },
     {
       "id": "single_line_extended_002_q4",
       "title": "Extended 1¾ Line to Second Floor",
-      "question": "Engine 181 has a 250 ft 1.75-inch line stretched to a second-floor apartment fire. The fog nozzle is flowing 185 GPM at 50 PSI. Add 5 PSI elevation for the floor above the pump. Add 10 PSI appliance loss. Use C = 15.5. What pump pressure should you set?",
+      "question": "Engine 181 has a 250 ft 1¾-inch line stretched to a second-floor apartment fire. The fog nozzle is flowing 185 GPM at 50 PSI. The nozzle is on the second floor; use height = (floor number - 1) × 10 ft and elevation pressure = height × 0.5 PSI/ft. Add 10 PSI appliance loss for the appliance. Use C = 15.5. What pump discharge pressure should you set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Your pump pressure answer",
+      "inputLabel": "Your PDP answer",
       "inputPlaceholder": "Enter PSI",
       "answerValue": 198,
       "correctPP": 198,
@@ -265,7 +265,7 @@
         "FL ≈ 133 PSI.",
         "PP = 133 + 50 + 5 + 10 = 198 PSI."
       ],
-      "instructorExplanation": "This variation uses 250 ft of 1.75-inch hose, 185 GPM, 5 PSI elevation, and 10 PSI appliance loss. Add those values after calculating friction loss.",
+      "instructorExplanation": "This variation uses 250 ft of 1¾-inch hose, 185 GPM, 5 PSI elevation, and 10 PSI appliance loss. Add those values after calculating friction loss.",
       "explainMistake": "Do not use the same answer for every similar-looking single-line problem. Check length, flow, elevation, and appliance loss in the question."
     }
   ],

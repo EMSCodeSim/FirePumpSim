@@ -8,15 +8,15 @@
   "sceneElements": {
     "engine": "Engine 181",
     "hoses": [
-      "1.75-inch attack line",
-      "2.5-inch smooth bore attack line",
+      "1¾-inch attack line",
+      "2½-inch smooth bore attack line",
       "Deck gun"
     ],
     "nozzles": [
       "Fog nozzle",
       "15/16-inch smooth bore",
-      "1 1/8-inch smooth bore",
-      "1 1/2-inch smooth bore deck gun tip"
+      "1⅛-inch smooth bore",
+      "1½-inch smooth bore deck gun tip"
     ],
     "appliances": [
       "Deck gun"
@@ -27,7 +27,7 @@
     {
       "id": "nr_fog_185_001",
       "title": "Nozzle Reaction: 185 GPM Fog",
-      "question": "Engine 181 is supplying a 1.75-inch attack line with a fog nozzle flowing 185 GPM at 50 PSI nozzle pressure. What is the nozzle reaction?",
+      "question": "Engine 181 is supplying a 1¾-inch attack line with a fog nozzle flowing 185 GPM at 50 PSI nozzle pressure. What is the nozzle reaction?",
       "answerLabel": "Nozzle reaction",
       "answerUnit": "lbs",
       "inputLabel": "Your nozzle reaction answer",
@@ -77,7 +77,7 @@
         "NR = 66 lbs"
       ],
       "instructorExplanation": "This is a fog nozzle reaction problem, not a pump-pressure problem. Use NR = 0.0505 × GPM × √NP. With 185 GPM at 50 PSI nozzle pressure, nozzle reaction is 66 lbs.",
-      "explainMistake": "Common mistakes include using the pump-pressure formula instead of the nozzle reaction formula, using the smooth bore formula on a fog nozzle, using pump pressure instead of nozzle pressure, or rounding too early."
+      "explainMistake": "Common mistakes include using the pump-pressure formula instead of the nozzle reaction formula, using the smooth bore formula on a fog nozzle, using pump discharge pressure instead of nozzle pressure, or rounding too early."
     },
     {
       "id": "nr_fog_265_001",
@@ -132,7 +132,7 @@
         "NR = 95 lbs"
       ],
       "instructorExplanation": "This is a fog nozzle reaction problem, not a pump-pressure problem. Use NR = 0.0505 × GPM × √NP. With 265 GPM at 50 PSI nozzle pressure, nozzle reaction is 95 lbs.",
-      "explainMistake": "Common mistakes include using the pump-pressure formula instead of the nozzle reaction formula, using the smooth bore formula on a fog nozzle, using pump pressure instead of nozzle pressure, or rounding too early."
+      "explainMistake": "Common mistakes include using the pump-pressure formula instead of the nozzle reaction formula, using the smooth bore formula on a fog nozzle, using pump discharge pressure instead of nozzle pressure, or rounding too early."
     },
     {
       "id": "nr_sb_15_16_001",
@@ -188,12 +188,12 @@
         "Rounded answer = 70 lbs"
       ],
       "instructorExplanation": "This is a smooth bore nozzle reaction problem, not a pump-pressure problem. Use NR = 1.57 × diameter² × NP. With a 15/16-inch smooth bore at 50 PSI nozzle pressure, nozzle reaction is 69 lbs, rounded to 70 lbs.",
-      "explainMistake": "Common mistakes include using the pump-pressure formula instead of the nozzle reaction formula, using the fog formula on a smooth bore, forgetting to square the smooth bore diameter, using pump pressure instead of nozzle pressure, or rounding too early."
+      "explainMistake": "Common mistakes include using the pump-pressure formula instead of the nozzle reaction formula, using the fog formula on a smooth bore, forgetting to square the smooth bore diameter, using pump discharge pressure instead of nozzle pressure, or rounding too early."
     },
     {
       "id": "nr_sb_1_1_8_001",
-      "title": "Nozzle Reaction: 1 1/8-inch Smooth Bore",
-      "question": "Engine 181 is supplying a 1 1/8-inch smooth bore nozzle operating at 50 PSI nozzle pressure. What is the nozzle reaction?",
+      "title": "Nozzle Reaction: 1⅛-inch Smooth Bore",
+      "question": "Engine 181 is supplying a 1⅛-inch smooth bore nozzle operating at 50 PSI nozzle pressure. What is the nozzle reaction?",
       "answerLabel": "Nozzle reaction",
       "answerUnit": "lbs",
       "inputLabel": "Your nozzle reaction answer",
@@ -243,13 +243,13 @@
         "NR = 99 lbs",
         "Rounded answer = 100 lbs"
       ],
-      "instructorExplanation": "This is a smooth bore nozzle reaction problem, not a pump-pressure problem. Use NR = 1.57 × diameter² × NP. With a 1 1/8-inch smooth bore at 50 PSI nozzle pressure, nozzle reaction is 99 lbs, rounded to 100 lbs.",
-      "explainMistake": "Common mistakes include using the pump-pressure formula instead of the nozzle reaction formula, using the fog formula on a smooth bore, forgetting to square the smooth bore diameter, using pump pressure instead of nozzle pressure, or rounding too early."
+      "instructorExplanation": "This is a smooth bore nozzle reaction problem, not a pump-pressure problem. Use NR = 1.57 × diameter² × NP. With a 1⅛-inch smooth bore at 50 PSI nozzle pressure, nozzle reaction is 99 lbs, rounded to 100 lbs.",
+      "explainMistake": "Common mistakes include using the pump-pressure formula instead of the nozzle reaction formula, using the fog formula on a smooth bore, forgetting to square the smooth bore diameter, using pump discharge pressure instead of nozzle pressure, or rounding too early."
     },
     {
       "id": "nr_deckgun_sb_1_1_2_001",
-      "title": "Nozzle Reaction: Deck Gun 1 1/2-inch Smooth Bore",
-      "question": "Engine 181 is operating a deck gun with a 1 1/2-inch smooth bore tip at 80 PSI nozzle pressure. What is the nozzle reaction?",
+      "title": "Nozzle Reaction: Deck Gun 1½-inch Smooth Bore",
+      "question": "Engine 181 is operating a deck gun with a 1½-inch smooth bore tip at 80 PSI nozzle pressure. What is the nozzle reaction?",
       "answerLabel": "Nozzle reaction",
       "answerUnit": "lbs",
       "inputLabel": "Your nozzle reaction answer",
@@ -299,8 +299,8 @@
         "NR = 283 lbs",
         "Rounded answer = 285 lbs"
       ],
-      "instructorExplanation": "This is a deck gun smooth bore nozzle reaction problem, not a pump-pressure problem. Use NR = 1.57 × diameter² × NP. With a 1 1/2-inch smooth bore deck gun tip at 80 PSI nozzle pressure, nozzle reaction is 283 lbs, rounded to 285 lbs.",
-      "explainMistake": "Common mistakes include using the pump-pressure formula instead of the nozzle reaction formula, using the fog formula on a smooth bore, forgetting to square the smooth bore diameter, using pump pressure instead of nozzle pressure, or rounding too early."
+      "instructorExplanation": "This is a deck gun smooth bore nozzle reaction problem, not a pump-pressure problem. Use NR = 1.57 × diameter² × NP. With a 1½-inch smooth bore deck gun tip at 80 PSI nozzle pressure, nozzle reaction is 283 lbs, rounded to 285 lbs.",
+      "explainMistake": "Common mistakes include using the pump-pressure formula instead of the nozzle reaction formula, using the fog formula on a smooth bore, forgetting to square the smooth bore diameter, using pump discharge pressure instead of nozzle pressure, or rounding too early."
     }
   ],
   "tags": [

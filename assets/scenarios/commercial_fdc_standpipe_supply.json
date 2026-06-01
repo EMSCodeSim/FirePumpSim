@@ -4,19 +4,19 @@
   "difficulty": "advanced",
   "category": "standpipe",
   "type": "pump",
-  "image": "assets/images/starter_fdc_standpipe_010.png",
+  "image": "assets/images/commercial_fdc_standpipe_supply.png",
   "imageRatio": "4:7",
   "recommendedImageSize": "1080x1890",
   "sceneElements": {
     "engine": "Engine 181",
     "hoses": [
       "Supply line from hydrant to Engine 181 intake",
-      "FDC Supply Line A: 100 ft of 2.5-inch hose from Engine 181 discharge to building FDC",
-      "FDC Supply Line B: 100 ft of 2.5-inch hose from Engine 181 discharge to building FDC",
-      "Interior attack line: 150 ft of 2.5-inch hose from standpipe outlet to nozzle"
+      "FDC Supply Line A: 100 ft of 2½-inch hose from Engine 181 discharge to building FDC",
+      "FDC Supply Line B: 100 ft of 2½-inch hose from Engine 181 discharge to building FDC",
+      "Interior attack line: 150 ft of 2½-inch hose from standpipe outlet to nozzle"
     ],
     "nozzles": [
-      "1 1/8-inch smooth bore nozzle, 265 GPM @ 50 PSI"
+      "1⅛-inch smooth bore nozzle, 265 GPM @ 50 PSI"
     ],
     "appliances": [
       "Building FDC / standpipe system, 25 PSI system loss"
@@ -26,26 +26,29 @@
   "problems": [
     {
       "id": "commercial_fdc_standpipe_supply_p1",
-      "title": "Standpipe Attack Plus Sprinkler Support Flow",
-      "question": "Engine 181 is supplying one interior standpipe attack line flowing 265 GPM and also assigning 250 GPM for sprinkler-system support through the FDC. What is the combined flow demand for the FDC operation?",
-      "answerLabel": "Total Flow",
+      "title": "Known Standpipe Flow With Unknown Sprinkler Flow",
+      "question": "Engine 181 is supplying one interior standpipe attack line using a 1⅛-inch smooth bore nozzle at 50 PSI. A separate sprinkler FDC support line is connected, but the sprinkler system flowing GPM is unknown. Using smooth-bore flow = 29.7 × diameter² × √NP, and not adding unknown sprinkler flow as a known demand, what known standpipe attack flow should be used for the operation?",
+      "answerLabel": "Known Standpipe Flow",
       "answerUnit": "GPM",
-      "inputLabel": "Enter total flow",
+      "inputLabel": "Enter known standpipe attack flow",
       "inputPlaceholder": "GPM",
-      "answerValue": 515,
+      "answerValue": 265,
       "correctPP": 0,
       "tolerance": 5,
       "answers": {
         "frictionLoss": 0,
-        "nozzlePressure": 0,
+        "nozzlePressure": 50,
         "elevation": 0,
         "applianceLoss": 0,
-        "totalGpm": 515,
+        "totalGpm": 265,
         "pumpPressure": 0,
         "tolerance": 5,
-        "answerValue": 515,
-        "correctAnswer": 515,
-        "value": 515
+        "answerValue": 265,
+        "correctAnswer": 265,
+        "value": 265,
+        "answerUnit": "GPM",
+        "unit": "GPM",
+        "answerLabel": "Known Standpipe Flow"
       },
       "overlays": [
         {
@@ -70,17 +73,19 @@
         }
       ],
       "formulaBreakdown": [
-        "Interior attack flow = 265 GPM.",
-        "Sprinkler support flow = 250 GPM.",
-        "Combined FDC demand = 265 + 250 = 515 GPM."
+        "Smooth-bore flow = 29.7 × diameter² × √NP.",
+        "Flow = 29.7 × 1.125² × √50.",
+        "Flow ≈ 265 GPM for the standpipe attack line.",
+        "Sprinkler FDC flow is unknown, so do not add an assumed sprinkler GPM.",
+        "Known flow to use = 265 GPM."
       ],
-      "instructorExplanation": "This problem separates flow demand from pump pressure. Add the standpipe attack flow and sprinkler-support flow; do not add duplicate flow just because multiple FDC hoses are connected.",
-      "explainMistake": "Do not count each FDC hose as a separate attack line. Add only the actual assigned flowing devices or system support demand."
+      "instructorExplanation": "This scenario has a known standpipe attack flow and an unknown sprinkler support flow. Calculate the known standpipe flow from the smooth-bore nozzle, but do not invent or add a sprinkler GPM value.",
+      "explainMistake": "Do not add a guessed sprinkler support flow. Unless the scenario gives a measured sprinkler flow, sprinkler FDC support should be treated as unknown flow and handled as a pressure-support operation."
     },
     {
       "id": "commercial_fdc_standpipe_supply_p2",
       "title": "FDC Supply Line Friction Loss",
-      "question": "The building FDC is supplied by two equal 100 ft 2.5-inch lines. The single interior attack line requires 265 GPM total, so each FDC supply line carries 132.5 GPM. Using C = 2, what is the friction loss in each FDC supply line?",
+      "question": "The building FDC is supplied by two equal 100 ft 2½-inch lines. The known standpipe attack flow is 265 GPM, while the separate sprinkler support flow is unknown and excluded. Split the known standpipe flow equally between the two FDC supply lines. Using FL = C × (GPM/100)² × (length/100), with C = 2, what is the friction loss in each FDC supply line?",
       "answerLabel": "FDC Line Friction Loss",
       "answerUnit": "PSI",
       "inputLabel": "Enter friction loss",
@@ -124,7 +129,7 @@
         "Total flow = 265 GPM.",
         "Flow per FDC supply line = 265 ÷ 2 = 132.5 GPM.",
         "FL = C × (GPM / 100)^2 × hose length in hundreds.",
-        "C for 2.5-inch hose = 2.",
+        "C for 2½-inch hose = 2.",
         "FDC supply line length = 100 ft = 1 hundred.",
         "FL = 2 × (132.5 / 100)^2 × 1.",
         "FL = 2 × 1.7556 × 1.",
@@ -137,7 +142,7 @@
     {
       "id": "commercial_fdc_standpipe_supply_p3",
       "title": "Sixth-Floor Standpipe Elevation",
-      "question": "An interior standpipe attack is operating on the 6th floor. Use the FirePumpSim floor rule: 1st floor = 0 ft, each floor above the 1st adds 10 ft, and elevation adds 0.5 PSI per foot. What elevation pressure must be added?",
+      "question": "An interior standpipe attack is operating on the 6th floor. Use the elevation formula: height = (floor number - 1) × 10 ft, and elevation pressure = height × 0.5 PSI/ft. What elevation pressure must be added?",
       "answerLabel": "System Loss",
       "answerUnit": "PSI",
       "inputLabel": "Enter system loss",
@@ -186,13 +191,13 @@
         "Elevation pressure = 50 × 0.5 = 25 PSI."
       ],
       "instructorExplanation": "Elevation is based on floors above the first floor, not the floor number itself.",
-      "explainMistake": "Do not multiply the 6th floor by 10 ft. The 1st floor is treated as 0 ft in this FirePumpSim rule."
+      "explainMistake": "Do not multiply the 6th floor directly by 10 ft. Use the formula height = (floor number - 1) × 10 ft because the 1st floor is grade level."
     },
     {
       "id": "commercial_fdc_standpipe_supply_p4",
       "title": "Total Pump Discharge Pressure",
-      "question": "Engine 181 is supplying a grade-level standpipe attack through two equal 100 ft 2.5-inch FDC supply lines. Total attack flow is 265 GPM, so each FDC supply line carries 132.5 GPM. The interior attack line is 150 ft of 2.5-inch hose flowing 265 GPM through a 1⅛-inch smooth bore at 50 PSI. Add 25 PSI FDC/standpipe system loss and no elevation. What pump discharge pressure should be set?",
-      "answerLabel": "Pump Pressure",
+      "question": "Engine 181 is supplying a grade-level standpipe attack through two equal 100 ft 2½-inch FDC supply lines. The known attack flow is 265 GPM; split that flow equally between the two FDC supply lines. The interior attack line is 150 ft of 2½-inch hose flowing 265 GPM through a 1⅛-inch smooth bore at 50 PSI. Add 25 PSI FDC/standpipe system loss and no elevation. What pump discharge pressure should be set?",
+      "answerLabel": "Pump Discharge Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
       "inputPlaceholder": "PSI",
@@ -234,7 +239,7 @@
         "PP = FL + NP + elevation + appliance loss.",
         "FDC supply line friction loss = 5 PSI.",
         "Interior attack line FL = C × (GPM / 100)^2 × hose length in hundreds.",
-        "Interior attack line uses 2.5-inch hose, so C = 2.",
+        "Interior attack line uses 2½-inch hose, so C = 2.",
         "Interior attack line flow = 265 GPM.",
         "Interior attack line length = 150 ft = 1.5 hundreds.",
         "Interior FL = 2 × (265 / 100)^2 × 1.5.",
@@ -254,8 +259,8 @@
     {
       "id": "commercial_fdc_standpipe_supply_p5",
       "title": "Elevated Sprinkler FDC Support Pressure",
-      "question": "For a sprinkler-only FDC support operation, FirePumpSim uses a 150 PSI base setting. The sprinkler area being supported is on the 4th floor, so add 15 PSI elevation. No other losses are used. What pump discharge pressure should be set?",
-      "answerLabel": "Pump Pressure",
+      "question": "For a sprinkler-only FDC support operation, the sprinkler system flowing GPM is unknown. Use the department sprinkler/FDC guideline: PDP = 150 PSI base + elevation pressure. Elevation pressure = (floor number - 1) × 10 ft × 0.5 PSI/ft. The sprinkler area being supported is on the 4th floor. No flow-based friction loss or other losses are used. What pump discharge pressure should be set?",
+      "answerLabel": "Pump Discharge Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
       "inputPlaceholder": "PSI",
@@ -298,12 +303,13 @@
         }
       ],
       "formulaBreakdown": [
+        "Sprinkler flowing GPM is unknown, so no flow-based friction loss is calculated.",
         "Base sprinkler FDC support setting = 150 PSI.",
         "4th-floor elevation add-on = 15 PSI.",
-        "Pump pressure = 150 + 15 = 165 PSI."
+        "Pump discharge pressure = 150 + 15 = 165 PSI."
       ],
-      "instructorExplanation": "Use the sprinkler-only support base setting, then add the stated elevation correction for the supported area.",
-      "explainMistake": "Do not calculate this like an interior handline. It is a sprinkler-support setting with the stated elevation correction."
+      "instructorExplanation": "Use the sprinkler-only support base setting, then add the stated elevation correction. Do not invent a sprinkler GPM value.",
+      "explainMistake": "Do not calculate this like an interior handline, and do not invent a sprinkler system flow. It is a sprinkler-support setting with the stated elevation correction."
     }
   ],
   "tags": [

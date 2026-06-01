@@ -4,29 +4,29 @@
   "difficulty": "advanced",
   "category": "master_stream",
   "type": "pump",
-  "image": "assets/images/portable_monitor_operation.png",
+  "image": "assets/images/elevated_portable_monitor_operation.png",
   "imageRatio": "4:7",
   "recommendedImageSize": "1080x1890",
   "sceneElements": {
     "engine": "Engine 181",
     "hoses": [
       "Hydrant supply hose from hydrant to Engine 181 intake",
-      "Monitor Supply Line A: 300 ft of 2.5-inch hose from Engine 181 discharge to portable monitor",
-      "Monitor Supply Line B: 300 ft of 2.5-inch hose from Engine 181 discharge to portable monitor"
+      "Monitor Supply Line A: 300 ft of 2½-inch hose from Engine 181 discharge to portable monitor",
+      "Monitor Supply Line B: 300 ft of 2½-inch hose from Engine 181 discharge to portable monitor"
     ],
     "nozzles": [
-      "Portable monitor with 1 3/8-inch smooth bore tip, 500 GPM @ 80 PSI"
+      "Portable monitor with 1⅜-inch smooth bore tip, 500 GPM @ 80 PSI"
     ],
     "appliances": [
       "Portable monitor positioned uphill from Engine 181"
     ],
-    "elevation": "Portable monitor is 60 ft above Engine 181, requiring 30 PSI elevation pressure"
+    "elevation": "Portable monitor is 60 ft above Engine 181, using elevation pressure = height × 0.5 PSI/ft"
   },
   "problems": [
     {
       "id": "elevated_portable_monitor_operation_p1",
       "title": "Flow Per Monitor Supply Line",
-      "question": "The elevated portable monitor is flowing 500 GPM total and is supplied by two equal hose lines from Engine 181. The two lines split the monitor flow; they do not each flow the full monitor total. How much flow is carried by each supply line?",
+      "question": "The elevated portable monitor is flowing 500 GPM total and is supplied by two equal hose lines from Engine 181. The two lines split the monitor flow; they do not each flow the full monitor total. What flow should be used for each supply line?",
       "answerLabel": "Total Flow",
       "answerUnit": "GPM",
       "inputLabel": "Enter total flow",
@@ -77,61 +77,9 @@
       "explainMistake": "Do not put 500 GPM in each line. The two supply lines split the 500 GPM monitor flow."
     },
     {
-      "id": "elevated_portable_monitor_operation_p2",
-      "title": "Flow Per Supply Line",
-      "question": "The portable monitor is supplied by two equal supply lines and the total monitor flow is 500 GPM. How much flow is carried by each supply line?",
-      "answerLabel": "Flow Per Line",
-      "answerUnit": "GPM",
-      "inputLabel": "Enter flow per line",
-      "inputPlaceholder": "GPM",
-      "answerValue": 250,
-      "correctPP": 0,
-      "tolerance": 5,
-      "answers": {
-        "frictionLoss": 0,
-        "nozzlePressure": 80,
-        "elevation": 30,
-        "applianceLoss": 25,
-        "totalGpm": 500,
-        "pumpPressure": 0,
-        "tolerance": 5
-      },
-      "overlays": [
-        {
-          "label": "Engine 181",
-          "x": 39,
-          "y": 70
-        },
-        {
-          "label": "Supply Line A",
-          "x": 67,
-          "y": 58
-        },
-        {
-          "label": "Supply Line B",
-          "x": 73,
-          "y": 58
-        },
-        {
-          "label": "Portable monitor",
-          "x": 73,
-          "y": 40
-        }
-      ],
-      "formulaBreakdown": [
-        "Flow per line = total monitor flow / number of supply lines.",
-        "Total monitor flow = 500 GPM.",
-        "Number of supply lines = 2.",
-        "Flow per line = 500 / 2.",
-        "Flow per line = 250 GPM."
-      ],
-      "instructorExplanation": "A portable monitor supplied by two equal lines splits the total flow between the lines. Each line carries 250 GPM.",
-      "explainMistake": "Do not calculate friction loss using the full 500 GPM in each line. Each supply line carries half of the total monitor flow."
-    },
-    {
       "id": "elevated_portable_monitor_operation_p3",
       "title": "Friction Loss Per Supply Line",
-      "question": "Each elevated monitor supply line is 300 ft of 2.5-inch hose carrying 250 GPM. Using C = 2, what is the friction loss in each supply line?",
+      "question": "Each elevated-monitor supply line is 300 ft of 2½-inch hose. The monitor flows 500 GPM total through two equal lines, so calculate each line at one-half of the total flow. Using FL = C × (GPM/100)² × (length/100), with C = 2, what is the friction loss in each supply line?",
       "answerLabel": "Friction Loss",
       "answerUnit": "PSI",
       "inputLabel": "Enter friction loss",
@@ -172,7 +120,7 @@
       ],
       "formulaBreakdown": [
         "FL = C × (GPM / 100)^2 × hose length in hundreds.",
-        "C for 2.5-inch hose = 2.",
+        "C for 2½-inch hose = 2.",
         "Flow per line = 250 GPM.",
         "Hose length = 300 ft = 3 hundreds.",
         "FL = 2 × (250 / 100)^2 × 3.",
@@ -180,7 +128,7 @@
         "FL = 37.5 PSI.",
         "Round to nearest 5 PSI: 40 PSI."
       ],
-      "instructorExplanation": "Each supply line carries 250 GPM. At 250 GPM through 300 ft of 2.5-inch hose, friction loss rounds to 40 PSI.",
+      "instructorExplanation": "Each supply line carries 250 GPM. At 250 GPM through 300 ft of 2½-inch hose, friction loss rounds to 40 PSI.",
       "explainMistake": "Do not use the total 500 GPM to calculate friction loss for one line. The total flow is split between the two supply lines."
     },
     {
@@ -236,9 +184,9 @@
     },
     {
       "id": "elevated_portable_monitor_operation_p5",
-      "title": "Portable Monitor Pump Pressure",
-      "question": "Engine 181 is supplying an uphill portable monitor with two equal 300 ft 2.5-inch supply lines. The monitor flows 500 GPM total, so each line carries 250 GPM. Nozzle pressure is 80 PSI, elevation pressure is 30 PSI, and monitor appliance loss is 25 PSI. What pump discharge pressure should be set?",
-      "answerLabel": "Pump Pressure",
+      "title": "Portable Monitor Pump Discharge Pressure",
+      "question": "Engine 181 is supplying an uphill portable monitor with two equal 300 ft 2½-inch supply lines. The monitor flows 500 GPM total; split the flow equally between the two lines for friction-loss calculations. The monitor uses 80 PSI nozzle pressure, has 25 PSI monitor appliance loss, and is 60 ft above the pump. Use elevation pressure = height × 0.5 PSI/ft. What pump discharge pressure should be set?",
+      "answerLabel": "Pump Discharge Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
       "inputPlaceholder": "PSI",
@@ -290,13 +238,13 @@
         "PP = 40 + 80 + 30 + 25.",
         "PP = 175 PSI."
       ],
-      "instructorExplanation": "For the portable monitor operation, calculate each supply line separately. Since both lines are equal, either line gives the same friction loss. Add friction loss, monitor nozzle pressure, elevation, and appliance loss for a final pump pressure of 175 PSI.",
-      "explainMistake": "Do not add friction loss for both supply lines together. The two equal supply lines split the flow, and the pump pressure is based on the pressure required by one supply path."
+      "instructorExplanation": "For the portable monitor operation, calculate each supply line separately. Since both lines are equal, either line gives the same friction loss. Add friction loss, monitor nozzle pressure, elevation, and appliance loss for a final pump discharge pressure of 175 PSI.",
+      "explainMistake": "Do not add friction loss for both supply lines together. The two equal supply lines split the flow, and the pump discharge pressure is based on the pressure required by one supply path."
     },
     {
       "id": "elevated_portable_monitor_operation_p6",
       "title": "Hydrant Supply Line Count",
-      "question": "The operation has one hydrant supply line connected to Engine 181’s intake and two separate discharge lines supplying the portable monitor. How many hydrant supply lines feed Engine 181?",
+      "question": "The operation has one hydrant supply line connected to Engine 181’s intake and two separate discharge lines supplying the portable monitor. For water-supply tracking, count only intake-side hydrant supply lines feeding Engine 181. How many hydrant supply lines feed Engine 181?",
       "answerLabel": "Supply Lines",
       "answerUnit": "line",
       "inputLabel": "Enter number of supply lines",

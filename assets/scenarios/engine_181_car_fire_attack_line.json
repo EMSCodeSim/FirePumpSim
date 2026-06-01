@@ -25,10 +25,10 @@
   "image": "assets/images/car_fire_engine181_001.png",
   "scene": "assets/images/car_fire_engine181_001.png",
   "sceneDescription": "Engine 181 is positioned on the street for a working car fire. A single 1¾\" attack line is stretched from the engine to the vehicle. All labels are generated from this JSON using overlay coordinates.",
-  "studentQuestion": "Engine 181 is operating at a car fire. The crew stretched 200′ of 1¾\" hose with a fog nozzle flowing 150 GPM at 50 PSI. There is no elevation change and no appliance loss. What pump pressure should you set?",
-  "answerLabel": "Pump Pressure",
+  "studentQuestion": "Engine 181 is operating at a car fire. The crew stretched 200′ of 1¾\" hose with a fog nozzle flowing 150 GPM at 50 PSI. There is no elevation change and no appliance loss. What pump discharge pressure should you set?",
+  "answerLabel": "Pump Discharge Pressure",
   "answerUnit": "PSI",
-  "inputLabel": "Your pump pressure answer",
+  "inputLabel": "Your PDP answer",
   "inputPlaceholder": "Enter PSI",
   "details": [
     {
@@ -109,7 +109,7 @@
     "pumpPressure": 120,
     "unit": "PSI",
     "answerUnit": "PSI",
-    "answerLabel": "Pump Pressure",
+    "answerLabel": "Pump Discharge Pressure",
     "tolerance": 5
   },
   "formulaBreakdown": [

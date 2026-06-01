@@ -15,7 +15,7 @@
       "Relay Segment 2: 1000 ft of 5-inch LDH from Relay Engine discharge to Attack Engine intake"
     ],
     "nozzles": [
-      "Attack Engine deck gun with 1 3/8-inch smooth bore tip",
+      "Attack Engine deck gun with 1⅜-inch smooth bore tip",
       "Master stream nozzle pressure: 80 PSI"
     ],
     "appliances": [
@@ -142,9 +142,9 @@
     },
     {
       "id": "relay_pumping_operation_p3",
-      "title": "Attack Engine Pump Pressure",
-      "question": "The attack engine is supplying a deck gun master stream at 80 PSI nozzle pressure. The deck gun is elevated 20 ft above the pump, requiring 10 PSI elevation. It is mounted on the attack engine, with no hose friction loss or appliance loss. What pump discharge pressure should the attack engine set?",
-      "answerLabel": "Attack Engine Pump Pressure",
+      "title": "Attack Engine Pump Discharge Pressure",
+      "question": "The attack engine is supplying a deck gun master stream at 80 PSI nozzle pressure. The deck gun is elevated 20 ft above the pump; use elevation pressure = height × 0.5 PSI/ft. It is mounted on the attack engine, with no hose friction loss or appliance loss. What pump discharge pressure should the attack engine set?",
+      "answerLabel": "Attack Engine Pump Discharge Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
       "inputPlaceholder": "PSI",
@@ -196,7 +196,7 @@
     {
       "id": "relay_pumping_operation_p4",
       "title": "Total Flow Requirement",
-      "question": "The relay operation is supplying one attack-engine deck gun with a 1⅜-inch smooth-bore tip operating at 80 PSI nozzle pressure. Using the FirePumpSim smooth-bore formula, what is the approximate total flow requirement for the relay operation?",
+      "question": "The relay operation is supplying one attack-engine deck gun with a 1⅜-inch smooth-bore tip operating at 80 PSI nozzle pressure. Use the smooth-bore flow formula: GPM = 29.7 × diameter² × √NP. What is the approximate total flow requirement for the relay operation?",
       "answerLabel": "Total Flow",
       "answerUnit": "GPM",
       "inputLabel": "Enter total flow",

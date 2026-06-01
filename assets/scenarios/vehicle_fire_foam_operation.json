@@ -11,8 +11,8 @@
     "engine": "Engine 181",
     "hoses": [
       "Supply line from hydrant to Engine 181 intake",
-      "Pre-eductor attack hose: 100 ft of 1.75-inch hose from Engine 181 discharge to foam eductor",
-      "Post-eductor attack hose: 100 ft of 1.75-inch hose from foam eductor to foam nozzle"
+      "Pre-eductor attack hose: 100 ft of 1¾-inch hose from Engine 181 discharge to foam eductor",
+      "Post-eductor attack hose: 100 ft of 1¾-inch hose from foam eductor to foam nozzle"
     ],
     "nozzles": [
       "Foam nozzle matched to eductor flow"
@@ -29,7 +29,7 @@
     {
       "id": "vehicle_fire_foam_operation_p1",
       "title": "Total Flow Requirement",
-      "question": "The foam line is operating through a 95 GPM eductor, and a backup water line is flowing 185 GPM. What is the total flow requirement for the vehicle-fire operation?",
+      "question": "The foam line is operating through a 95 GPM eductor, and a backup water line is flowing 185 GPM. For water-supply planning, what total operating flow must Engine 181 support?",
       "answerLabel": "Total Flow",
       "answerUnit": "GPM",
       "inputLabel": "Enter total flow",
@@ -82,7 +82,7 @@
     {
       "id": "vehicle_fire_foam_operation_p2",
       "title": "Foam Eductor Inlet Pressure",
-      "question": "Engine 181 is set to 215 PSI for the foam eductor discharge. The hose between the engine and eductor loses 15 PSI. What pressure reaches the foam eductor inlet?",
+      "question": "Engine 181 is pumping a foam-eductor line. The eductor requires 200 PSI at its inlet, and the hose from the engine to the eductor has 15 PSI friction loss. What engine discharge pressure is needed to deliver the required eductor inlet pressure?",
       "answerLabel": "Eductor Inlet Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter eductor inlet pressure",
@@ -129,13 +129,13 @@
         "Eductor inlet pressure = engine discharge pressure - pre-eductor friction loss.",
         "Eductor inlet pressure = 215 - 15 = 200 PSI."
       ],
-      "instructorExplanation": "This checks the eductor logic from the opposite direction: pump pressure minus the hose loss before the eductor equals eductor inlet pressure.",
+      "instructorExplanation": "This checks the eductor logic from the opposite direction: pump discharge pressure minus the hose loss before the eductor equals eductor inlet pressure.",
       "explainMistake": "Do not add post-eductor nozzle pressure here. The question is asking what reaches the eductor inlet."
     },
     {
       "id": "vehicle_fire_foam_operation_p3",
       "title": "Pre-Eductor Friction Loss",
-      "question": "Engine 181 pumps through 100 ft of 1.75-inch hose to the foam eductor. The eductor flow is 95 GPM. Using C = 15.5, how much friction loss is present before the eductor?",
+      "question": "Engine 181 pumps through 100 ft of 1¾-inch hose to the foam eductor. The eductor flow is 95 GPM. Use FL = C × (GPM/100)² × (length/100), with C = 15.5. How much friction loss is present before the eductor?",
       "answerLabel": "Pre-Eductor Friction Loss",
       "answerUnit": "PSI",
       "inputLabel": "Enter friction loss",
@@ -171,7 +171,7 @@
       ],
       "formulaBreakdown": [
         "FL = C × (GPM / 100)^2 × hose length in hundreds.",
-        "Pre-eductor hose uses 1.75-inch hose, so C = 15.5.",
+        "Pre-eductor hose uses 1¾-inch hose, so C = 15.5.",
         "Flow = 95 GPM.",
         "Pre-eductor hose length = 100 ft = 1 hundred.",
         "FL = 15.5 × (95 / 100)^2 × 1.",
@@ -179,14 +179,14 @@
         "FL = 14.0 PSI.",
         "Round to nearest 5 PSI: 15 PSI."
       ],
-      "instructorExplanation": "Only the hose between Engine 181 and the foam eductor is included for this friction loss question. At 95 GPM through 100 ft of 1.75-inch hose, the friction loss rounds to 15 PSI.",
+      "instructorExplanation": "Only the hose between Engine 181 and the foam eductor is included for this friction loss question. At 95 GPM through 100 ft of 1¾-inch hose, the friction loss rounds to 15 PSI.",
       "explainMistake": "Do not include the hose after the eductor when calculating pre-eductor friction loss. The question asks only for the hose section before the foam eductor."
     },
     {
       "id": "vehicle_fire_foam_operation_p4",
       "title": "Pump Discharge Pressure",
-      "question": "Engine 181 is pumping an in-line foam eductor operation. The hose from the engine to the eductor is 100 ft of 1.75-inch hose flowing 95 GPM, with 15 PSI friction loss. The eductor requires 200 PSI at its inlet. Do not add the post-eductor nozzle pressure to the engine discharge calculation. What pump discharge pressure should be set?",
-      "answerLabel": "Pump Pressure",
+      "question": "Engine 181 is pumping an in-line foam eductor operation. The hose from the engine to the eductor is 100 ft of 1¾-inch hose flowing 95 GPM. The eductor requires 200 PSI at its inlet. Use FL = C × (GPM/100)² × (length/100), with C = 15.5, for the pre-eductor hose. Do not add the post-eductor nozzle pressure to the engine discharge calculation. What pump discharge pressure should be set?",
+      "answerLabel": "Pump Discharge Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
       "inputPlaceholder": "PSI",
@@ -288,7 +288,7 @@
         "Foam concentrate needed = 28.5 gallons."
       ],
       "instructorExplanation": "Foam concentrate use is based on total foam solution flow and the selected foam percentage. At 95 GPM for 10 minutes using 3% foam, the operation requires 28.5 gallons of concentrate.",
-      "explainMistake": "Do not use the water supply hose size or pump pressure to calculate concentrate use. Foam concentrate is calculated from flow, time, and foam percentage."
+      "explainMistake": "Do not use the water supply hose size or pump discharge pressure to calculate concentrate use. Foam concentrate is calculated from flow, time, and foam percentage."
     }
   ],
   "tags": [

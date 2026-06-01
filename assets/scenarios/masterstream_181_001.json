@@ -13,7 +13,7 @@
   "sceneElements": {
     "engine": "Engine 181 positioned on the street side of a commercial building",
     "hoses": [
-      "Hydrant supply line to Engine 181 intake; not included in pump pressure calculation",
+      "Hydrant supply line to Engine 181 intake; not included in pump discharge pressure calculation",
       "Two 200′ 2½″ discharge lines from Engine 181 to portable monitor",
       "Each 2½″ line carries 250 GPM"
     ],
@@ -29,10 +29,10 @@
     {
       "id": "masterstream_181_001_q1",
       "title": "Engine 181 Portable Master Stream",
-      "question": "Engine 181 is supplying a portable monitor with two 200′ 2½″ lines. The monitor is flowing 500 GPM with a master stream nozzle pressure of 80 PSI. Use 15 PSI appliance loss for the portable monitor. What pump pressure should the operator set?",
+      "question": "Engine 181 is supplying a portable monitor with two equal 200 ft 2½-inch lines. The monitor is flowing 500 GPM total with a master-stream nozzle pressure of 80 PSI. Split the monitor flow equally between the two lines, use FL = C × (GPM/100)² × (length/100) with C = 2, and use 15 PSI appliance loss for the portable monitor. What pump discharge pressure should the operator set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Your pump pressure answer",
+      "inputLabel": "Your PDP answer",
       "inputPlaceholder": "Enter PSI",
       "answerValue": 120,
       "correctPP": 120,
@@ -112,16 +112,16 @@
         "PP = 25 + 80 + 0 + 15",
         "PP = 120 PSI"
       ],
-      "instructorExplanation": "Split the total portable master stream flow between the two equal 2½″ lines. Each line carries 250 gpm. Calculate friction loss for one 200′ 2½″ line, then add nozzle pressure and portable monitor appliance loss. The hydrant supply line feeds the pump intake and is not part of the discharge pump pressure calculation.",
-      "explainMistake": "Common mistakes are calculating each 2½″ line at the full 500 gpm, adding both hose line friction losses together, forgetting portable monitor appliance loss, using the hydrant supply line in the discharge pressure math, or using the wrong nozzle pressure for the master stream."
+      "instructorExplanation": "Split the total portable master stream flow between the two equal 2½″ lines. Each line carries 250 GPM. Calculate friction loss for one 200′ 2½″ line, then add nozzle pressure and portable monitor appliance loss. The hydrant supply line feeds the pump intake and is not part of the discharge pump discharge pressure calculation.",
+      "explainMistake": "Common mistakes are calculating each 2½″ line at the full 500 GPM, adding both hose line friction losses together, forgetting portable monitor appliance loss, using the hydrant supply line in the discharge pressure math, or using the wrong nozzle pressure for the master stream."
     },
     {
       "id": "masterstream_181_001_q2",
       "title": "Engine 181 Portable Master Stream",
-      "question": "Engine 181 supplies the portable monitor at 600 gpm total through two equal 200′ 2½″ lines. Each line carries 300 gpm. Master stream nozzle pressure is 80 psi and portable monitor appliance loss is 15 psi. What pump pressure should you set?",
+      "question": "Engine 181 supplies the portable monitor at 600 GPM total through two equal 200 ft 2½-inch lines. Split the monitor flow equally between the two lines, use FL = C × (GPM/100)² × (length/100) with C = 2, use 80 PSI master-stream nozzle pressure, and add 15 PSI portable monitor appliance loss. What pump discharge pressure should be set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Your pump pressure answer",
+      "inputLabel": "Your PDP answer",
       "inputPlaceholder": "Enter PSI",
       "answerValue": 131,
       "correctPP": 131,
@@ -186,23 +186,23 @@
         }
       ],
       "formulaBreakdown": [
-        "Each line flow = 600 ÷ 2 = 300 gpm",
+        "Each line flow = 600 ÷ 2 = 300 GPM",
         "FL = 2 × (300 ÷ 100)^2 × 2",
         "FL = 2 × 3^2 × 2",
-        "FL = 36 psi",
+        "FL = 36 PSI",
         "PP = 36 FL + 80 NP + 0 elevation + 15 appliance loss",
-        "PP = 131 psi"
+        "PP = 131 PSI"
       ],
-      "instructorExplanation": "Only the total flow changed. Split the 600 gpm between the two equal 2½″ lines, then use one line’s friction loss in the final pump pressure.",
-      "explainMistake": "Common mistakes are calculating each 2½″ line at the full 500 gpm, adding both hose line friction losses together, forgetting portable monitor appliance loss, using the hydrant supply line in the discharge pressure math, or using the wrong nozzle pressure for the master stream."
+      "instructorExplanation": "Only the total flow changed. Split the 600 GPM between the two equal 2½″ lines, then use one line’s friction loss in the final pump discharge pressure.",
+      "explainMistake": "Common mistakes are calculating each 2½″ line at the full 500 GPM, adding both hose line friction losses together, forgetting portable monitor appliance loss, using the hydrant supply line in the discharge pressure math, or using the wrong nozzle pressure for the master stream."
     },
     {
       "id": "masterstream_181_001_q3",
       "title": "Engine 181 Portable Master Stream",
-      "question": "Engine 181 supplies the portable monitor at 500 gpm total through two equal 250′ 2½″ lines. Each line carries 250 gpm. Master stream nozzle pressure is 80 psi and portable monitor appliance loss is 15 psi. What pump pressure should you set?",
+      "question": "Engine 181 supplies the portable monitor at 500 GPM total through two equal 250 ft 2½-inch lines. Split the monitor flow equally between the two lines, use FL = C × (GPM/100)² × (length/100) with C = 2, use 80 PSI master-stream nozzle pressure, and add 15 PSI portable monitor appliance loss. What pump discharge pressure should be set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Your pump pressure answer",
+      "inputLabel": "Your PDP answer",
       "inputPlaceholder": "Enter PSI",
       "answerValue": 126,
       "correctPP": 126,
@@ -267,23 +267,23 @@
         }
       ],
       "formulaBreakdown": [
-        "Each line flow = 500 ÷ 2 = 250 gpm",
+        "Each line flow = 500 ÷ 2 = 250 GPM",
         "FL = 2 × (250 ÷ 100)^2 × 2.5",
         "FL = 2 × 2.5^2 × 2.5",
-        "FL = 31 psi",
+        "FL = 31 PSI",
         "PP = 31 FL + 80 NP + 0 elevation + 15 appliance loss",
-        "PP = 126 psi"
+        "PP = 126 PSI"
       ],
-      "instructorExplanation": "Only the hose length changed. The monitor is still fed by two equal 2½″ lines, so each line carries 250 gpm. Use one line’s friction loss.",
-      "explainMistake": "Common mistakes are calculating each 2½″ line at the full 500 gpm, adding both hose line friction losses together, forgetting portable monitor appliance loss, using the hydrant supply line in the discharge pressure math, or using the wrong nozzle pressure for the master stream."
+      "instructorExplanation": "Only the hose length changed. The monitor is still fed by two equal 2½″ lines, because the total flow is split equally between the two lines. Use one line’s friction loss.",
+      "explainMistake": "Common mistakes are calculating each 2½″ line at the full 500 GPM, adding both hose line friction losses together, forgetting portable monitor appliance loss, using the hydrant supply line in the discharge pressure math, or using the wrong nozzle pressure for the master stream."
     },
     {
       "id": "masterstream_181_001_q4",
       "title": "Engine 181 Portable Master Stream",
-      "question": "Engine 181 supplies the portable monitor at 500 gpm total through two equal 200′ 2½″ lines. Each line carries 250 gpm. Master stream nozzle pressure is 80 psi and portable monitor appliance loss is 25 psi. What pump pressure should you set?",
+      "question": "Engine 181 supplies the portable monitor at 500 GPM total through two equal 200 ft 2½-inch lines. Split the monitor flow equally between the two lines, use FL = C × (GPM/100)² × (length/100) with C = 2, use 80 PSI master-stream nozzle pressure, and add 25 PSI portable monitor appliance loss. What pump discharge pressure should be set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Your pump pressure answer",
+      "inputLabel": "Your PDP answer",
       "inputPlaceholder": "Enter PSI",
       "answerValue": 130,
       "correctPP": 130,
@@ -348,14 +348,14 @@
         }
       ],
       "formulaBreakdown": [
-        "Each line flow = 500 ÷ 2 = 250 gpm",
+        "Each line flow = 500 ÷ 2 = 250 GPM",
         "FL = 2 × (250 ÷ 100)^2 × 2",
-        "FL = 25 psi",
+        "FL = 25 PSI",
         "PP = 25 FL + 80 NP + 0 elevation + 25 appliance loss",
-        "PP = 130 psi"
+        "PP = 130 PSI"
       ],
-      "instructorExplanation": "Only the appliance loss changed. The friction loss stays 25 psi, but the portable monitor loss increases from 15 psi to 25 psi.",
-      "explainMistake": "Common mistakes are calculating each 2½″ line at the full 500 gpm, adding both hose line friction losses together, forgetting portable monitor appliance loss, using the hydrant supply line in the discharge pressure math, or using the wrong nozzle pressure for the master stream."
+      "instructorExplanation": "Only the appliance loss changed. The friction loss stays 25 PSI, but the portable monitor loss increases from 15 PSI to 25 PSI.",
+      "explainMistake": "Common mistakes are calculating each 2½″ line at the full 500 GPM, adding both hose line friction losses together, forgetting portable monitor appliance loss, using the hydrant supply line in the discharge pressure math, or using the wrong nozzle pressure for the master stream."
     }
   ],
   "tags": [

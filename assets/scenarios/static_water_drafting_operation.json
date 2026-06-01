@@ -11,7 +11,7 @@
     "engine": "Engine 181",
     "hoses": [
       "Large black hard suction hose from pond floating strainer to Engine 181 intake",
-      "Attack line: 200 ft of 1.75-inch hose from Engine 181 discharge to firefighter operating on the rural grass fire"
+      "Attack line: 200 ft of 1¾-inch hose from Engine 181 discharge to firefighter operating on the rural grass fire"
     ],
     "nozzles": [
       "ChiefXD 185 fog nozzle, 185 GPM @ 50 PSI"
@@ -25,9 +25,9 @@
   "problems": [
     {
       "id": "static_water_drafting_operation_p1",
-      "title": "Attack Line Pump Pressure",
-      "question": "Engine 181 is drafting from a pond and supplying one 200 ft 1.75-inch attack line with a ChiefXD 185 fog nozzle operating at 185 GPM @ 50 PSI. What pump discharge pressure should be set?",
-      "answerLabel": "Pump Pressure",
+      "title": "Attack Line Pump Discharge Pressure",
+      "question": "Engine 181 is drafting from a pond and supplying one 200 ft 1¾-inch attack line with a ChiefXD 185 fog nozzle operating at 185 GPM @ 50 PSI. What pump discharge pressure should be set?",
+      "answerLabel": "Pump Discharge Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
       "inputPlaceholder": "PSI",
@@ -78,7 +78,7 @@
       "formulaBreakdown": [
         "PP = FL + NP + elevation + appliance loss.",
         "FL = C × (GPM / 100)^2 × hose length in hundreds.",
-        "C for 1.75-inch hose = 15.5.",
+        "C for 1¾-inch hose = 15.5.",
         "Flow = 185 GPM.",
         "Hose length = 200 ft = 2 hundreds.",
         "FL = 15.5 × (185 / 100)^2 × 2.",
@@ -91,13 +91,13 @@
         "PP = 105 + 50 + 0 + 0.",
         "PP = 155 PSI."
       ],
-      "instructorExplanation": "The pump pressure for the attack line is based on attack-line friction loss plus nozzle pressure. The hard suction, pond, and floating strainer are part of the intake side and are not added to the discharge pressure calculation.",
-      "explainMistake": "Do not add hard suction or drafting setup components to the attack-line pump pressure. Use the attack hose friction loss plus nozzle pressure."
+      "instructorExplanation": "The pump discharge pressure for the attack line is based on attack-line friction loss plus nozzle pressure. The hard suction, pond, and floating strainer are part of the intake side and are not added to the discharge pressure calculation.",
+      "explainMistake": "Do not add hard suction or drafting setup components to the attack-line pump discharge pressure. Use the attack hose friction loss plus nozzle pressure."
     },
     {
       "id": "static_water_drafting_operation_p2",
       "title": "Attack Line Friction Loss",
-      "question": "Engine 181 is supplying 185 GPM through 200 ft of 1.75-inch attack hose. What is the attack line friction loss?",
+      "question": "Engine 181 is supplying 185 GPM through 200 ft of 1¾-inch attack hose. What is the attack line friction loss?",
       "answerLabel": "Friction Loss",
       "answerUnit": "PSI",
       "inputLabel": "Enter friction loss",
@@ -138,68 +138,15 @@
       ],
       "formulaBreakdown": [
         "FL = C × (GPM / 100)^2 × hose length in hundreds.",
-        "C for 1.75-inch hose = 15.5.",
+        "C for 1¾-inch hose = 15.5.",
         "Flow = 185 GPM.",
         "Hose length = 200 ft = 2 hundreds.",
         "FL = 15.5 × (185 / 100)^2 × 2.",
         "FL = 106 PSI.",
         "Round FL to nearest 5 PSI: 105 PSI."
       ],
-      "instructorExplanation": "At 185 GPM through 200 ft of 1.75-inch hose, the friction loss rounds to 105 PSI.",
+      "instructorExplanation": "At 185 GPM through 200 ft of 1¾-inch hose, the friction loss rounds to 105 PSI.",
       "explainMistake": "Do not include nozzle pressure when the question asks only for friction loss."
-    },
-    {
-      "id": "static_water_drafting_operation_p3",
-      "title": "Total Flow",
-      "question": "Engine 181 is drafting from the pond and operating one ChiefXD 185 line plus one backup line flowing 150 GPM. What is the total flow from Engine 181?",
-      "answerLabel": "Total Flow",
-      "answerUnit": "GPM",
-      "inputLabel": "Enter total flow",
-      "inputPlaceholder": "GPM",
-      "answerValue": 335,
-      "correctPP": 0,
-      "tolerance": 5,
-      "answers": {
-        "frictionLoss": 0,
-        "nozzlePressure": 50,
-        "elevation": 0,
-        "applianceLoss": 0,
-        "totalGpm": 335,
-        "pumpPressure": 0,
-        "tolerance": 5,
-        "answerValue": 335,
-        "correctAnswer": 335,
-        "value": 335
-      },
-      "overlays": [
-        {
-          "label": "Engine 181",
-          "x": 36,
-          "y": 47
-        },
-        {
-          "label": "Attack line",
-          "x": 70,
-          "y": 52
-        },
-        {
-          "label": "Nozzle crew",
-          "x": 84,
-          "y": 33
-        },
-        {
-          "label": "Grass fire",
-          "x": 59,
-          "y": 22
-        }
-      ],
-      "formulaBreakdown": [
-        "ChiefXD line flow = 185 GPM.",
-        "Backup line flow = 150 GPM.",
-        "Total flow = 185 + 150 = 335 GPM."
-      ],
-      "instructorExplanation": "When drafting, the pump still has to support total discharge flow from all operating lines.",
-      "explainMistake": "Do not use only the first attack line flow when a backup line is also flowing."
     },
     {
       "id": "static_water_drafting_operation_p4",
@@ -303,59 +250,7 @@
         "Round to 65 minutes."
       ],
       "instructorExplanation": "Water supply duration is the usable water volume divided by the operating flow. At 185 GPM, 12000 gallons lasts about 65 minutes.",
-      "explainMistake": "Do not use pump pressure to calculate water duration. Duration is based only on available gallons and flow."
-    },
-    {
-      "id": "static_water_drafting_operation_p6",
-      "title": "Additional Attack Line Flow",
-      "question": "If a second identical ChiefXD 185 attack line is added, what would the total flow from Engine 181 be?",
-      "answerLabel": "Total Flow",
-      "answerUnit": "GPM",
-      "inputLabel": "Enter total flow",
-      "inputPlaceholder": "GPM",
-      "answerValue": 370,
-      "correctPP": 0,
-      "tolerance": 5,
-      "answers": {
-        "frictionLoss": 0,
-        "nozzlePressure": 50,
-        "elevation": 0,
-        "applianceLoss": 0,
-        "totalGpm": 370,
-        "pumpPressure": 0,
-        "tolerance": 5
-      },
-      "overlays": [
-        {
-          "label": "Engine 181",
-          "x": 36,
-          "y": 47
-        },
-        {
-          "label": "Attack line",
-          "x": 70,
-          "y": 52
-        },
-        {
-          "label": "Nozzle crew",
-          "x": 84,
-          "y": 33
-        },
-        {
-          "label": "Grass fire",
-          "x": 59,
-          "y": 22
-        }
-      ],
-      "formulaBreakdown": [
-        "Total flow = flow per line × number of lines.",
-        "Flow per ChiefXD 185 line = 185 GPM.",
-        "Number of identical lines = 2.",
-        "Total flow = 185 × 2.",
-        "Total flow = 370 GPM."
-      ],
-      "instructorExplanation": "Two identical ChiefXD 185 attack lines would flow a total of 370 GPM.",
-      "explainMistake": "Do not change the nozzle flow because the engine is drafting. The total flow is based on the number of operating nozzles."
+      "explainMistake": "Do not use pump discharge pressure to calculate water duration. Duration is based only on available gallons and flow."
     },
     {
       "id": "static_water_drafting_operation_p7",

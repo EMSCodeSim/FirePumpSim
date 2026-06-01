@@ -4,15 +4,15 @@
   "difficulty": "intermediate",
   "category": "single_line",
   "type": "pump",
-  "image": "assets/images/starter_attack_line_001.png",
+  "image": "assets/images/dual_attack_line_residential.png",
   "imageRatio": "4:7",
   "recommendedImageSize": "1080x1890",
   "sceneElements": {
     "engine": "Engine 181",
     "hoses": [
       "Supply line from hydrant to Engine 181 intake",
-      "Attack Line A: 200 ft of 1.75-inch hose from pump panel discharge to front door firefighter",
-      "Attack Line B: 250 ft of 1.75-inch hose from rear discharge to Alpha-side firefighter"
+      "Attack Line A: 200 ft of 1¾-inch hose from pump panel discharge to front door firefighter",
+      "Attack Line B: 250 ft of 1¾-inch hose from rear discharge to Alpha-side firefighter"
     ],
     "nozzles": [
       "Attack Line A: ChiefXD 185 fog nozzle, 185 GPM @ 50 PSI",
@@ -23,61 +23,9 @@
   },
   "problems": [
     {
-      "id": "dual_attack_line_residential_p1",
-      "title": "Total Flow Requirement",
-      "question": "Engine 181 is supplying two 1.75-inch ChiefXD 185 attack lines. Line A flows 185 GPM and Line B flows 185 GPM. What is the total flow requirement?",
-      "answerLabel": "Total Flow",
-      "answerUnit": "GPM",
-      "inputLabel": "Enter total flow",
-      "inputPlaceholder": "GPM",
-      "answerValue": 370,
-      "correctPP": 0,
-      "tolerance": 5,
-      "answers": {
-        "frictionLoss": 135,
-        "nozzlePressure": 50,
-        "elevation": 0,
-        "applianceLoss": 0,
-        "totalGpm": 370,
-        "pumpPressure": 0,
-        "tolerance": 5
-      },
-      "overlays": [
-        {
-          "label": "Hydrant",
-          "x": 12,
-          "y": 80
-        },
-        {
-          "label": "Engine 181",
-          "x": 38,
-          "y": 64
-        },
-        {
-          "label": "Line A",
-          "x": 44,
-          "y": 43
-        },
-        {
-          "label": "Line B",
-          "x": 78,
-          "y": 47
-        }
-      ],
-      "formulaBreakdown": [
-        "Total flow = Line A flow + Line B flow.",
-        "Line A flow = 185 GPM.",
-        "Line B flow = 185 GPM.",
-        "Total flow = 185 + 185.",
-        "Total flow = 370 GPM."
-      ],
-      "instructorExplanation": "Both attack lines are flowing. Each ChiefXD 185 line requires 185 GPM, so the total flow requirement is 370 GPM.",
-      "explainMistake": "Do not count the hydrant supply line as an additional flowing line. The total flow is based on the attack lines being supplied."
-    },
-    {
       "id": "dual_attack_line_residential_p2",
       "title": "Attack Line A Friction Loss",
-      "question": "Attack Line A is 200 ft of 1.75-inch hose flowing 185 GPM. Using C = 15.5, what is the friction loss in Line A?",
+      "question": "Attack Line A is 200 ft of 1¾-inch hose flowing 185 GPM. Using C = 15.5, what is the friction loss in Line A?",
       "answerLabel": "Line A Friction Loss",
       "answerUnit": "PSI",
       "inputLabel": "Enter friction loss",
@@ -113,7 +61,7 @@
       ],
       "formulaBreakdown": [
         "FL = C × (GPM / 100)^2 × hose length in hundreds.",
-        "Line A uses 1.75-inch hose, so C = 15.5.",
+        "Line A uses 1¾-inch hose, so C = 15.5.",
         "Line A flow = 185 GPM.",
         "Line A hose length = 200 ft = 2 hundreds.",
         "FL = 15.5 × (185 / 100)^2 × 2.",
@@ -127,7 +75,7 @@
     {
       "id": "dual_attack_line_residential_p3",
       "title": "Attack Line B Friction Loss",
-      "question": "Attack Line B is 300 ft of 1.75-inch hose flowing 185 GPM. Using C = 15.5, what is the friction loss in Line B?",
+      "question": "Attack Line B is 300 ft of 1¾-inch hose flowing 185 GPM. Using C = 15.5, what is the friction loss in Line B?",
       "answerLabel": "Line B Friction Loss",
       "answerUnit": "PSI",
       "inputLabel": "Enter friction loss",
@@ -170,14 +118,14 @@
         "FL ≈ 159 PSI.",
         "Rounded FL = 160 PSI."
       ],
-      "instructorExplanation": "Line B is longer than Line A, so it has higher friction loss and will likely govern the pump pressure.",
+      "instructorExplanation": "Line B is longer than Line A, so it has higher friction loss and will likely govern the pump discharge pressure.",
       "explainMistake": "Do not reuse the 200 ft line friction loss. Line B is 300 ft long."
     },
     {
       "id": "dual_attack_line_residential_p4",
       "title": "Pump Discharge Pressure",
-      "question": "Engine 181 is supplying two attack lines. Line A is 200 ft of 1.75-inch hose flowing 185 GPM at 50 PSI. Line B is 300 ft of 1.75-inch hose flowing 185 GPM at 50 PSI. No elevation or appliance loss. What pump discharge pressure should be set for the governing line?",
-      "answerLabel": "Pump Pressure",
+      "question": "Engine 181 is supplying two attack lines. Line A is 200 ft of 1¾-inch hose flowing 185 GPM at 50 PSI. Line B is 300 ft of 1¾-inch hose flowing 185 GPM at 50 PSI. No elevation or appliance loss. What pump discharge pressure should be set for the governing line?",
+      "answerLabel": "Pump Discharge Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
       "inputPlaceholder": "PSI",
@@ -232,7 +180,7 @@
     {
       "id": "dual_attack_line_residential_p5",
       "title": "Governing Attack Line",
-      "question": "Line A is 200 ft of 1.75-inch hose flowing 185 GPM at 50 PSI. Line B is 300 ft of 1.75-inch hose flowing 185 GPM at 50 PSI. No elevation or appliance loss. Which attack line governs the pump discharge pressure?",
+      "question": "Line A is 200 ft of 1¾-inch hose flowing 185 GPM at 50 PSI. Line B is 300 ft of 1¾-inch hose flowing 185 GPM at 50 PSI. No elevation or appliance loss. Which attack line governs the pump discharge pressure?",
       "answerLabel": "Governing Line",
       "answerUnit": "line number",
       "inputLabel": "Enter 1 for Line A or 2 for Line B",
@@ -273,7 +221,7 @@
         "Line B governs, so enter 2."
       ],
       "instructorExplanation": "The longer 300 ft line has higher friction loss. Line B requires 210 PSI and governs the operation.",
-      "explainMistake": "Do not choose the closest or shortest line. The governing line is the line requiring the highest pump pressure."
+      "explainMistake": "Do not choose the closest or shortest line. The governing line is the line requiring the highest pump discharge pressure."
     },
     {
       "id": "dual_attack_line_residential_p6",
@@ -322,14 +270,14 @@
         }
       ],
       "formulaBreakdown": [
-        "Line A pump pressure = 155 PSI.",
-        "Line B pump pressure = 210 PSI.",
+        "Line A pump discharge pressure = 155 PSI.",
+        "Line B pump discharge pressure = 210 PSI.",
         "Line A is the lower-pressure line.",
         "If Line A is not flowing and Line B remains flowing, Engine 181 must still supply Line B.",
-        "Gauge pressure = Line B pump pressure = 210 PSI."
+        "Gauge pressure = Line B pump discharge pressure = 210 PSI."
       ],
       "instructorExplanation": "The pump gauge displays the pressure being supplied by the pump. If the lower-pressure line is shut down but the higher-pressure line remains flowing, the pump still needs to supply 210 PSI.",
-      "explainMistake": "Do not reduce the pump pressure to the lower line value when that lower-pressure line is shut down. The remaining flowing line still controls the pump setting."
+      "explainMistake": "Do not reduce the pump discharge pressure to the lower line value when that lower-pressure line is shut down. The remaining flowing line still controls the pump setting."
     }
   ],
   "tags": [

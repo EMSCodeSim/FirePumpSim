@@ -12,8 +12,8 @@
     "engine": "Engine 181",
     "hoses": [
       "Hydrant supply hose from hydrant to Engine 181 intake",
-      "Ladder supply line A: 200 ft of 2.5-inch hose from Engine 181 discharge to ladder truck intake",
-      "Ladder supply line B: 200 ft of 2.5-inch hose from Engine 181 discharge to ladder truck intake"
+      "Ladder supply line A: 200 ft of 2½-inch hose from Engine 181 discharge to ladder truck intake",
+      "Ladder supply line B: 200 ft of 2½-inch hose from Engine 181 discharge to ladder truck intake"
     ],
     "nozzles": [
       "Aerial ladder pipe master stream, 750 GPM @ 80 PSI"
@@ -22,13 +22,13 @@
       "Ladder truck aerial waterway",
       "Ladder pipe nozzle at the tip of the aerial ladder"
     ],
-    "elevation": "Ladder pipe nozzle is 60 ft above Engine 181, requiring 30 PSI elevation pressure"
+    "elevation": "Ladder pipe nozzle is 60 ft above Engine 181, using elevation pressure = height × 0.5 PSI/ft"
   },
   "problems": [
     {
       "id": "ladder_pipe_operation_p1",
       "title": "Total Ladder Pipe Flow",
-      "question": "A ladder pipe is supplied by two equal supply lines. Each supply line is carrying 375 GPM to the ladder truck. What is the total ladder pipe flow?",
+      "question": "The ladder pipe is supplied by two equal supply lines. Each supply line is carrying 375 GPM to the ladder truck. What known ladder pipe flow is being supplied?",
       "answerLabel": "Total Flow",
       "answerUnit": "GPM",
       "inputLabel": "Enter total flow",
@@ -84,7 +84,7 @@
     {
       "id": "ladder_pipe_operation_p2",
       "title": "Flow Per Ladder Supply Line",
-      "question": "Engine 181 supplies the ladder truck with two equal supply lines. The ladder pipe is flowing 750 GPM total. How much flow is carried by each supply line?",
+      "question": "Engine 181 supplies the ladder truck with two equal supply lines. The ladder pipe is flowing 750 GPM total. What flow should be used for each ladder supply line?",
       "answerLabel": "Flow Per Line",
       "answerUnit": "GPM",
       "inputLabel": "Enter flow per line",
@@ -136,7 +136,7 @@
     {
       "id": "ladder_pipe_operation_p3",
       "title": "Ladder Supply Line Friction Loss",
-      "question": "Each ladder supply line is 200 ft of 2.5-inch hose flowing 375 GPM. What is the friction loss in each supply line?",
+      "question": "Each ladder supply line is 200 ft of 2½-inch hose. The ladder pipe flow is 750 GPM split equally between two supply lines. Use FL = C × (GPM/100)² × (length/100), with C = 2. What is the friction loss in each supply line?",
       "answerLabel": "Friction Loss",
       "answerUnit": "PSI",
       "inputLabel": "Enter friction loss",
@@ -177,7 +177,7 @@
       ],
       "formulaBreakdown": [
         "FL = C x (GPM / 100)^2 x hose length in hundreds.",
-        "C for 2.5-inch hose = 2.",
+        "C for 2½-inch hose = 2.",
         "Flow per line = 375 GPM.",
         "Hose length = 200 ft = 2 hundreds.",
         "FL = 2 x (375 / 100)^2 x 2.",
@@ -185,13 +185,13 @@
         "FL = 56.25 PSI.",
         "Round to nearest 5 PSI: 55 PSI."
       ],
-      "instructorExplanation": "Each supply line carries 375 GPM. At 375 GPM through 200 ft of 2.5-inch hose, friction loss rounds to 55 PSI.",
+      "instructorExplanation": "Each supply line carries 375 GPM. At 375 GPM through 200 ft of 2½-inch hose, friction loss rounds to 55 PSI.",
       "explainMistake": "Do not add the friction loss from both equal supply lines together. Calculate one supply path because the lines are parallel."
     },
     {
       "id": "ladder_pipe_operation_p4",
       "title": "Ladder Pipe Elevation Pressure",
-      "question": "The ladder pipe nozzle is 60 ft above Engine 181. What elevation pressure must be added?",
+      "question": "The ladder pipe nozzle is 60 ft above Engine 181. Use elevation pressure = height × 0.5 PSI/ft. What elevation pressure must be added?",
       "answerLabel": "Elevation Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter elevation pressure",
@@ -241,9 +241,9 @@
     },
     {
       "id": "ladder_pipe_operation_p5",
-      "title": "Ladder Pipe Pump Pressure",
-      "question": "Engine 181 supplies a ladder truck with two equal 200 ft 2.5-inch supply lines. The ladder pipe flows 750 GPM total, so each supply line carries 375 GPM. The ladder pipe nozzle pressure is 80 PSI, the nozzle is 60 ft above Engine 181 so elevation is 30 PSI, and ladder waterway appliance loss is 25 PSI. Using C = 2 for each 2.5-inch supply line, what pump discharge pressure should Engine 181 set?",
-      "answerLabel": "Pump Pressure",
+      "title": "Ladder Pipe Pump Discharge Pressure",
+      "question": "Engine 181 supplies a ladder truck with two equal 200 ft 2½-inch supply lines. The ladder pipe flows 750 GPM total; split that flow equally between the two supply lines for friction-loss calculations. The ladder pipe nozzle pressure is 80 PSI, the nozzle is 60 ft above Engine 181, and ladder waterway appliance loss is 25 PSI. Use C = 2 for each 2½-inch supply line and elevation pressure = height × 0.5 PSI/ft. What pump discharge pressure should Engine 181 set?",
+      "answerLabel": "Pump Discharge Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
       "inputPlaceholder": "PSI",
@@ -296,56 +296,7 @@
         "PP = 190 PSI."
       ],
       "instructorExplanation": "For a ladder pipe supplied through two equal lines, calculate one supply path. Add supply line friction loss, ladder pipe nozzle pressure, elevation pressure, and ladder waterway appliance loss. Engine 181 should pump 190 PSI.",
-      "explainMistake": "Do not add the friction loss of both blue supply lines together. Parallel supply lines split the flow, so one supply path governs the pump pressure."
-    },
-    {
-      "id": "ladder_pipe_operation_p6",
-      "title": "Ladder Truck Supply Hose Count",
-      "question": "How many supply hoses from Engine 181 feed the ladder truck?",
-      "answerLabel": "Supply Hoses",
-      "answerUnit": "hoses",
-      "inputLabel": "Enter number of supply hoses",
-      "inputPlaceholder": "whole number",
-      "answerValue": 2,
-      "correctPP": 0,
-      "tolerance": 0,
-      "answers": {
-        "frictionLoss": 0,
-        "nozzlePressure": 0,
-        "elevation": 0,
-        "applianceLoss": 0,
-        "totalGpm": 0,
-        "pumpPressure": 0,
-        "tolerance": 0
-      },
-      "overlays": [
-        {
-          "label": "Engine 181",
-          "x": 34,
-          "y": 64
-        },
-        {
-          "label": "Supply A",
-          "x": 57,
-          "y": 67
-        },
-        {
-          "label": "Supply B",
-          "x": 67,
-          "y": 70
-        },
-        {
-          "label": "Ladder truck",
-          "x": 74,
-          "y": 49
-        }
-      ],
-      "formulaBreakdown": [
-        "The scene shows two supply hoses from Engine 181 to the ladder truck.",
-        "Supply hoses = 2."
-      ],
-      "instructorExplanation": "The hydrant supplies Engine 181, and Engine 181 supplies the ladder truck with two separate supply hoses.",
-      "explainMistake": "Do not count the yellow hydrant supply hose as a ladder truck supply hose. The ladder truck is fed by the two blue hoses from Engine 181."
+      "explainMistake": "Do not add the friction loss of both blue supply lines together. Parallel supply lines split the flow, so one supply path governs the pump discharge pressure."
     }
   ],
   "tags": [

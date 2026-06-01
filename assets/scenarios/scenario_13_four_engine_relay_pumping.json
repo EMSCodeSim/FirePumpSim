@@ -14,10 +14,10 @@
       "Relay Segment 1: 1500 ft of 5-inch LDH from Engine 181 discharge to Relay Engine 2 intake",
       "Relay Segment 2: 1500 ft of 5-inch LDH from Relay Engine 2 discharge to Relay Engine 3 intake",
       "Relay Segment 3: 1500 ft of 5-inch LDH from Relay Engine 3 discharge to Attack Engine 4 intake",
-      "Attack line: 250 ft of 2.5-inch hose from Attack Engine 4 discharge to nozzle crew"
+      "Attack line: 250 ft of 2½-inch hose from Attack Engine 4 discharge to nozzle crew"
     ],
     "nozzles": [
-      "Attack line smooth bore nozzle, 1 1/8-inch tip, 265 GPM @ 50 PSI"
+      "Attack line smooth bore nozzle, 1⅛-inch tip, 265 GPM @ 50 PSI"
     ],
     "appliances": [],
     "elevation": "Level industrial property, 0 PSI elevation correction"
@@ -25,9 +25,9 @@
   "problems": [
     {
       "id": "scenario_13_four_engine_relay_pumping_p1",
-      "title": "Engine 181 Relay Pump Pressure",
+      "title": "Engine 181 Relay Pump Discharge Pressure",
       "question": "Engine 181 is pumping through 1500 ft of 5-inch LDH to Relay Engine 2. The relay flow is 265 GPM and the desired intake pressure at Relay Engine 2 is 20 PSI. What pump discharge pressure should Engine 181 set?",
-      "answerLabel": "Relay Pump Pressure",
+      "answerLabel": "Relay Pump Discharge Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
       "inputPlaceholder": "PSI",
@@ -89,9 +89,9 @@
     },
     {
       "id": "scenario_13_four_engine_relay_pumping_p2",
-      "title": "Relay Engine 2 Pump Pressure",
+      "title": "Relay Engine 2 Pump Discharge Pressure",
       "question": "Relay Engine 2 is pumping through 1500 ft of 5-inch LDH to Relay Engine 3. The relay flow is 265 GPM and the desired intake pressure at Relay Engine 3 is 20 PSI. What pump discharge pressure should Relay Engine 2 set?",
-      "answerLabel": "Relay Pump Pressure",
+      "answerLabel": "Relay Pump Discharge Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
       "inputPlaceholder": "PSI",
@@ -143,13 +143,13 @@
         "Relay PDP = 30 PSI."
       ],
       "instructorExplanation": "Relay Engine 2 is not supplying the nozzle directly. It is supplying Relay Engine 3, so the required pump discharge pressure is the relay segment friction loss plus the desired intake pressure.",
-      "explainMistake": "Do not use attack-line pump pressure for Relay Engine 2. A relay engine only needs to move water to the next intake while maintaining the target intake pressure."
+      "explainMistake": "Do not use attack-line pump discharge pressure for Relay Engine 2. A relay engine only needs to move water to the next intake while maintaining the target intake pressure."
     },
     {
       "id": "scenario_13_four_engine_relay_pumping_p3",
-      "title": "Relay Engine 3 Pump Pressure",
+      "title": "Relay Engine 3 Pump Discharge Pressure",
       "question": "Relay Engine 3 is pumping through 1500 ft of 5-inch LDH to Attack Engine 4. The relay flow is 265 GPM and the desired intake pressure at Attack Engine 4 is 20 PSI. What pump discharge pressure should Relay Engine 3 set?",
-      "answerLabel": "Relay Pump Pressure",
+      "answerLabel": "Relay Pump Discharge Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
       "inputPlaceholder": "PSI",
@@ -201,13 +201,13 @@
         "Relay PDP = 30 PSI."
       ],
       "instructorExplanation": "Relay Engine 3 must overcome the friction loss in the final relay segment and deliver the target intake pressure to Attack Engine 4. The correct pump discharge pressure is 30 PSI.",
-      "explainMistake": "Do not add nozzle pressure at Relay Engine 3. The attack engine handles the attack-line pump pressure separately."
+      "explainMistake": "Do not add nozzle pressure at Relay Engine 3. The attack engine handles the attack-line pump discharge pressure separately."
     },
     {
       "id": "scenario_13_four_engine_relay_pumping_p4",
-      "title": "Attack Engine Pump Pressure",
-      "question": "Attack Engine 4 is supplying a 250 ft 2.5-inch attack line with a 1 1/8-inch smooth bore nozzle flowing 265 GPM @ 50 PSI. What pump discharge pressure should Attack Engine 4 set?",
-      "answerLabel": "Pump Pressure",
+      "title": "Attack Engine Pump Discharge Pressure",
+      "question": "Attack Engine 4 is supplying a 250 ft 2½-inch attack line with a 1⅛-inch smooth bore nozzle flowing 265 GPM @ 50 PSI. What pump discharge pressure should Attack Engine 4 set?",
+      "answerLabel": "Pump Discharge Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
       "inputPlaceholder": "PSI",
@@ -248,7 +248,7 @@
       "formulaBreakdown": [
         "PP = FL + NP + elevation + appliance loss.",
         "FL = C x (GPM / 100)^2 x hose length in hundreds.",
-        "C for 2.5-inch hose = 2.",
+        "C for 2½-inch hose = 2.",
         "Flow = 265 GPM.",
         "Hose length = 250 ft = 2.5 hundreds.",
         "FL = 2 x (265 / 100)^2 x 2.5.",

@@ -15,7 +15,7 @@
       "Black hard suction transfer hose connecting the left dump tank to the right dump tank through the jet siphon setup",
       "Small supply hose from Engine 181 discharge to the jet siphon at the left dump tank",
       "Large black hard suction hose from the right dump tank to Engine 181 intake",
-      "Attack line: 200 ft of 1.75-inch hose from Engine 181 discharge to firefighter operating near the rural structure fire"
+      "Attack line: 200 ft of 1¾-inch hose from Engine 181 discharge to firefighter operating near the rural structure fire"
     ],
     "nozzles": [
       "ChiefXD 185 fog nozzle, 185 GPM @ 50 PSI"
@@ -32,9 +32,9 @@
   "problems": [
     {
       "id": "multiple_dump_tank_jet_siphon_operation_p1",
-      "title": "Attack Line Pump Pressure",
-      "question": "Engine 181 is supplying one 200 ft 1.75-inch attack line with a ChiefXD 185 fog nozzle operating at 185 GPM @ 50 PSI. What pump discharge pressure should be set?",
-      "answerLabel": "Pump Pressure",
+      "title": "Attack Line Pump Discharge Pressure",
+      "question": "Engine 181 is supplying one 200 ft 1¾-inch attack line with a ChiefXD 185 fog nozzle operating at 185 GPM @ 50 PSI. What pump discharge pressure should be set?",
+      "answerLabel": "Pump Discharge Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
       "inputPlaceholder": "PSI",
@@ -75,7 +75,7 @@
       "formulaBreakdown": [
         "PP = FL + NP + elevation + appliance loss.",
         "FL = C × (GPM / 100)^2 × hose length in hundreds.",
-        "C for 1.75-inch hose = 15.5.",
+        "C for 1¾-inch hose = 15.5.",
         "Flow = 185 GPM.",
         "Hose length = 200 ft = 2 hundreds.",
         "FL = 15.5 × (185 / 100)^2 × 2.",
@@ -88,13 +88,13 @@
         "PP = 105 + 50 + 0 + 0.",
         "PP = 155 PSI."
       ],
-      "instructorExplanation": "The attack line calculation is based on the hose between Engine 181 and the nozzle. The dump tanks, jet siphon, and hard suction are part of the water supply side and are not added to the attack line pump pressure.",
-      "explainMistake": "Do not include the dump tanks, jet siphon, or hard suction in the pump pressure calculation for the attack line. Use attack-line friction loss plus nozzle pressure."
+      "instructorExplanation": "The attack line calculation is based on the hose between Engine 181 and the nozzle. The dump tanks, jet siphon, and hard suction are part of the water supply side and are not added to the attack line pump discharge pressure.",
+      "explainMistake": "Do not include the dump tanks, jet siphon, or hard suction in the pump discharge pressure calculation for the attack line. Use attack-line friction loss plus nozzle pressure."
     },
     {
       "id": "multiple_dump_tank_jet_siphon_operation_p2",
       "title": "Usable Tender Water",
-      "question": "Each water tender carries 3000 gallons. Using the 90% usable water rule, how many gallons are usable from one tender?",
+      "question": "Each tender carries 3,000 gallons, but the dump-tank shuttle plan credits only 90% as usable water. Use usable gallons = tank capacity × 0.90. How many usable gallons should be credited to one tender?",
       "answerLabel": "Usable Water",
       "answerUnit": "gal",
       "inputLabel": "Enter usable water",
@@ -139,13 +139,13 @@
         "Usable water = 3000 × 0.90.",
         "Usable water = 2700 gallons."
       ],
-      "instructorExplanation": "For tender shuttle calculations, FirePumpSim counts 90% of the tender capacity as usable water. A 3000-gallon tender provides 2700 usable gallons.",
-      "explainMistake": "Do not use the full tender capacity. Use the 90% usable water rule for shuttle calculations."
+      "instructorExplanation": "For tender shuttle calculations, use the usable water formula: usable gallons = tank capacity × 0.90. A 3000-gallon tender provides 2700 usable gallons.",
+      "explainMistake": "Do not use the full tender capacity. Use the usable water formula: usable gallons = tank capacity × 0.90."
     },
     {
       "id": "multiple_dump_tank_jet_siphon_operation_p3",
       "title": "Single Tender Shuttle Flow",
-      "question": "One tender provides 2700 usable gallons and has a 12-minute shuttle cycle time. What sustained flow can one tender provide?",
+      "question": "One tender contributes 2,700 usable gallons every 12-minute cycle. Use sustained flow = usable gallons ÷ cycle time. What sustained flow does one tender add to the dump-tank operation?",
       "answerLabel": "Sustained Flow",
       "answerUnit": "GPM",
       "inputLabel": "Enter sustained flow",
@@ -197,7 +197,7 @@
     {
       "id": "multiple_dump_tank_jet_siphon_operation_p4",
       "title": "Tenders Needed",
-      "question": "The operation needs a sustained water supply of 450 GPM. If each tender can sustain 225 GPM, how many tenders are needed?",
+      "question": "The jet-siphon dump-tank operation needs a sustained 450 GPM water supply. Each tender can sustain 225 GPM. What minimum number of tenders must be cycling to maintain that supply?",
       "answerLabel": "Tenders Needed",
       "answerUnit": "tenders",
       "inputLabel": "Enter number of tenders",
@@ -249,7 +249,7 @@
     {
       "id": "multiple_dump_tank_jet_siphon_operation_p5",
       "title": "Combined Dump Tank Water Duration",
-      "question": "The two portable dump tanks are connected by a jet siphon and function as one water source. If each dump tank contains 2500 gallons and Engine 181 is flowing 185 GPM, how long will the combined dump tank supply last with no refill?",
+      "question": "The two dump tanks are connected by a jet siphon and should be treated as one drafting source. Each tank contains 2,500 gallons. If Engine 181 is flowing one 185 GPM attack line and no refill is arriving, how long will the combined dump-tank supply last?",
       "answerLabel": "Water Duration",
       "answerUnit": "min",
       "inputLabel": "Enter water duration",
@@ -298,56 +298,6 @@
       ],
       "instructorExplanation": "Because the dump tanks are connected with a jet siphon, they function as one water source. With 5000 total gallons and a 185 GPM flow, the supply lasts about 27 minutes with no refill.",
       "explainMistake": "Do not calculate using only one dump tank when the jet siphon connects both tanks into a single water source."
-    },
-    {
-      "id": "multiple_dump_tank_jet_siphon_operation_p6",
-      "title": "Drafting Tank Identification",
-      "question": "Engine 181 is drafting through the large black hard suction from only one dump tank. How many dump tanks are directly connected to Engine 181 by hard suction?",
-      "answerLabel": "Drafting Tanks",
-      "answerUnit": "tank",
-      "inputLabel": "Enter number of tanks",
-      "inputPlaceholder": "whole number",
-      "answerValue": 1,
-      "correctPP": 0,
-      "tolerance": 0,
-      "answers": {
-        "frictionLoss": 0,
-        "nozzlePressure": 0,
-        "elevation": 0,
-        "applianceLoss": 0,
-        "totalGpm": 0,
-        "pumpPressure": 0,
-        "tolerance": 0
-      },
-      "overlays": [
-        {
-          "label": "Right dump tank",
-          "x": 69,
-          "y": 62
-        },
-        {
-          "label": "Hard suction",
-          "x": 67,
-          "y": 52
-        },
-        {
-          "label": "Engine 181",
-          "x": 70,
-          "y": 41
-        },
-        {
-          "label": "Jet siphon",
-          "x": 47,
-          "y": 63
-        }
-      ],
-      "formulaBreakdown": [
-        "The large black hard suction connects Engine 181 to the right dump tank only.",
-        "The left dump tank transfers water through the jet siphon setup.",
-        "Direct drafting tanks connected to Engine 181 = 1."
-      ],
-      "instructorExplanation": "Engine 181 drafts from only one dump tank. The second dump tank supports the drafting tank through the jet siphon, allowing both tanks to function together without two hard suction intakes.",
-      "explainMistake": "Do not count both dump tanks as directly drafted. Only the tank connected to Engine 181 by the large hard suction is directly drafted."
     }
   ],
   "tags": [

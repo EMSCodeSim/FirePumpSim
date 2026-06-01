@@ -7,7 +7,7 @@
   "image": "assets/images/wye_residential_split_001.png",
   "scene": {
     "engine": "Engine 181",
-    "description": "Engine 181 is supplying a wye with 200' of 2½\" hose. Branch A is 150' of 1¾\" flowing 150 GPM with a fog nozzle at 50 PSI. Branch B is 200' of 1¾\" flowing 185 GPM with a fog nozzle at 50 PSI. What pump pressure should the operator set?",
+    "description": "Engine 181 is supplying a wye with 200' of 2½\" hose. Branch A is 150' of 1¾\" flowing 150 GPM with a fog nozzle at 50 PSI. Branch B is 200' of 1¾\" flowing 185 GPM with a fog nozzle at 50 PSI. What pump discharge pressure should the operator set?",
     "baseOverlays": []
   },
   "sceneElements": {
@@ -30,10 +30,10 @@
     {
       "id": "wye_residential_split_001_q1",
       "title": "Residential Wye Split",
-      "question": "Engine 181 is supplying a wye with 200 ft of 2.5-inch hose. Branch A is 150 ft of 1.75-inch hose flowing 150 GPM at 50 PSI. Branch B is 200 ft of 1.75-inch hose flowing 185 GPM at 50 PSI. Do not add appliance loss. What pump pressure should the operator set for the governing branch?",
+      "question": "Engine 181 is supplying a wye with 200 ft of 2½-inch hose. Branch A is 150 ft of 1¾-inch hose flowing 150 GPM at 50 PSI. Branch B is 200 ft of 1¾-inch hose flowing 185 GPM at 50 PSI. Do not add appliance loss. What pump discharge pressure should the operator set for the governing branch?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Your pump pressure answer",
+      "inputLabel": "Your PDP answer",
       "inputPlaceholder": "Enter PSI",
       "answerValue": 201,
       "correctPP": 201,
@@ -84,16 +84,16 @@
         "Branch B FL = 15.5 × (185 / 100)^2 × 2 ≈ 106 PSI; branch B total = 45 + 106 + 50 = 201 PSI.",
         "Highest-pressure branch governs: 201 PSI."
       ],
-      "instructorExplanation": "For a wye operation, calculate the shared supply-line friction loss using total flow, then calculate each branch separately. Add the shared supply loss to each branch and use the highest-pressure branch as the governing pump pressure.",
-      "explainMistake": "Do not add both branch pressures together. The main line carries total flow to the wye, but the pump pressure is based on the highest-pressure path through the wye."
+      "instructorExplanation": "For a wye operation, calculate the shared supply-line friction loss using total flow, then calculate each branch separately. Add the shared supply loss to each branch and use the highest-pressure branch as the governing pump discharge pressure.",
+      "explainMistake": "Do not add both branch pressures together. The main line carries total flow to the wye, but the pump discharge pressure is based on the highest-pressure path through the wye."
     },
     {
       "id": "wye_residential_split_001_q2",
       "title": "Residential Wye Split",
-      "question": "Engine 181 is supplying a wye with 200 ft of 2.5-inch hose. Branch A is 150 ft of 1.75-inch hose flowing 150 GPM at 50 PSI. Branch B is 150 ft of 1.75-inch hose flowing 185 GPM at 50 PSI. Do not add appliance loss. What pump pressure should the operator set for the governing branch?",
+      "question": "Engine 181 is supplying a wye with 200 ft of 2½-inch hose. Branch A is 150 ft of 1¾-inch hose flowing 150 GPM at 50 PSI. Branch B is 150 ft of 1¾-inch hose flowing 185 GPM at 50 PSI. Do not add appliance loss. What pump discharge pressure should the operator set for the governing branch?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Your pump pressure answer",
+      "inputLabel": "Your PDP answer",
       "inputPlaceholder": "Enter PSI",
       "answerValue": 175,
       "correctPP": 175,
@@ -144,16 +144,16 @@
         "Branch B FL = 15.5 × (185 / 100)^2 × 1.5 ≈ 80 PSI; branch B total = 45 + 80 + 50 = 175 PSI.",
         "Highest-pressure branch governs: 175 PSI."
       ],
-      "instructorExplanation": "For a wye operation, calculate the shared supply-line friction loss using total flow, then calculate each branch separately. Add the shared supply loss to each branch and use the highest-pressure branch as the governing pump pressure.",
-      "explainMistake": "Do not add both branch pressures together. The main line carries total flow to the wye, but the pump pressure is based on the highest-pressure path through the wye."
+      "instructorExplanation": "For a wye operation, calculate the shared supply-line friction loss using total flow, then calculate each branch separately. Add the shared supply loss to each branch and use the highest-pressure branch as the governing pump discharge pressure.",
+      "explainMistake": "Do not add both branch pressures together. The main line carries total flow to the wye, but the pump discharge pressure is based on the highest-pressure path through the wye."
     },
     {
       "id": "wye_residential_split_001_q3",
       "title": "Residential Wye Split",
-      "question": "Engine 181 is supplying a wye with 200 ft of 2.5-inch hose. Branch A is 150 ft of 1.75-inch hose flowing 150 GPM at 50 PSI at ground level. Branch B is 200 ft of 1.75-inch hose flowing 185 GPM at 50 PSI and operates 40 ft above the pump, requiring 20 PSI elevation. Do not add appliance loss. What pump pressure should the operator set for the governing branch?",
+      "question": "Engine 181 is supplying a wye with 200 ft of 2½-inch hose. Branch A is 150 ft of 1¾-inch hose flowing 150 GPM at 50 PSI at ground level. Branch B is 200 ft of 1¾-inch hose flowing 185 GPM at 50 PSI and operates 40 ft above the pump. Use elevation pressure = height × 0.5 PSI/ft. Do not add appliance loss. What pump discharge pressure should the operator set for the governing branch?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Your pump pressure answer",
+      "inputLabel": "Your PDP answer",
       "inputPlaceholder": "Enter PSI",
       "answerValue": 221,
       "correctPP": 221,
@@ -204,16 +204,16 @@
         "Branch B total = supply FL 45 + branch FL 106 + nozzle pressure 50 + elevation 20 = 221 PSI.",
         "Branch B governs."
       ],
-      "instructorExplanation": "For a wye operation, calculate the shared supply-line friction loss using total flow, then calculate each branch separately. Add the shared supply loss to each branch and use the highest-pressure branch as the governing pump pressure.",
-      "explainMistake": "Do not add both branch pressures together. The main line carries total flow to the wye, but the pump pressure is based on the highest-pressure path through the wye."
+      "instructorExplanation": "For a wye operation, calculate the shared supply-line friction loss using total flow, then calculate each branch separately. Add the shared supply loss to each branch and use the highest-pressure branch as the governing pump discharge pressure.",
+      "explainMistake": "Do not add both branch pressures together. The main line carries total flow to the wye, but the pump discharge pressure is based on the highest-pressure path through the wye."
     },
     {
       "id": "wye_residential_split_001_q4",
       "title": "Residential Wye Split",
-      "question": "Engine 181 is supplying a wye with 200 ft of 2.5-inch hose. Branch A is 150 ft of 1.75-inch hose flowing 150 GPM at 50 PSI. Branch B is 200 ft of 1.75-inch hose flowing 185 GPM at 50 PSI. Add 10 PSI appliance loss for the wye and no elevation. What pump pressure should the operator set for the governing branch?",
+      "question": "Engine 181 is supplying a wye with 200 ft of 2½-inch hose. Branch A is 150 ft of 1¾-inch hose flowing 150 GPM at 50 PSI. Branch B is 200 ft of 1¾-inch hose flowing 185 GPM at 50 PSI. Add 10 PSI appliance loss for the wye and no elevation. What pump discharge pressure should the operator set for the governing branch?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Your pump pressure answer",
+      "inputLabel": "Your PDP answer",
       "inputPlaceholder": "Enter PSI",
       "answerValue": 211,
       "correctPP": 211,
@@ -264,8 +264,8 @@
         "Branch B total = 45 + 106 + 50 + 10 = 211 PSI.",
         "Branch B governs."
       ],
-      "instructorExplanation": "For a wye operation, calculate the shared supply-line friction loss using total flow, then calculate each branch separately. Add the shared supply loss to each branch and use the highest-pressure branch as the governing pump pressure.",
-      "explainMistake": "Do not add both branch pressures together. The main line carries total flow to the wye, but the pump pressure is based on the highest-pressure path through the wye."
+      "instructorExplanation": "For a wye operation, calculate the shared supply-line friction loss using total flow, then calculate each branch separately. Add the shared supply loss to each branch and use the highest-pressure branch as the governing pump discharge pressure.",
+      "explainMistake": "Do not add both branch pressures together. The main line carries total flow to the wye, but the pump discharge pressure is based on the highest-pressure path through the wye."
     }
   ],
   "tags": [

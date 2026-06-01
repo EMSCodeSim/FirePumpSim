@@ -11,11 +11,11 @@
     "engine": "Engine 181",
     "hoses": [
       "Supply line from hydrant to Engine 181 intake",
-      "Line A: 200 ft of 2.5-inch hose from Engine 181 discharge to portable monitor",
-      "Line B: 200 ft of 2.5-inch hose from Engine 181 discharge to portable monitor"
+      "Line A: 200 ft of 2½-inch hose from Engine 181 discharge to portable monitor",
+      "Line B: 200 ft of 2½-inch hose from Engine 181 discharge to portable monitor"
     ],
     "nozzles": [
-      "Portable monitor with 1 3/4-inch smooth bore tip",
+      "Portable monitor with 1¾-inch smooth bore tip",
       "Master stream nozzle pressure: 80 PSI"
     ],
     "appliances": [
@@ -27,7 +27,7 @@
     {
       "id": "portable_monitor_operation_p1",
       "title": "Master Stream Flow",
-      "question": "The portable monitor uses a 1¾-inch smooth bore master-stream tip at 80 PSI nozzle pressure. Using the FirePumpSim solid-bore flow reference, determine the master stream flow.",
+      "question": "The portable monitor uses a 1¾-inch smooth bore master-stream tip at 80 PSI nozzle pressure. Use the smooth-bore flow formula: GPM = 29.7 × diameter² × √NP. Determine the master stream flow.",
       "answerLabel": "Master Stream Flow",
       "answerUnit": "GPM",
       "inputLabel": "Enter master stream flow",
@@ -75,13 +75,13 @@
         "GPM = 813.6.",
         "Rounded master stream flow = 815 GPM."
       ],
-      "instructorExplanation": "The portable monitor is using a smooth bore tip. Smooth bore flow is calculated using tip diameter and nozzle pressure. A 1 3/4-inch tip at 80 PSI produces approximately 815 GPM.",
+      "instructorExplanation": "The portable monitor is using a smooth bore tip. Smooth bore flow is calculated using tip diameter and nozzle pressure. A 1¾-inch tip at 80 PSI produces approximately 815 GPM.",
       "explainMistake": "Do not use handline fog nozzle flow values for this question. A portable monitor with a smooth bore tip uses the smooth bore flow formula."
     },
     {
       "id": "portable_monitor_operation_p2",
       "title": "Line A Flow",
-      "question": "The portable monitor is flowing 815 GPM total and is supplied by two equal lines from Engine 181. How much water is carried by Line A?",
+      "question": "The portable monitor is flowing 815 GPM total and is supplied by two equal lines from Engine 181. The two lines split the monitor flow; they do not each flow the full monitor total. What flow should be used for Line A?",
       "answerLabel": "Line A Flow",
       "answerUnit": "GPM",
       "inputLabel": "Enter Line A flow",
@@ -134,8 +134,8 @@
     {
       "id": "portable_monitor_operation_p3",
       "title": "Pump Discharge Pressure",
-      "question": "Engine 181 is supplying a portable monitor flowing 815 GPM total through two equal 200 ft 2.5-inch supply lines. Each line carries about 408 GPM. Use 65 PSI friction loss per supply line, 80 PSI nozzle pressure, 25 PSI portable monitor appliance loss, and no elevation. What pump discharge pressure is required?",
-      "answerLabel": "Pump Pressure",
+      "question": "Engine 181 is supplying a portable monitor flowing 815 GPM total through two equal 200 ft 2½-inch supply lines. Split the monitor flow equally between the two lines, use FL = C × (GPM/100)² × (length/100) with C = 2, add 80 PSI nozzle pressure, add 25 PSI portable monitor appliance loss, and use no elevation. What pump discharge pressure is required?",
+      "answerLabel": "Pump Discharge Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
       "inputPlaceholder": "PSI",
@@ -184,7 +184,7 @@
         "Flow is split between two equal supply lines.",
         "Flow per line = 815 ÷ 2 = 407.5 GPM.",
         "FL = C × (GPM / 100)^2 × hose length in hundreds.",
-        "Line A and Line B use 2.5-inch hose, so C = 2.",
+        "Line A and Line B use 2½-inch hose, so C = 2.",
         "Each supply line length = 200 ft = 2 hundreds.",
         "FL = 2 × (407.5 / 100)^2 × 2.",
         "FL = 66.4 PSI.",

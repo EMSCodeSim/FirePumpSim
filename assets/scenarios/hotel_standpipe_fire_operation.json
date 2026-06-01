@@ -5,33 +5,33 @@
   "difficulty": "advanced",
   "category": "standpipe",
   "type": "pump",
-  "image": "assets/images/standpipe-engine181.png",
+  "image": "assets/images/hotel_standpipe_fire_operation.png",
   "imageRatio": "4:7",
   "recommendedImageSize": "1080x1890",
   "sceneElements": {
     "engine": "Engine 181",
     "hoses": [
       "Hydrant supply hose from hydrant to Engine 181 intake",
-      "FDC supply line A: 100 ft of 2.5-inch hose from Engine 181 discharge to hotel FDC inlet A",
-      "FDC supply line B: 100 ft of 2.5-inch hose from Engine 181 discharge to hotel FDC inlet B",
-      "Interior attack line A: 150 ft of 2.5-inch hose from 8th-floor standpipe outlet to fire room",
-      "Interior attack line B: 150 ft of 2.5-inch hose from 8th-floor standpipe outlet to fire room"
+      "FDC supply line A: 100 ft of 2½-inch hose from Engine 181 discharge to hotel FDC inlet A",
+      "FDC supply line B: 100 ft of 2½-inch hose from Engine 181 discharge to hotel FDC inlet B",
+      "Interior attack line A: 150 ft of 2½-inch hose from 8th-floor standpipe outlet to fire room",
+      "Interior attack line B: 150 ft of 2½-inch hose from 8th-floor standpipe outlet to fire room"
     ],
     "nozzles": [
-      "Interior attack line A with 1 1/8-inch smooth bore nozzle, 265 GPM @ 50 PSI",
-      "Interior attack line B with 1 1/8-inch smooth bore nozzle, 265 GPM @ 50 PSI"
+      "Interior attack line A with 1⅛-inch smooth bore nozzle, 265 GPM @ 50 PSI",
+      "Interior attack line B with 1⅛-inch smooth bore nozzle, 265 GPM @ 50 PSI"
     ],
     "appliances": [
       "Hotel FDC on exterior wall near main entrance",
       "Building standpipe system"
     ],
-    "elevation": "Fire room is on the 8th floor, requiring 35 PSI elevation pressure"
+    "elevation": "Fire room is on the 8th floor, using elevation pressure = height × 0.5 PSI/ft"
   },
   "problems": [
     {
       "id": "hotel_standpipe_fire_operation_p1",
       "title": "Total Standpipe Flow",
-      "question": "Engine 181 is supplying two interior standpipe attack lines. Each line flows 265 GPM. What is the total flow for this standpipe operation?",
+      "question": "Only the known standpipe attack lines are included in the standpipe flow calculation. Engine 181 is supplying two interior standpipe attack lines at 265 GPM each. What known standpipe flow should be used for the operation?",
       "answerLabel": "Total Flow",
       "answerUnit": "GPM",
       "inputLabel": "Enter total flow",
@@ -88,7 +88,7 @@
     {
       "id": "hotel_standpipe_fire_operation_p2",
       "title": "Flow Per FDC Supply Line",
-      "question": "Engine 181 is supplying the hotel FDC with two equal supply lines. The total standpipe flow is 530 GPM. How much flow is carried by each FDC supply line?",
+      "question": "Engine 181 is supplying the hotel FDC with two equal supply lines. The known standpipe flow is 530 GPM. What flow should be used for each FDC supply line?",
       "answerLabel": "Flow Per Line",
       "answerUnit": "GPM",
       "inputLabel": "Enter flow per line",
@@ -140,7 +140,7 @@
     {
       "id": "hotel_standpipe_fire_operation_p3",
       "title": "FDC Supply Line Friction Loss",
-      "question": "Each FDC supply line is 100 ft of 2.5-inch hose flowing 265 GPM. What is the friction loss in each FDC supply line?",
+      "question": "Each FDC supply line is 100 ft of 2½-inch hose. The known standpipe flow is 530 GPM split equally between two FDC supply lines. Use FL = C × (GPM/100)² × (length/100), with C = 2. What is the friction loss in each FDC supply line?",
       "answerLabel": "Friction Loss",
       "answerUnit": "PSI",
       "inputLabel": "Enter friction loss",
@@ -181,7 +181,7 @@
       ],
       "formulaBreakdown": [
         "FL = C x (GPM / 100)^2 x hose length in hundreds.",
-        "C for 2.5-inch hose = 2.",
+        "C for 2½-inch hose = 2.",
         "Flow per FDC line = 265 GPM.",
         "Hose length = 100 ft = 1 hundred.",
         "FL = 2 x (265 / 100)^2 x 1.",
@@ -189,7 +189,7 @@
         "FL = 14.04 PSI.",
         "Round to nearest 5 PSI: 15 PSI."
       ],
-      "instructorExplanation": "Each FDC supply line carries 265 GPM. At 265 GPM through 100 ft of 2.5-inch hose, friction loss rounds to 15 PSI.",
+      "instructorExplanation": "Each FDC supply line carries 265 GPM. At 265 GPM through 100 ft of 2½-inch hose, friction loss rounds to 15 PSI.",
       "explainMistake": "Do not use the total 530 GPM in one FDC supply line. Each line carries half of the total flow."
     },
     {
@@ -240,9 +240,9 @@
     },
     {
       "id": "hotel_standpipe_fire_operation_p5",
-      "title": "Standpipe Pump Pressure",
-      "question": "Engine 181 is supplying the hotel FDC with two equal 100 ft 2.5-inch FDC supply lines. Total standpipe flow is 530 GPM, so each FDC supply line carries 265 GPM. Each interior attack line is 150 ft of 2.5-inch hose flowing 265 GPM through a 1⅛-inch smooth bore nozzle at 50 PSI. The fire is on the 8th floor, adding 35 PSI elevation. Add 25 PSI standpipe/FDC system loss. What pump discharge pressure should Engine 181 set for one complete standpipe flow path?",
-      "answerLabel": "Pump Pressure",
+      "title": "Standpipe Pump Discharge Pressure",
+      "question": "Engine 181 is supplying the hotel FDC with two equal 100 ft 2½-inch FDC supply lines. The known standpipe flow is 530 GPM; split that flow equally between the two supply lines. Each interior attack line is 150 ft of 2½-inch hose flowing 265 GPM through a 1⅛-inch smooth bore nozzle at 50 PSI. The fire room is on the 8th floor. Use height = (floor number - 1) × 10 ft and elevation pressure = height × 0.5 PSI/ft. Add 25 PSI standpipe/FDC system loss. What pump discharge pressure should Engine 181 set for one complete standpipe flow path?",
+      "answerLabel": "Pump Discharge Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
       "inputPlaceholder": "PSI",
@@ -290,57 +290,8 @@
         "PP = 35 + 50 + 35 + 25.",
         "PP = 145 PSI."
       ],
-      "instructorExplanation": "For this standpipe operation, calculate one complete supply path from Engine 181 to the FDC, through the standpipe, and through the interior attack line. Add the FDC supply line friction loss, interior hose friction loss, nozzle pressure, elevation, and standpipe/FDC loss. The required pump pressure is 145 PSI.",
-      "explainMistake": "Do not add friction loss for both equal FDC supply lines together. Parallel supply lines split the flow, and one complete supply path governs the pump pressure."
-    },
-    {
-      "id": "hotel_standpipe_fire_operation_p6",
-      "title": "FDC Supply Hose Count",
-      "question": "How many hoses from Engine 181 are connected directly to the hotel FDC?",
-      "answerLabel": "FDC Supply Hoses",
-      "answerUnit": "hoses",
-      "inputLabel": "Enter number of hoses",
-      "inputPlaceholder": "whole number",
-      "answerValue": 2,
-      "correctPP": 0,
-      "tolerance": 0,
-      "answers": {
-        "frictionLoss": 0,
-        "nozzlePressure": 0,
-        "elevation": 0,
-        "applianceLoss": 0,
-        "totalGpm": 0,
-        "pumpPressure": 0,
-        "tolerance": 0
-      },
-      "overlays": [
-        {
-          "label": "Engine 181",
-          "x": 24,
-          "y": 66
-        },
-        {
-          "label": "FDC line A",
-          "x": 55,
-          "y": 75
-        },
-        {
-          "label": "FDC line B",
-          "x": 60,
-          "y": 73
-        },
-        {
-          "label": "Hotel FDC",
-          "x": 75,
-          "y": 69
-        }
-      ],
-      "formulaBreakdown": [
-        "The scene shows two hoses from Engine 181 to the hotel FDC.",
-        "FDC supply hoses = 2."
-      ],
-      "instructorExplanation": "The hydrant supplies Engine 181, and Engine 181 supplies the hotel FDC with two separate hose lines.",
-      "explainMistake": "Do not count the hydrant supply hose as an FDC supply hose. The FDC is supplied by the two hoses from Engine 181."
+      "instructorExplanation": "For this standpipe operation, calculate one complete supply path from Engine 181 to the FDC, through the standpipe, and through the interior attack line. Add the FDC supply line friction loss, interior hose friction loss, nozzle pressure, elevation, and standpipe/FDC loss. The required pump discharge pressure is 145 PSI.",
+      "explainMistake": "Do not add friction loss for both equal FDC supply lines together. Parallel supply lines split the flow, and one complete supply path governs the pump discharge pressure."
     }
   ],
   "tags": [
