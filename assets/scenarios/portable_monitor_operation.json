@@ -1,0 +1,160 @@
+{
+  "id": "portable_monitor_operation",
+  "title": "Portable Monitor Operation",
+  "difficulty": "advanced",
+  "category": "master_stream",
+  "type": "pump",
+  "image": "portable_monitor_operation.png",
+  "imageRatio": "4:7",
+  "recommendedImageSize": "1080x1890",
+  "sceneElements": {
+    "engine": "Engine 181",
+    "hoses": [
+      "Supply line from hydrant to Engine 181 intake",
+      "Line A: 200 ft of 2.5-inch hose from Engine 181 discharge to portable monitor",
+      "Line B: 200 ft of 2.5-inch hose from Engine 181 discharge to portable monitor"
+    ],
+    "nozzles": [
+      "Portable monitor with 1 3/4-inch smooth bore tip",
+      "Master stream nozzle pressure: 80 PSI"
+    ],
+    "appliances": [
+      "Portable monitor appliance loss: 25 PSI"
+    ],
+    "elevation": "Level parking lot operation, 0 PSI elevation correction"
+  },
+  "problems": [
+    {
+      "id": "portable_monitor_operation_p1",
+      "title": "Master Stream Flow",
+      "question": "Given the portable monitor setup shown, determine the master stream flow.",
+      "answerLabel": "Master Stream Flow",
+      "answerUnit": "GPM",
+      "inputLabel": "Enter master stream flow",
+      "inputPlaceholder": "GPM",
+      "answerValue": 815,
+      "correctPP": 0,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 65,
+        "nozzlePressure": 80,
+        "elevation": 0,
+        "applianceLoss": 25,
+        "totalGpm": 815,
+        "pumpPressure": 0,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Hydrant", "x": 11, "y": 72 },
+        { "label": "Engine 181", "x": 28, "y": 62 },
+        { "label": "Monitor", "x": 72, "y": 49 },
+        { "label": "Fire", "x": 82, "y": 31 }
+      ],
+      "formulaBreakdown": [
+        "Smooth bore flow formula: GPM = 29.7 × d² × √NP.",
+        "Tip diameter = 1.75 inches.",
+        "Master stream nozzle pressure = 80 PSI.",
+        "GPM = 29.7 × 1.75² × √80.",
+        "GPM = 29.7 × 3.0625 × 8.944.",
+        "GPM = 813.6.",
+        "Rounded master stream flow = 815 GPM."
+      ],
+      "instructorExplanation": "The portable monitor is using a smooth bore tip. Smooth bore flow is calculated using tip diameter and nozzle pressure. A 1 3/4-inch tip at 80 PSI produces approximately 815 GPM.",
+      "explainMistake": "Do not use handline fog nozzle flow values for this question. A portable monitor with a smooth bore tip uses the smooth bore flow formula."
+    },
+    {
+      "id": "portable_monitor_operation_p2",
+      "title": "Line A Flow",
+      "question": "How much water is flowing through Line A while supplying the portable monitor?",
+      "answerLabel": "Line A Flow",
+      "answerUnit": "GPM",
+      "inputLabel": "Enter Line A flow",
+      "inputPlaceholder": "GPM",
+      "answerValue": 408,
+      "correctPP": 0,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 65,
+        "nozzlePressure": 80,
+        "elevation": 0,
+        "applianceLoss": 25,
+        "totalGpm": 815,
+        "pumpPressure": 0,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Engine 181", "x": 28, "y": 62 },
+        { "label": "Line A", "x": 58, "y": 65 },
+        { "label": "Line B", "x": 66, "y": 72 },
+        { "label": "Monitor", "x": 72, "y": 49 }
+      ],
+      "formulaBreakdown": [
+        "Total monitor flow = 815 GPM.",
+        "The monitor is supplied by two equal supply lines.",
+        "Line A flow = total monitor flow ÷ number of supply lines.",
+        "Line A flow = 815 ÷ 2.",
+        "Line A flow = 407.5 GPM.",
+        "Rounded Line A flow = 408 GPM."
+      ],
+      "instructorExplanation": "The portable monitor flow is divided between two equal supply lines. Line A carries half of the total monitor flow.",
+      "explainMistake": "Do not place the full monitor flow in Line A. Because the monitor is supplied by two equal lines, each line carries one-half of the total flow."
+    },
+    {
+      "id": "portable_monitor_operation_p3",
+      "title": "Pump Discharge Pressure",
+      "question": "Determine the required pump discharge pressure for the portable monitor operation shown.",
+      "answerLabel": "Pump Pressure",
+      "answerUnit": "PSI",
+      "inputLabel": "Enter pump discharge pressure",
+      "inputPlaceholder": "PSI",
+      "answerValue": 170,
+      "correctPP": 170,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 65,
+        "nozzlePressure": 80,
+        "elevation": 0,
+        "applianceLoss": 25,
+        "totalGpm": 815,
+        "pumpPressure": 170,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Hydrant", "x": 11, "y": 72 },
+        { "label": "Engine 181", "x": 28, "y": 62 },
+        { "label": "Line A", "x": 58, "y": 65 },
+        { "label": "Line B", "x": 66, "y": 72 },
+        { "label": "Monitor", "x": 72, "y": 49 }
+      ],
+      "formulaBreakdown": [
+        "PP = FL + NP + elevation + appliance loss.",
+        "Total monitor flow = 815 GPM.",
+        "Flow is split between two equal supply lines.",
+        "Flow per line = 815 ÷ 2 = 407.5 GPM.",
+        "FL = C × (GPM / 100)^2 × hose length in hundreds.",
+        "Line A and Line B use 2.5-inch hose, so C = 2.",
+        "Each supply line length = 200 ft = 2 hundreds.",
+        "FL = 2 × (407.5 / 100)^2 × 2.",
+        "FL = 66.4 PSI.",
+        "Round FL to nearest 5 PSI: 65 PSI.",
+        "Nozzle pressure = 80 PSI.",
+        "Elevation = 0 PSI.",
+        "Portable monitor appliance loss = 25 PSI.",
+        "PP = 65 + 80 + 0 + 25.",
+        "PP = 170 PSI."
+      ],
+      "instructorExplanation": "For a portable monitor supplied by two equal lines, calculate the friction loss for one supply line using half of the total monitor flow. Since both lines are equal, either line gives the governing friction loss. Add nozzle pressure and appliance loss to get the required pump discharge pressure.",
+      "explainMistake": "Do not calculate friction loss using the full monitor flow through one hose. The total flow is split between Line A and Line B before reaching the portable monitor."
+    }
+  ],
+  "tags": [
+    "portable_monitor",
+    "master_stream",
+    "smooth_bore",
+    "line_a",
+    "line_b",
+    "pump_pressure",
+    "engine_181",
+    "warehouse_fire"
+  ]
+}

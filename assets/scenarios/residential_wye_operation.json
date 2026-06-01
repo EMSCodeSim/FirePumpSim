@@ -1,0 +1,157 @@
+{
+  "id": "residential_wye_operation",
+  "title": "Residential Structure Fire – Wye Operation",
+  "difficulty": "intermediate",
+  "category": "wye",
+  "type": "pump",
+  "image": "residential_wye_operation.png",
+  "imageRatio": "4:7",
+  "recommendedImageSize": "1080x1890",
+  "sceneElements": {
+    "engine": "Engine 181",
+    "hoses": [
+      "Supply: Hydrant to Engine 181 intake",
+      "Main line: 200 ft of 2.5-inch hose from Engine 181 discharge to wye",
+      "Branch A: 150 ft of 1.75-inch hose from wye to front door nozzle",
+      "Branch B: 200 ft of 1.75-inch hose from wye to Alpha-side nozzle"
+    ],
+    "nozzles": [
+      "Branch A: ChiefXD 185 fog nozzle, 185 GPM @ 50 PSI",
+      "Branch B: ChiefXD 185 fog nozzle, 185 GPM @ 50 PSI"
+    ],
+    "appliances": [
+      "Wye appliance, 10 PSI appliance loss"
+    ],
+    "elevation": "Grade-level operation, 0 PSI elevation correction"
+  },
+  "problems": [
+    {
+      "id": "residential_wye_operation_p1",
+      "title": "Branch A Friction Loss",
+      "question": "What is the friction loss in Branch A?",
+      "answerLabel": "Branch A Friction Loss",
+      "answerUnit": "PSI",
+      "inputLabel": "Enter Branch A friction loss",
+      "inputPlaceholder": "PSI",
+      "answerValue": 80,
+      "correctPP": 0,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 80,
+        "nozzlePressure": 50,
+        "elevation": 0,
+        "applianceLoss": 10,
+        "totalGpm": 185,
+        "pumpPressure": 0,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Engine 181", "x": 30, "y": 61 },
+        { "label": "Wye", "x": 63, "y": 58 },
+        { "label": "Branch A", "x": 58, "y": 44 },
+        { "label": "Front door", "x": 56, "y": 36 }
+      ],
+      "formulaBreakdown": [
+        "FL = C × (GPM / 100)^2 × hose length in hundreds.",
+        "Branch A uses 1.75-inch hose, so C = 15.5.",
+        "Branch A flow = 185 GPM.",
+        "Branch A hose length = 150 ft = 1.5 hundreds.",
+        "FL = 15.5 × (185 / 100)^2 × 1.5.",
+        "FL = 15.5 × 3.4225 × 1.5.",
+        "FL = 79.6 PSI.",
+        "Round to nearest 5 PSI: 80 PSI."
+      ],
+      "instructorExplanation": "Branch A is calculated independently from the wye to the nozzle. Using 150 ft of 1.75-inch hose at 185 GPM gives 79.6 PSI, which rounds to 80 PSI.",
+      "explainMistake": "Do not include the main line friction loss or the wye appliance loss when the question asks only for Branch A friction loss. Calculate Branch A by itself from the wye to the nozzle."
+    },
+    {
+      "id": "residential_wye_operation_p2",
+      "title": "Branch B Friction Loss",
+      "question": "What is the friction loss in Branch B?",
+      "answerLabel": "Branch B Friction Loss",
+      "answerUnit": "PSI",
+      "inputLabel": "Enter Branch B friction loss",
+      "inputPlaceholder": "PSI",
+      "answerValue": 105,
+      "correctPP": 0,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 105,
+        "nozzlePressure": 50,
+        "elevation": 0,
+        "applianceLoss": 10,
+        "totalGpm": 185,
+        "pumpPressure": 0,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Engine 181", "x": 30, "y": 61 },
+        { "label": "Wye", "x": 63, "y": 58 },
+        { "label": "Branch B", "x": 78, "y": 47 },
+        { "label": "Alpha side", "x": 84, "y": 39 }
+      ],
+      "formulaBreakdown": [
+        "FL = C × (GPM / 100)^2 × hose length in hundreds.",
+        "Branch B uses 1.75-inch hose, so C = 15.5.",
+        "Branch B flow = 185 GPM.",
+        "Branch B hose length = 200 ft = 2 hundreds.",
+        "FL = 15.5 × (185 / 100)^2 × 2.",
+        "FL = 15.5 × 3.4225 × 2.",
+        "FL = 106.1 PSI.",
+        "Round to nearest 5 PSI: 105 PSI."
+      ],
+      "instructorExplanation": "Branch B is the longer branch line. At 200 ft of 1.75-inch hose flowing 185 GPM, the friction loss is 106.1 PSI, which rounds to 105 PSI.",
+      "explainMistake": "Do not use the Branch A length for Branch B. Each branch must be calculated separately, and the longer branch will have more friction loss at the same flow."
+    },
+    {
+      "id": "residential_wye_operation_p3",
+      "title": "Main Line Friction Loss",
+      "question": "What is the friction loss in the main line supplying the wye?",
+      "answerLabel": "Main Line Friction Loss",
+      "answerUnit": "PSI",
+      "inputLabel": "Enter main line friction loss",
+      "inputPlaceholder": "PSI",
+      "answerValue": 55,
+      "correctPP": 0,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 55,
+        "nozzlePressure": 0,
+        "elevation": 0,
+        "applianceLoss": 10,
+        "totalGpm": 370,
+        "pumpPressure": 0,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Engine 181", "x": 30, "y": 61 },
+        { "label": "Main line", "x": 47, "y": 63 },
+        { "label": "Wye", "x": 63, "y": 58 },
+        { "label": "Two branches", "x": 72, "y": 49 }
+      ],
+      "formulaBreakdown": [
+        "FL = C × (GPM / 100)^2 × hose length in hundreds.",
+        "Main line uses 2.5-inch hose, so C = 2.",
+        "Main line supplies both branches.",
+        "Total main line flow = 185 GPM + 185 GPM = 370 GPM.",
+        "Main line hose length = 200 ft = 2 hundreds.",
+        "FL = 2 × (370 / 100)^2 × 2.",
+        "FL = 2 × 13.69 × 2.",
+        "FL = 54.8 PSI.",
+        "Round to nearest 5 PSI: 55 PSI."
+      ],
+      "instructorExplanation": "The main line carries the combined flow of both branches. Since each branch flows 185 GPM, the main line flow is 370 GPM. Using 200 ft of 2.5-inch hose gives 54.8 PSI, rounded to 55 PSI.",
+      "explainMistake": "Do not calculate the main line using only one branch flow. The main line supplies the wye, so it carries the total flow of both Branch A and Branch B."
+    }
+  ],
+  "tags": [
+    "wye",
+    "branch_a",
+    "branch_b",
+    "main_line",
+    "friction_loss",
+    "engine_181",
+    "residential_fire",
+    "driver_operator"
+  ]
+}

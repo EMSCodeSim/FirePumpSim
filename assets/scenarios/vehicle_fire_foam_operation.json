@@ -1,0 +1,222 @@
+{
+  "id": "vehicle_fire_foam_operation",
+  "title": "Vehicle Fire Foam Operation",
+  "difficulty": "advanced",
+  "category": "vehicle_fire",
+  "type": "pump",
+  "image": "vehicle_fire_foam_operation.png",
+  "imageRatio": "4:7",
+  "recommendedImageSize": "1080x1890",
+  "sceneElements": {
+    "engine": "Engine 181",
+    "hoses": [
+      "Supply line from hydrant to Engine 181 intake",
+      "Pre-eductor attack hose: 100 ft of 1.75-inch hose from Engine 181 discharge to foam eductor",
+      "Post-eductor attack hose: 100 ft of 1.75-inch hose from foam eductor to foam nozzle"
+    ],
+    "nozzles": [
+      "Foam nozzle matched to eductor flow"
+    ],
+    "appliances": [
+      "In-line foam eductor rated at 95 GPM",
+      "Foam eductor required inlet pressure: 200 PSI",
+      "Yellow foam concentrate bucket with lid and pickup tube",
+      "Foam concentrate proportion: 3%"
+    ],
+    "elevation": "Level roadside operation, 0 PSI elevation correction"
+  },
+  "problems": [
+    {
+      "id": "vehicle_fire_foam_operation_p1",
+      "title": "Total Flow Requirement",
+      "question": "What is the total flow requirement for the foam operation shown?",
+      "answerLabel": "Total Flow",
+      "answerUnit": "GPM",
+      "inputLabel": "Enter total flow",
+      "inputPlaceholder": "GPM",
+      "answerValue": 95,
+      "correctPP": 0,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 0,
+        "nozzlePressure": 0,
+        "elevation": 0,
+        "applianceLoss": 0,
+        "totalGpm": 95,
+        "pumpPressure": 0,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Hydrant", "x": 12, "y": 78 },
+        { "label": "Engine 181", "x": 28, "y": 44 },
+        { "label": "Foam eductor", "x": 63, "y": 71 },
+        { "label": "Vehicle fire", "x": 82, "y": 38 }
+      ],
+      "formulaBreakdown": [
+        "The foam eductor controls the operating flow.",
+        "Foam eductor rated flow = 95 GPM.",
+        "Total flow requirement = 95 GPM."
+      ],
+      "instructorExplanation": "The foam operation is built around the rated flow of the in-line foam eductor. Since the eductor is rated at 95 GPM, the total flow requirement is 95 GPM.",
+      "explainMistake": "Do not use a standard handline flow unless the nozzle or eductor rating calls for it. In this setup, the foam eductor rating determines the flow."
+    },
+    {
+      "id": "vehicle_fire_foam_operation_p2",
+      "title": "Foam Eductor Inlet Pressure",
+      "question": "What pressure must be supplied at the foam eductor inlet?",
+      "answerLabel": "Eductor Inlet Pressure",
+      "answerUnit": "PSI",
+      "inputLabel": "Enter eductor inlet pressure",
+      "inputPlaceholder": "PSI",
+      "answerValue": 200,
+      "correctPP": 0,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 0,
+        "nozzlePressure": 0,
+        "elevation": 0,
+        "applianceLoss": 200,
+        "totalGpm": 95,
+        "pumpPressure": 0,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Engine 181", "x": 28, "y": 44 },
+        { "label": "Foam eductor", "x": 63, "y": 71 },
+        { "label": "Foam bucket", "x": 66, "y": 80 },
+        { "label": "Vehicle fire", "x": 82, "y": 38 }
+      ],
+      "formulaBreakdown": [
+        "The scenario information gives the foam eductor required inlet pressure.",
+        "Foam eductor required inlet pressure = 200 PSI."
+      ],
+      "instructorExplanation": "The in-line foam eductor must receive its rated inlet pressure to proportion foam correctly. For this operation, that required inlet pressure is 200 PSI.",
+      "explainMistake": "Do not confuse eductor inlet pressure with total pump discharge pressure. The pump must also overcome friction loss between the engine and the eductor."
+    },
+    {
+      "id": "vehicle_fire_foam_operation_p3",
+      "title": "Pre-Eductor Friction Loss",
+      "question": "How much friction loss is present in the hose section between Engine 181 and the foam eductor?",
+      "answerLabel": "Pre-Eductor Friction Loss",
+      "answerUnit": "PSI",
+      "inputLabel": "Enter friction loss",
+      "inputPlaceholder": "PSI",
+      "answerValue": 15,
+      "correctPP": 0,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 15,
+        "nozzlePressure": 0,
+        "elevation": 0,
+        "applianceLoss": 0,
+        "totalGpm": 95,
+        "pumpPressure": 0,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Engine 181", "x": 28, "y": 44 },
+        { "label": "Pre-eductor hose", "x": 47, "y": 63 },
+        { "label": "Foam eductor", "x": 63, "y": 71 }
+      ],
+      "formulaBreakdown": [
+        "FL = C × (GPM / 100)^2 × hose length in hundreds.",
+        "Pre-eductor hose uses 1.75-inch hose, so C = 15.5.",
+        "Flow = 95 GPM.",
+        "Pre-eductor hose length = 100 ft = 1 hundred.",
+        "FL = 15.5 × (95 / 100)^2 × 1.",
+        "FL = 15.5 × 0.9025 × 1.",
+        "FL = 14.0 PSI.",
+        "Round to nearest 5 PSI: 15 PSI."
+      ],
+      "instructorExplanation": "Only the hose between Engine 181 and the foam eductor is included for this friction loss question. At 95 GPM through 100 ft of 1.75-inch hose, the friction loss rounds to 15 PSI.",
+      "explainMistake": "Do not include the hose after the eductor when calculating pre-eductor friction loss. The question asks only for the hose section before the foam eductor."
+    },
+    {
+      "id": "vehicle_fire_foam_operation_p4",
+      "title": "Pump Discharge Pressure",
+      "question": "Determine the required pump discharge pressure for the foam operation shown.",
+      "answerLabel": "Pump Pressure",
+      "answerUnit": "PSI",
+      "inputLabel": "Enter pump discharge pressure",
+      "inputPlaceholder": "PSI",
+      "answerValue": 215,
+      "correctPP": 215,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 15,
+        "nozzlePressure": 0,
+        "elevation": 0,
+        "applianceLoss": 200,
+        "totalGpm": 95,
+        "pumpPressure": 215,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Hydrant", "x": 12, "y": 78 },
+        { "label": "Engine 181", "x": 28, "y": 44 },
+        { "label": "Foam eductor", "x": 63, "y": 71 },
+        { "label": "Vehicle fire", "x": 82, "y": 38 }
+      ],
+      "formulaBreakdown": [
+        "Foam operation PP = pre-eductor FL + required eductor inlet pressure + elevation.",
+        "Pre-eductor friction loss = 15 PSI.",
+        "Required foam eductor inlet pressure = 200 PSI.",
+        "Elevation = 0 PSI.",
+        "PP = 15 + 200 + 0.",
+        "PP = 215 PSI."
+      ],
+      "instructorExplanation": "Engine 181 must overcome friction loss before the foam eductor and still deliver the required inlet pressure to the eductor. The required pump discharge pressure is 215 PSI.",
+      "explainMistake": "Do not set the pump at only 200 PSI. The eductor needs 200 PSI at its inlet, so the pump must also overcome the friction loss between the engine and the eductor."
+    },
+    {
+      "id": "vehicle_fire_foam_operation_p5",
+      "title": "Foam Concentrate Needed",
+      "question": "How many gallons of foam concentrate are needed for the assigned operating period?",
+      "answerLabel": "Foam Concentrate",
+      "answerUnit": "gal",
+      "inputLabel": "Enter foam concentrate",
+      "inputPlaceholder": "gal",
+      "answerValue": 28.5,
+      "correctPP": 0,
+      "tolerance": 0.5,
+      "answers": {
+        "frictionLoss": 0,
+        "nozzlePressure": 0,
+        "elevation": 0,
+        "applianceLoss": 0,
+        "totalGpm": 95,
+        "pumpPressure": 0,
+        "tolerance": 0.5
+      },
+      "overlays": [
+        { "label": "Foam eductor", "x": 63, "y": 71 },
+        { "label": "Pickup tube", "x": 66, "y": 76 },
+        { "label": "Foam bucket", "x": 66, "y": 80 },
+        { "label": "Vehicle fire", "x": 82, "y": 38 }
+      ],
+      "formulaBreakdown": [
+        "Foam solution used = flow × time.",
+        "Flow = 95 GPM.",
+        "Assigned operating time = 10 minutes.",
+        "Foam solution used = 95 × 10.",
+        "Foam solution used = 950 gallons.",
+        "Foam concentrate rate = 3%.",
+        "Foam concentrate needed = 950 × 0.03.",
+        "Foam concentrate needed = 28.5 gallons."
+      ],
+      "instructorExplanation": "Foam concentrate use is based on total foam solution flow and the selected foam percentage. At 95 GPM for 10 minutes using 3% foam, the operation requires 28.5 gallons of concentrate.",
+      "explainMistake": "Do not use the water supply hose size or pump pressure to calculate concentrate use. Foam concentrate is calculated from flow, time, and foam percentage."
+    }
+  ],
+  "tags": [
+    "vehicle_fire",
+    "foam_operation",
+    "foam_eductor",
+    "foam_concentrate",
+    "engine_181",
+    "hydrant_supply",
+    "pump_pressure",
+    "friction_loss",
+    "driver_operator"
+  ]
+}

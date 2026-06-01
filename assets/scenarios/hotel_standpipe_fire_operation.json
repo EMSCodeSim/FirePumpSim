@@ -1,0 +1,264 @@
+{
+  "filename": "hotel_standpipe_fire_operation.json",
+  "id": "hotel_standpipe_fire_operation",
+  "title": "Hotel Standpipe Fire Operation",
+  "difficulty": "advanced",
+  "category": "standpipe",
+  "type": "pump",
+  "image": "hotel_standpipe_fire_operation.png",
+  "imageRatio": "4:7",
+  "recommendedImageSize": "1080x1890",
+  "sceneElements": {
+    "engine": "Engine 181",
+    "hoses": [
+      "Hydrant supply hose from hydrant to Engine 181 intake",
+      "FDC supply line A: 100 ft of 2.5-inch hose from Engine 181 discharge to hotel FDC inlet A",
+      "FDC supply line B: 100 ft of 2.5-inch hose from Engine 181 discharge to hotel FDC inlet B",
+      "Interior attack line A: 150 ft of 2.5-inch hose from 8th-floor standpipe outlet to fire room",
+      "Interior attack line B: 150 ft of 2.5-inch hose from 8th-floor standpipe outlet to fire room"
+    ],
+    "nozzles": [
+      "Interior attack line A with 1 1/8-inch smooth bore nozzle, 265 GPM @ 50 PSI",
+      "Interior attack line B with 1 1/8-inch smooth bore nozzle, 265 GPM @ 50 PSI"
+    ],
+    "appliances": [
+      "Hotel FDC on exterior wall near main entrance",
+      "Building standpipe system"
+    ],
+    "elevation": "Fire room is on the 8th floor, requiring 35 PSI elevation pressure"
+  },
+  "problems": [
+    {
+      "id": "hotel_standpipe_fire_operation_p1",
+      "title": "Total Standpipe Flow",
+      "question": "Engine 181 is supplying two interior standpipe attack lines. Each line flows 265 GPM. What is the total flow for this standpipe operation?",
+      "answerLabel": "Total Flow",
+      "answerUnit": "GPM",
+      "inputLabel": "Enter total flow",
+      "inputPlaceholder": "GPM",
+      "answerValue": 530,
+      "correctPP": 0,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 0,
+        "nozzlePressure": 50,
+        "elevation": 35,
+        "applianceLoss": 25,
+        "totalGpm": 530,
+        "pumpPressure": 0,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Hydrant", "x": 13, "y": 85 },
+        { "label": "Engine 181", "x": 24, "y": 66 },
+        { "label": "Hotel FDC", "x": 75, "y": 69 },
+        { "label": "Main entrance", "x": 55, "y": 65 },
+        { "label": "8th floor fire", "x": 65, "y": 12 }
+      ],
+      "formulaBreakdown": [
+        "Total flow = attack line A flow + attack line B flow.",
+        "Attack line A = 265 GPM.",
+        "Attack line B = 265 GPM.",
+        "Total flow = 265 + 265.",
+        "Total flow = 530 GPM."
+      ],
+      "instructorExplanation": "The engine is supplying two interior standpipe attack lines. Add both attack line flows to get the total system flow of 530 GPM.",
+      "explainMistake": "Do not count only one attack line. Both interior lines are supplied through the standpipe system."
+    },
+    {
+      "id": "hotel_standpipe_fire_operation_p2",
+      "title": "Flow Per FDC Supply Line",
+      "question": "Engine 181 is supplying the hotel FDC with two equal supply lines. The total standpipe flow is 530 GPM. How much flow is carried by each FDC supply line?",
+      "answerLabel": "Flow Per Line",
+      "answerUnit": "GPM",
+      "inputLabel": "Enter flow per line",
+      "inputPlaceholder": "GPM",
+      "answerValue": 265,
+      "correctPP": 0,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 0,
+        "nozzlePressure": 50,
+        "elevation": 35,
+        "applianceLoss": 25,
+        "totalGpm": 530,
+        "pumpPressure": 0,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Engine 181", "x": 24, "y": 66 },
+        { "label": "FDC line A", "x": 55, "y": 75 },
+        { "label": "FDC line B", "x": 60, "y": 73 },
+        { "label": "Hotel FDC", "x": 75, "y": 69 }
+      ],
+      "formulaBreakdown": [
+        "Flow per FDC line = total standpipe flow / number of FDC supply lines.",
+        "Total standpipe flow = 530 GPM.",
+        "Number of FDC supply lines = 2.",
+        "Flow per FDC line = 530 / 2.",
+        "Flow per FDC line = 265 GPM."
+      ],
+      "instructorExplanation": "The two FDC supply lines split the total standpipe flow equally. Each FDC supply line carries 265 GPM.",
+      "explainMistake": "Do not calculate each FDC supply line using the full 530 GPM. The two supply lines share the flow."
+    },
+    {
+      "id": "hotel_standpipe_fire_operation_p3",
+      "title": "FDC Supply Line Friction Loss",
+      "question": "Each FDC supply line is 100 ft of 2.5-inch hose flowing 265 GPM. What is the friction loss in each FDC supply line?",
+      "answerLabel": "Friction Loss",
+      "answerUnit": "PSI",
+      "inputLabel": "Enter friction loss",
+      "inputPlaceholder": "PSI",
+      "answerValue": 15,
+      "correctPP": 0,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 15,
+        "nozzlePressure": 50,
+        "elevation": 35,
+        "applianceLoss": 25,
+        "totalGpm": 265,
+        "pumpPressure": 0,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Engine 181", "x": 24, "y": 66 },
+        { "label": "FDC line A", "x": 55, "y": 75 },
+        { "label": "FDC line B", "x": 60, "y": 73 },
+        { "label": "Hotel FDC", "x": 75, "y": 69 }
+      ],
+      "formulaBreakdown": [
+        "FL = C x (GPM / 100)^2 x hose length in hundreds.",
+        "C for 2.5-inch hose = 2.",
+        "Flow per FDC line = 265 GPM.",
+        "Hose length = 100 ft = 1 hundred.",
+        "FL = 2 x (265 / 100)^2 x 1.",
+        "FL = 2 x 7.02 x 1.",
+        "FL = 14.04 PSI.",
+        "Round to nearest 5 PSI: 15 PSI."
+      ],
+      "instructorExplanation": "Each FDC supply line carries 265 GPM. At 265 GPM through 100 ft of 2.5-inch hose, friction loss rounds to 15 PSI.",
+      "explainMistake": "Do not use the total 530 GPM in one FDC supply line. Each line carries half of the total flow."
+    },
+    {
+      "id": "hotel_standpipe_fire_operation_p4",
+      "title": "Standpipe Elevation Pressure",
+      "question": "The fire room is on the 8th floor. Using 5 PSI per floor above the 1st floor, what elevation pressure must be added?",
+      "answerLabel": "Elevation Pressure",
+      "answerUnit": "PSI",
+      "inputLabel": "Enter elevation pressure",
+      "inputPlaceholder": "PSI",
+      "answerValue": 35,
+      "correctPP": 0,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 0,
+        "nozzlePressure": 50,
+        "elevation": 35,
+        "applianceLoss": 0,
+        "totalGpm": 530,
+        "pumpPressure": 0,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Engine 181", "x": 24, "y": 66 },
+        { "label": "Hotel FDC", "x": 75, "y": 69 },
+        { "label": "8th floor fire", "x": 65, "y": 12 }
+      ],
+      "formulaBreakdown": [
+        "Elevation pressure = floors above 1st floor x 5 PSI.",
+        "8th floor is 7 floors above the 1st floor.",
+        "Elevation pressure = 7 x 5.",
+        "Elevation pressure = 35 PSI."
+      ],
+      "instructorExplanation": "The 8th floor is seven floors above the 1st floor. At 5 PSI per floor, the standpipe operation requires 35 PSI for elevation.",
+      "explainMistake": "Do not add 5 PSI for the 1st floor. The 1st floor is the baseline elevation."
+    },
+    {
+      "id": "hotel_standpipe_fire_operation_p5",
+      "title": "Standpipe Pump Pressure",
+      "question": "Engine 181 is supplying the hotel FDC with two 100 ft 2.5-inch lines. The fire is on the 8th floor. Each interior attack line is 150 ft of 2.5-inch hose flowing 265 GPM through a 1 1/8-inch smooth bore nozzle. Use 15 PSI FDC supply line friction loss, 20 PSI interior attack line friction loss, 50 PSI nozzle pressure, 35 PSI elevation, and 25 PSI standpipe/FDC loss. What pump discharge pressure should Engine 181 set?",
+      "answerLabel": "Pump Pressure",
+      "answerUnit": "PSI",
+      "inputLabel": "Enter pump discharge pressure",
+      "inputPlaceholder": "PSI",
+      "answerValue": 145,
+      "correctPP": 145,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 35,
+        "nozzlePressure": 50,
+        "elevation": 35,
+        "applianceLoss": 25,
+        "totalGpm": 530,
+        "pumpPressure": 145,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Hydrant", "x": 13, "y": 85 },
+        { "label": "Engine 181", "x": 24, "y": 66 },
+        { "label": "Hotel FDC", "x": 75, "y": 69 },
+        { "label": "8th floor fire", "x": 65, "y": 12 }
+      ],
+      "formulaBreakdown": [
+        "PP = FL + NP + elevation + appliance loss.",
+        "Friction loss = FDC supply line FL + interior attack line FL.",
+        "Friction loss = 15 + 20 = 35 PSI.",
+        "Nozzle pressure = 50 PSI.",
+        "Elevation pressure = 35 PSI.",
+        "Standpipe/FDC loss = 25 PSI.",
+        "PP = 35 + 50 + 35 + 25.",
+        "PP = 145 PSI."
+      ],
+      "instructorExplanation": "For this standpipe operation, calculate one complete supply path from Engine 181 to the FDC, through the standpipe, and through the interior attack line. Add the FDC supply line friction loss, interior hose friction loss, nozzle pressure, elevation, and standpipe/FDC loss. The required pump pressure is 145 PSI.",
+      "explainMistake": "Do not add friction loss for both equal FDC supply lines together. Parallel supply lines split the flow, and one complete supply path governs the pump pressure."
+    },
+    {
+      "id": "hotel_standpipe_fire_operation_p6",
+      "title": "FDC Supply Hose Count",
+      "question": "How many hoses from Engine 181 are connected directly to the hotel FDC?",
+      "answerLabel": "FDC Supply Hoses",
+      "answerUnit": "hoses",
+      "inputLabel": "Enter number of hoses",
+      "inputPlaceholder": "whole number",
+      "answerValue": 2,
+      "correctPP": 0,
+      "tolerance": 0,
+      "answers": {
+        "frictionLoss": 0,
+        "nozzlePressure": 0,
+        "elevation": 0,
+        "applianceLoss": 0,
+        "totalGpm": 0,
+        "pumpPressure": 0,
+        "tolerance": 0
+      },
+      "overlays": [
+        { "label": "Engine 181", "x": 24, "y": 66 },
+        { "label": "FDC line A", "x": 55, "y": 75 },
+        { "label": "FDC line B", "x": 60, "y": 73 },
+        { "label": "Hotel FDC", "x": 75, "y": 69 }
+      ],
+      "formulaBreakdown": [
+        "The scene shows two hoses from Engine 181 to the hotel FDC.",
+        "FDC supply hoses = 2."
+      ],
+      "instructorExplanation": "The hydrant supplies Engine 181, and Engine 181 supplies the hotel FDC with two separate hose lines.",
+      "explainMistake": "Do not count the hydrant supply hose as an FDC supply hose. The FDC is supplied by the two hoses from Engine 181."
+    }
+  ],
+  "tags": [
+    "hotel_standpipe",
+    "standpipe",
+    "fdc",
+    "engine_181",
+    "hydrant_supply",
+    "hotel_fire",
+    "8th_floor",
+    "interior_attack",
+    "pump_pressure",
+    "elevation",
+    "friction_loss",
+    "driver_operator"
+  ]
+}

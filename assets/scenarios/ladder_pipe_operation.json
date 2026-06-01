@@ -1,0 +1,259 @@
+{
+  "filename": "ladder_pipe_operation.json",
+  "id": "ladder_pipe_operation",
+  "title": "Ladder Pipe Operation",
+  "difficulty": "advanced",
+  "category": "master_stream",
+  "type": "pump",
+  "image": "ladder_pipe_operation.png",
+  "imageRatio": "4:7",
+  "recommendedImageSize": "1080x1890",
+  "sceneElements": {
+    "engine": "Engine 181",
+    "hoses": [
+      "Hydrant supply hose from hydrant to Engine 181 intake",
+      "Ladder supply line A: 200 ft of 2.5-inch hose from Engine 181 discharge to ladder truck intake",
+      "Ladder supply line B: 200 ft of 2.5-inch hose from Engine 181 discharge to ladder truck intake"
+    ],
+    "nozzles": [
+      "Aerial ladder pipe master stream, 750 GPM @ 80 PSI"
+    ],
+    "appliances": [
+      "Ladder truck aerial waterway",
+      "Ladder pipe nozzle at the tip of the aerial ladder"
+    ],
+    "elevation": "Ladder pipe nozzle is 60 ft above Engine 181, requiring 30 PSI elevation pressure"
+  },
+  "problems": [
+    {
+      "id": "ladder_pipe_operation_p1",
+      "title": "Total Ladder Pipe Flow",
+      "question": "Engine 181 is supplying a ladder pipe flowing 750 GPM. What is the total flow for the ladder pipe operation?",
+      "answerLabel": "Total Flow",
+      "answerUnit": "GPM",
+      "inputLabel": "Enter total flow",
+      "inputPlaceholder": "GPM",
+      "answerValue": 750,
+      "correctPP": 0,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 0,
+        "nozzlePressure": 80,
+        "elevation": 30,
+        "applianceLoss": 25,
+        "totalGpm": 750,
+        "pumpPressure": 0,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Hydrant", "x": 13, "y": 83 },
+        { "label": "Engine 181", "x": 34, "y": 64 },
+        { "label": "Ladder truck", "x": 74, "y": 49 },
+        { "label": "Ladder pipe", "x": 45, "y": 10 },
+        { "label": "Fire area", "x": 31, "y": 18 }
+      ],
+      "formulaBreakdown": [
+        "The ladder pipe operation is flowing 750 GPM.",
+        "Total flow = 750 GPM."
+      ],
+      "instructorExplanation": "The total flow is the amount being delivered through the aerial ladder pipe. In this operation, the ladder pipe flow is 750 GPM.",
+      "explainMistake": "Do not divide the ladder pipe flow unless the question asks for flow per supply line."
+    },
+    {
+      "id": "ladder_pipe_operation_p2",
+      "title": "Flow Per Ladder Supply Line",
+      "question": "Engine 181 supplies the ladder truck with two equal supply lines. The ladder pipe is flowing 750 GPM total. How much flow is carried by each supply line?",
+      "answerLabel": "Flow Per Line",
+      "answerUnit": "GPM",
+      "inputLabel": "Enter flow per line",
+      "inputPlaceholder": "GPM",
+      "answerValue": 375,
+      "correctPP": 0,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 0,
+        "nozzlePressure": 80,
+        "elevation": 30,
+        "applianceLoss": 25,
+        "totalGpm": 750,
+        "pumpPressure": 0,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Engine 181", "x": 34, "y": 64 },
+        { "label": "Supply A", "x": 57, "y": 67 },
+        { "label": "Supply B", "x": 67, "y": 70 },
+        { "label": "Ladder truck", "x": 74, "y": 49 }
+      ],
+      "formulaBreakdown": [
+        "Flow per line = total ladder pipe flow / number of supply lines.",
+        "Total ladder pipe flow = 750 GPM.",
+        "Number of supply lines = 2.",
+        "Flow per line = 750 / 2.",
+        "Flow per line = 375 GPM."
+      ],
+      "instructorExplanation": "The two ladder supply lines split the total flow evenly. Each line carries 375 GPM.",
+      "explainMistake": "Do not calculate friction loss using 750 GPM in each line. Each supply line carries half of the total ladder pipe flow."
+    },
+    {
+      "id": "ladder_pipe_operation_p3",
+      "title": "Ladder Supply Line Friction Loss",
+      "question": "Each ladder supply line is 200 ft of 2.5-inch hose flowing 375 GPM. What is the friction loss in each supply line?",
+      "answerLabel": "Friction Loss",
+      "answerUnit": "PSI",
+      "inputLabel": "Enter friction loss",
+      "inputPlaceholder": "PSI",
+      "answerValue": 55,
+      "correctPP": 0,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 55,
+        "nozzlePressure": 80,
+        "elevation": 30,
+        "applianceLoss": 25,
+        "totalGpm": 750,
+        "pumpPressure": 0,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Engine 181", "x": 34, "y": 64 },
+        { "label": "Supply A", "x": 57, "y": 67 },
+        { "label": "Supply B", "x": 67, "y": 70 },
+        { "label": "Ladder truck", "x": 74, "y": 49 }
+      ],
+      "formulaBreakdown": [
+        "FL = C x (GPM / 100)^2 x hose length in hundreds.",
+        "C for 2.5-inch hose = 2.",
+        "Flow per line = 375 GPM.",
+        "Hose length = 200 ft = 2 hundreds.",
+        "FL = 2 x (375 / 100)^2 x 2.",
+        "FL = 2 x 14.06 x 2.",
+        "FL = 56.25 PSI.",
+        "Round to nearest 5 PSI: 55 PSI."
+      ],
+      "instructorExplanation": "Each supply line carries 375 GPM. At 375 GPM through 200 ft of 2.5-inch hose, friction loss rounds to 55 PSI.",
+      "explainMistake": "Do not add the friction loss from both equal supply lines together. Calculate one supply path because the lines are parallel."
+    },
+    {
+      "id": "ladder_pipe_operation_p4",
+      "title": "Ladder Pipe Elevation Pressure",
+      "question": "The ladder pipe nozzle is 60 ft above Engine 181. What elevation pressure must be added?",
+      "answerLabel": "Elevation Pressure",
+      "answerUnit": "PSI",
+      "inputLabel": "Enter elevation pressure",
+      "inputPlaceholder": "PSI",
+      "answerValue": 30,
+      "correctPP": 0,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 0,
+        "nozzlePressure": 80,
+        "elevation": 30,
+        "applianceLoss": 0,
+        "totalGpm": 750,
+        "pumpPressure": 0,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Engine 181", "x": 34, "y": 64 },
+        { "label": "Ladder truck", "x": 74, "y": 49 },
+        { "label": "Aerial ladder", "x": 62, "y": 29 },
+        { "label": "Ladder pipe", "x": 45, "y": 10 }
+      ],
+      "formulaBreakdown": [
+        "Elevation pressure = elevation height x 0.5 PSI per foot.",
+        "Elevation height = 60 ft.",
+        "Elevation pressure = 60 x 0.5.",
+        "Elevation pressure = 30 PSI."
+      ],
+      "instructorExplanation": "The ladder pipe is above Engine 181, so elevation pressure must be added. A 60 ft elevation gain requires 30 PSI.",
+      "explainMistake": "Do not subtract elevation pressure for an elevated ladder pipe. Pressure must be added for uphill elevation."
+    },
+    {
+      "id": "ladder_pipe_operation_p5",
+      "title": "Ladder Pipe Pump Pressure",
+      "question": "Engine 181 supplies the ladder truck with two 200 ft 2.5-inch supply lines. The ladder pipe flows 750 GPM total, each supply line carries 375 GPM, friction loss is 55 PSI, nozzle pressure is 80 PSI, elevation is 30 PSI, and ladder waterway appliance loss is 25 PSI. What pump discharge pressure should Engine 181 set?",
+      "answerLabel": "Pump Pressure",
+      "answerUnit": "PSI",
+      "inputLabel": "Enter pump discharge pressure",
+      "inputPlaceholder": "PSI",
+      "answerValue": 190,
+      "correctPP": 190,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 55,
+        "nozzlePressure": 80,
+        "elevation": 30,
+        "applianceLoss": 25,
+        "totalGpm": 750,
+        "pumpPressure": 190,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Hydrant", "x": 13, "y": 83 },
+        { "label": "Engine 181", "x": 34, "y": 64 },
+        { "label": "Two supply lines", "x": 63, "y": 68 },
+        { "label": "Ladder truck", "x": 74, "y": 49 },
+        { "label": "Ladder pipe", "x": 45, "y": 10 }
+      ],
+      "formulaBreakdown": [
+        "PP = FL + NP + elevation + appliance loss.",
+        "Friction loss per supply line = 55 PSI.",
+        "Nozzle pressure = 80 PSI.",
+        "Elevation pressure = 30 PSI.",
+        "Ladder waterway appliance loss = 25 PSI.",
+        "PP = 55 + 80 + 30 + 25.",
+        "PP = 190 PSI."
+      ],
+      "instructorExplanation": "For a ladder pipe supplied through two equal lines, calculate one supply path. Add supply line friction loss, ladder pipe nozzle pressure, elevation pressure, and ladder waterway appliance loss. Engine 181 should pump 190 PSI.",
+      "explainMistake": "Do not add the friction loss of both blue supply lines together. Parallel supply lines split the flow, so one supply path governs the pump pressure."
+    },
+    {
+      "id": "ladder_pipe_operation_p6",
+      "title": "Ladder Truck Supply Hose Count",
+      "question": "How many supply hoses from Engine 181 feed the ladder truck?",
+      "answerLabel": "Supply Hoses",
+      "answerUnit": "hoses",
+      "inputLabel": "Enter number of supply hoses",
+      "inputPlaceholder": "whole number",
+      "answerValue": 2,
+      "correctPP": 0,
+      "tolerance": 0,
+      "answers": {
+        "frictionLoss": 0,
+        "nozzlePressure": 0,
+        "elevation": 0,
+        "applianceLoss": 0,
+        "totalGpm": 0,
+        "pumpPressure": 0,
+        "tolerance": 0
+      },
+      "overlays": [
+        { "label": "Engine 181", "x": 34, "y": 64 },
+        { "label": "Supply A", "x": 57, "y": 67 },
+        { "label": "Supply B", "x": 67, "y": 70 },
+        { "label": "Ladder truck", "x": 74, "y": 49 }
+      ],
+      "formulaBreakdown": [
+        "The scene shows two supply hoses from Engine 181 to the ladder truck.",
+        "Supply hoses = 2."
+      ],
+      "instructorExplanation": "The hydrant supplies Engine 181, and Engine 181 supplies the ladder truck with two separate supply hoses.",
+      "explainMistake": "Do not count the yellow hydrant supply hose as a ladder truck supply hose. The ladder truck is fed by the two blue hoses from Engine 181."
+    }
+  ],
+  "tags": [
+    "ladder_pipe",
+    "aerial_master_stream",
+    "ladder_truck",
+    "engine_181",
+    "hydrant_supply",
+    "commercial_building",
+    "master_stream",
+    "pump_pressure",
+    "friction_loss",
+    "elevation",
+    "appliance_loss",
+    "driver_operator"
+  ]
+}

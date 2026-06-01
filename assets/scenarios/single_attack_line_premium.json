@@ -1,0 +1,313 @@
+{
+  "id": "single_attack_line_premium",
+  "title": "Single Attack Line Operation",
+  "difficulty": "intermediate",
+  "category": "single_line",
+  "type": "pump",
+  "image": "single_attack_line_premium.png",
+  "imageRatio": "4:7",
+  "recommendedImageSize": "1080x1890",
+  "sceneElements": {
+    "engine": "Engine 181",
+    "hoses": [
+      "5-inch LDH supply line from hydrant outlet to Engine 181 intake",
+      "200-foot 1¾-inch attack line from Engine 181 pump panel discharge to front door"
+    ],
+    "nozzles": [
+      "ChiefXD 185 fog nozzle, 185 GPM @ 50 PSI"
+    ],
+    "appliances": [],
+    "elevation": "Grade-level entry, 0 PSI elevation correction"
+  },
+  "problems": [
+    {
+      "id": "single_attack_line_premium_p1",
+      "title": "Total Flow Requirement",
+      "question": "What is the total flow requirement for the operation shown?",
+      "answerLabel": "Total Flow",
+      "answerUnit": "GPM",
+      "inputLabel": "Enter total flow",
+      "inputPlaceholder": "GPM",
+      "answerValue": 185,
+      "correctPP": 0,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 105,
+        "nozzlePressure": 50,
+        "elevation": 0,
+        "applianceLoss": 0,
+        "totalGpm": 185,
+        "pumpPressure": 0,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Hydrant", "x": 8, "y": 67 },
+        { "label": "Engine 181", "x": 32, "y": 52 },
+        { "label": "Line A", "x": 58, "y": 58 },
+        { "label": "Nozzle", "x": 78, "y": 49 }
+      ],
+      "formulaBreakdown": [
+        "Total flow = number of flowing attack lines × flow per line.",
+        "Total flow = 1 × 185 GPM.",
+        "Total flow = 185 GPM."
+      ],
+      "instructorExplanation": "The operation has one flowing attack line. The ChiefXD 185 line requires 185 GPM, so the total flow requirement is 185 GPM.",
+      "explainMistake": "Do not add hydrant supply flow separately. The supply line provides water to the engine; the flow requirement is based on the attack line being supplied."
+    },
+    {
+      "id": "single_attack_line_premium_p2",
+      "title": "Pump Discharge Pressure",
+      "question": "Determine the required pump discharge pressure for the attack operation shown.",
+      "answerLabel": "Pump Pressure",
+      "answerUnit": "PSI",
+      "inputLabel": "Enter pump discharge pressure",
+      "inputPlaceholder": "PSI",
+      "answerValue": 155,
+      "correctPP": 155,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 105,
+        "nozzlePressure": 50,
+        "elevation": 0,
+        "applianceLoss": 0,
+        "totalGpm": 185,
+        "pumpPressure": 155,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Hydrant", "x": 8, "y": 67 },
+        { "label": "Engine 181", "x": 32, "y": 52 },
+        { "label": "Line A", "x": 58, "y": 58 },
+        { "label": "Nozzle", "x": 78, "y": 49 }
+      ],
+      "formulaBreakdown": [
+        "PP = FL + NP + elevation + appliance loss.",
+        "FL = C × (GPM / 100)^2 × hose length in hundreds.",
+        "FL = 15.5 × (185 / 100)^2 × 2.",
+        "FL = 15.5 × 3.4225 × 2 = 106.1 PSI.",
+        "Round FL to nearest 5 PSI: 105 PSI.",
+        "PP = 105 + 50 + 0 + 0 = 155 PSI."
+      ],
+      "instructorExplanation": "The attack line friction loss rounds to 105 PSI. Adding the 50 PSI nozzle pressure gives a required pump discharge pressure of 155 PSI.",
+      "explainMistake": "A common mistake is stopping at friction loss only. Pump discharge pressure must include nozzle pressure after friction loss is calculated."
+    },
+    {
+      "id": "single_attack_line_premium_p3",
+      "title": "Attack Line Friction Loss",
+      "question": "How much friction loss is present in the attack line?",
+      "answerLabel": "Friction Loss",
+      "answerUnit": "PSI",
+      "inputLabel": "Enter friction loss",
+      "inputPlaceholder": "PSI",
+      "answerValue": 105,
+      "correctPP": 0,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 105,
+        "nozzlePressure": 50,
+        "elevation": 0,
+        "applianceLoss": 0,
+        "totalGpm": 185,
+        "pumpPressure": 0,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Hydrant", "x": 8, "y": 67 },
+        { "label": "Engine 181", "x": 32, "y": 52 },
+        { "label": "Line A", "x": 58, "y": 58 },
+        { "label": "Nozzle", "x": 78, "y": 49 }
+      ],
+      "formulaBreakdown": [
+        "FL = C × (GPM / 100)^2 × hose length in hundreds.",
+        "FL = 15.5 × (185 / 100)^2 × 2.",
+        "FL = 106.1 PSI.",
+        "Round to nearest 5 PSI: 105 PSI."
+      ],
+      "instructorExplanation": "Using the 1¾-inch hose coefficient and the listed flow, the attack line friction loss is 106.1 PSI, rounded to 105 PSI.",
+      "explainMistake": "Do not add nozzle pressure when the question asks only for friction loss. Friction loss is calculated before nozzle pressure is added."
+    },
+    {
+      "id": "single_attack_line_premium_p4",
+      "title": "Nozzle Pressure",
+      "question": "What pressure is required at the nozzle?",
+      "answerLabel": "Nozzle Pressure",
+      "answerUnit": "PSI",
+      "inputLabel": "Enter nozzle pressure",
+      "inputPlaceholder": "PSI",
+      "answerValue": 50,
+      "correctPP": 0,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 105,
+        "nozzlePressure": 50,
+        "elevation": 0,
+        "applianceLoss": 0,
+        "totalGpm": 185,
+        "pumpPressure": 0,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Hydrant", "x": 8, "y": 67 },
+        { "label": "Engine 181", "x": 32, "y": 52 },
+        { "label": "Line A", "x": 58, "y": 58 },
+        { "label": "Nozzle", "x": 78, "y": 49 }
+      ],
+      "formulaBreakdown": [
+        "ChiefXD 185 nozzle pressure = 50 PSI.",
+        "Nozzle pressure answer = 50 PSI."
+      ],
+      "instructorExplanation": "The scenario information panel identifies the nozzle package. The ChiefXD 185 operates at 50 PSI nozzle pressure.",
+      "explainMistake": "Do not confuse pump discharge pressure with nozzle pressure. Nozzle pressure is only the pressure required at the nozzle."
+    },
+    {
+      "id": "single_attack_line_premium_p5",
+      "title": "Hydrant Pressure Drop",
+      "question": "The hydrant static pressure is 70 PSI and the residual pressure is 60 PSI while supplying the current operation. Based on the pressure drop, how many additional equivalent attack lines could be supplied?",
+      "answerLabel": "Additional Equivalent Lines",
+      "answerUnit": "lines",
+      "inputLabel": "Enter additional equivalent lines",
+      "inputPlaceholder": "whole number",
+      "answerValue": 2,
+      "correctPP": 0,
+      "tolerance": 0,
+      "answers": {
+        "frictionLoss": 0,
+        "nozzlePressure": 0,
+        "elevation": 0,
+        "applianceLoss": 0,
+        "totalGpm": 185,
+        "pumpPressure": 0,
+        "tolerance": 0
+      },
+      "overlays": [
+        { "label": "Hydrant", "x": 8, "y": 67 },
+        { "label": "Engine 181", "x": 32, "y": 52 },
+        { "label": "Line A", "x": 58, "y": 58 }
+      ],
+      "formulaBreakdown": [
+        "Pressure drop = static pressure − residual pressure.",
+        "Pressure drop = 70 − 60 = 10 PSI.",
+        "Percent drop = pressure drop ÷ static pressure × 100.",
+        "Percent drop = 10 ÷ 70 × 100 = 14.3%.",
+        "Driver Operator hydrant rule: 10–15% drop supports 2 additional equivalent lines.",
+        "Additional equivalent lines = 2."
+      ],
+      "instructorExplanation": "The pressure drop is 14.3% of static pressure. Under the standard hydrant pressure-drop rule, that indicates the hydrant can supply two additional equivalent attack lines.",
+      "explainMistake": "Do not use the 10 PSI drop as a 10% drop. The percentage must be based on static pressure: 10 divided by 70 equals 14.3%."
+    },
+    {
+      "id": "single_attack_line_premium_p6",
+      "title": "Second Identical Attack Line",
+      "question": "If a second identical attack line is deployed, what would the new total flow requirement be?",
+      "answerLabel": "New Total Flow",
+      "answerUnit": "GPM",
+      "inputLabel": "Enter new total flow",
+      "inputPlaceholder": "GPM",
+      "answerValue": 370,
+      "correctPP": 0,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 105,
+        "nozzlePressure": 50,
+        "elevation": 0,
+        "applianceLoss": 0,
+        "totalGpm": 370,
+        "pumpPressure": 0,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Hydrant", "x": 8, "y": 67 },
+        { "label": "Engine 181", "x": 32, "y": 52 },
+        { "label": "Line A", "x": 58, "y": 58 },
+        { "label": "Nozzle", "x": 78, "y": 49 }
+      ],
+      "formulaBreakdown": [
+        "New total flow = flow per attack line × number of identical attack lines.",
+        "New total flow = 185 GPM × 2.",
+        "New total flow = 370 GPM."
+      ],
+      "instructorExplanation": "A second identical attack line doubles the flow demand. Two 185 GPM lines require a total of 370 GPM.",
+      "explainMistake": "Do not double the pump pressure to find total flow. Flow is added by line; pressure is calculated separately."
+    },
+    {
+      "id": "single_attack_line_premium_p7",
+      "title": "Extended Attack Line Pump Pressure",
+      "question": "If the attack line is extended by one additional 50-foot section, what would the new required pump discharge pressure be?",
+      "answerLabel": "New Pump Pressure",
+      "answerUnit": "PSI",
+      "inputLabel": "Enter new pump discharge pressure",
+      "inputPlaceholder": "PSI",
+      "answerValue": 185,
+      "correctPP": 185,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 135,
+        "nozzlePressure": 50,
+        "elevation": 0,
+        "applianceLoss": 0,
+        "totalGpm": 185,
+        "pumpPressure": 185,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Hydrant", "x": 8, "y": 67 },
+        { "label": "Engine 181", "x": 32, "y": 52 },
+        { "label": "Line A", "x": 58, "y": 58 },
+        { "label": "Nozzle", "x": 78, "y": 49 }
+      ],
+      "formulaBreakdown": [
+        "Extended hose length = 200 ft + 50 ft = 250 ft.",
+        "Hose length in hundreds = 2.5.",
+        "FL = C × (GPM / 100)^2 × hose length in hundreds.",
+        "FL = 15.5 × (185 / 100)^2 × 2.5.",
+        "FL = 132.6 PSI.",
+        "Round FL to nearest 5 PSI: 135 PSI.",
+        "PP = FL + NP + elevation + appliance loss.",
+        "PP = 135 + 50 + 0 + 0 = 185 PSI."
+      ],
+      "instructorExplanation": "Adding 50 feet increases the friction loss. The new rounded friction loss is 135 PSI, and adding 50 PSI nozzle pressure gives a new pump discharge pressure of 185 PSI.",
+      "explainMistake": "Do not add a flat pressure amount for the extension. Recalculate friction loss using the new total hose length, then add nozzle pressure."
+    },
+    {
+      "id": "single_attack_line_premium_p8",
+      "title": "Apparatus Positioning",
+      "question": "How far should Engine 181 be positioned from the structure for this type of residential fire attack?",
+      "answerLabel": "Engine Setback",
+      "answerUnit": "ft",
+      "inputLabel": "Enter distance",
+      "inputPlaceholder": "feet",
+      "answerValue": 30,
+      "correctPP": 0,
+      "tolerance": 0,
+      "answers": {
+        "frictionLoss": 0,
+        "nozzlePressure": 0,
+        "elevation": 0,
+        "applianceLoss": 0,
+        "totalGpm": 0,
+        "pumpPressure": 0,
+        "tolerance": 0
+      },
+      "overlays": [
+        { "label": "Hydrant", "x": 8, "y": 67 },
+        { "label": "Engine 181", "x": 32, "y": 52 },
+        { "label": "Structure", "x": 78, "y": 30 }
+      ],
+      "formulaBreakdown": [
+        "Recommended minimum engine setback = 30 ft.",
+        "Engine 181 should be positioned at least 30 ft from the structure when practical."
+      ],
+      "instructorExplanation": "For this FirePumpSim residential attack scenario, Engine 181 should be positioned at least 30 ft from the structure when practical. This keeps the apparatus close enough for an efficient attack stretch while maintaining a safer setback from heat, smoke, falling debris, and collapse hazards.",
+      "explainMistake": "Do not position the engine directly against the structure. Leaving setback space protects the crew and apparatus and keeps the front of the building accessible for hose movement, ladders, and other operations."
+    }
+  ],
+  "tags": [
+    "single_line",
+    "attack_line",
+    "hydrant_supply",
+    "engine_181",
+    "driver_operator",
+    "premium_questions",
+    "apparatus_positioning"
+  ]
+}

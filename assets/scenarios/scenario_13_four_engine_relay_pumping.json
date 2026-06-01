@@ -1,0 +1,250 @@
+{
+  "id": "scenario_13_four_engine_relay_pumping",
+  "title": "Scenario 13: Four-Engine Relay Pumping Operation",
+  "difficulty": "advanced",
+  "category": "relay",
+  "type": "pump",
+  "image": "scenario_13_four_engine_relay_pumping.png",
+  "imageRatio": "4:7",
+  "recommendedImageSize": "1080x1890",
+  "sceneElements": {
+    "engine": "Engine 181",
+    "hoses": [
+      "Hydrant supply hose from hydrant to Engine 181 intake",
+      "Relay Segment 1: 1500 ft of 5-inch LDH from Engine 181 discharge to Relay Engine 2 intake",
+      "Relay Segment 2: 1500 ft of 5-inch LDH from Relay Engine 2 discharge to Relay Engine 3 intake",
+      "Relay Segment 3: 1500 ft of 5-inch LDH from Relay Engine 3 discharge to Attack Engine 4 intake",
+      "Attack line: 250 ft of 2.5-inch hose from Attack Engine 4 discharge to nozzle crew"
+    ],
+    "nozzles": [
+      "Attack line smooth bore nozzle, 1 1/8-inch tip, 265 GPM @ 50 PSI"
+    ],
+    "appliances": [],
+    "elevation": "Level industrial property, 0 PSI elevation correction"
+  },
+  "problems": [
+    {
+      "id": "scenario_13_four_engine_relay_pumping_p1",
+      "title": "Engine 181 Relay Pump Pressure",
+      "question": "Engine 181 is pumping through 1500 ft of 5-inch LDH to Relay Engine 2. The relay flow is 265 GPM and the desired intake pressure at Relay Engine 2 is 20 PSI. What pump discharge pressure should Engine 181 set?",
+      "answerLabel": "Relay Pump Pressure",
+      "answerUnit": "PSI",
+      "inputLabel": "Enter pump discharge pressure",
+      "inputPlaceholder": "PSI",
+      "answerValue": 30,
+      "correctPP": 30,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 10,
+        "nozzlePressure": 0,
+        "elevation": 0,
+        "applianceLoss": 20,
+        "totalGpm": 265,
+        "pumpPressure": 30,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Hydrant", "x": 12, "y": 84 },
+        { "label": "Engine 181", "x": 32, "y": 70 },
+        { "label": "1500' 5\" LDH", "x": 42, "y": 61 },
+        { "label": "Relay Engine 2", "x": 53, "y": 53 },
+        { "label": "Intake 20", "x": 57, "y": 49 }
+      ],
+      "formulaBreakdown": [
+        "Relay PDP = relay hose FL + elevation + desired intake pressure.",
+        "FL = C x (GPM / 100)^2 x hose length in hundreds.",
+        "C for 5-inch LDH = 0.08.",
+        "Flow = 265 GPM.",
+        "Hose length = 1500 ft = 15 hundreds.",
+        "FL = 0.08 x (265 / 100)^2 x 15.",
+        "FL = 0.08 x 7.0225 x 15.",
+        "FL = 8.4 PSI.",
+        "Round FL to nearest 5 PSI: 10 PSI.",
+        "Desired intake pressure = 20 PSI.",
+        "Relay PDP = 10 + 0 + 20.",
+        "Relay PDP = 30 PSI."
+      ],
+      "instructorExplanation": "Engine 181 must overcome the friction loss in the long LDH relay segment and still deliver 20 PSI intake pressure to Relay Engine 2. The correct pump discharge pressure is 30 PSI.",
+      "explainMistake": "Do not add nozzle pressure to a relay engine calculation. Engine 181 is only moving water to the next engine, so use relay hose friction loss plus the desired intake pressure."
+    },
+    {
+      "id": "scenario_13_four_engine_relay_pumping_p2",
+      "title": "Relay Engine 2 Pump Pressure",
+      "question": "Relay Engine 2 is pumping through 1500 ft of 5-inch LDH to Relay Engine 3. The relay flow is 265 GPM and the desired intake pressure at Relay Engine 3 is 20 PSI. What pump discharge pressure should Relay Engine 2 set?",
+      "answerLabel": "Relay Pump Pressure",
+      "answerUnit": "PSI",
+      "inputLabel": "Enter pump discharge pressure",
+      "inputPlaceholder": "PSI",
+      "answerValue": 30,
+      "correctPP": 30,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 10,
+        "nozzlePressure": 0,
+        "elevation": 0,
+        "applianceLoss": 20,
+        "totalGpm": 265,
+        "pumpPressure": 30,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Relay Engine 2", "x": 53, "y": 53 },
+        { "label": "1500' 5\" LDH", "x": 55, "y": 45 },
+        { "label": "Relay Engine 3", "x": 57, "y": 37 },
+        { "label": "Intake 20", "x": 61, "y": 33 }
+      ],
+      "formulaBreakdown": [
+        "Relay PDP = relay hose FL + elevation + desired intake pressure.",
+        "FL = C x (GPM / 100)^2 x hose length in hundreds.",
+        "C for 5-inch LDH = 0.08.",
+        "Flow = 265 GPM.",
+        "Hose length = 1500 ft = 15 hundreds.",
+        "FL = 0.08 x (265 / 100)^2 x 15.",
+        "FL = 8.4 PSI.",
+        "Round FL to nearest 5 PSI: 10 PSI.",
+        "Desired intake pressure = 20 PSI.",
+        "Relay PDP = 10 + 0 + 20.",
+        "Relay PDP = 30 PSI."
+      ],
+      "instructorExplanation": "Relay Engine 2 is not supplying the nozzle directly. It is supplying Relay Engine 3, so the required pump discharge pressure is the relay segment friction loss plus the desired intake pressure.",
+      "explainMistake": "Do not use attack-line pump pressure for Relay Engine 2. A relay engine only needs to move water to the next intake while maintaining the target intake pressure."
+    },
+    {
+      "id": "scenario_13_four_engine_relay_pumping_p3",
+      "title": "Relay Engine 3 Pump Pressure",
+      "question": "Relay Engine 3 is pumping through 1500 ft of 5-inch LDH to Attack Engine 4. The relay flow is 265 GPM and the desired intake pressure at Attack Engine 4 is 20 PSI. What pump discharge pressure should Relay Engine 3 set?",
+      "answerLabel": "Relay Pump Pressure",
+      "answerUnit": "PSI",
+      "inputLabel": "Enter pump discharge pressure",
+      "inputPlaceholder": "PSI",
+      "answerValue": 30,
+      "correctPP": 30,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 10,
+        "nozzlePressure": 0,
+        "elevation": 0,
+        "applianceLoss": 20,
+        "totalGpm": 265,
+        "pumpPressure": 30,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Relay Engine 3", "x": 57, "y": 37 },
+        { "label": "1500' 5\" LDH", "x": 61, "y": 29 },
+        { "label": "Attack Engine 4", "x": 65, "y": 22 },
+        { "label": "Intake 20", "x": 69, "y": 19 }
+      ],
+      "formulaBreakdown": [
+        "Relay PDP = relay hose FL + elevation + desired intake pressure.",
+        "FL = C x (GPM / 100)^2 x hose length in hundreds.",
+        "C for 5-inch LDH = 0.08.",
+        "Flow = 265 GPM.",
+        "Hose length = 1500 ft = 15 hundreds.",
+        "FL = 0.08 x (265 / 100)^2 x 15.",
+        "FL = 8.4 PSI.",
+        "Round FL to nearest 5 PSI: 10 PSI.",
+        "Desired intake pressure = 20 PSI.",
+        "Relay PDP = 10 + 0 + 20.",
+        "Relay PDP = 30 PSI."
+      ],
+      "instructorExplanation": "Relay Engine 3 must overcome the friction loss in the final relay segment and deliver the target intake pressure to Attack Engine 4. The correct pump discharge pressure is 30 PSI.",
+      "explainMistake": "Do not add nozzle pressure at Relay Engine 3. The attack engine handles the attack-line pump pressure separately."
+    },
+    {
+      "id": "scenario_13_four_engine_relay_pumping_p4",
+      "title": "Attack Engine Pump Pressure",
+      "question": "Attack Engine 4 is supplying a 250 ft 2.5-inch attack line with a 1 1/8-inch smooth bore nozzle flowing 265 GPM @ 50 PSI. What pump discharge pressure should Attack Engine 4 set?",
+      "answerLabel": "Pump Pressure",
+      "answerUnit": "PSI",
+      "inputLabel": "Enter pump discharge pressure",
+      "inputPlaceholder": "PSI",
+      "answerValue": 85,
+      "correctPP": 85,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 35,
+        "nozzlePressure": 50,
+        "elevation": 0,
+        "applianceLoss": 0,
+        "totalGpm": 265,
+        "pumpPressure": 85,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Attack Engine 4", "x": 65, "y": 22 },
+        { "label": "250' 2.5\"", "x": 72, "y": 19 },
+        { "label": "1 1/8\" SB", "x": 79, "y": 16 },
+        { "label": "Warehouse fire", "x": 83, "y": 13 }
+      ],
+      "formulaBreakdown": [
+        "PP = FL + NP + elevation + appliance loss.",
+        "FL = C x (GPM / 100)^2 x hose length in hundreds.",
+        "C for 2.5-inch hose = 2.",
+        "Flow = 265 GPM.",
+        "Hose length = 250 ft = 2.5 hundreds.",
+        "FL = 2 x (265 / 100)^2 x 2.5.",
+        "FL = 2 x 7.0225 x 2.5.",
+        "FL = 35.1 PSI.",
+        "Round FL to nearest 5 PSI: 35 PSI.",
+        "Nozzle pressure = 50 PSI.",
+        "Elevation = 0 PSI.",
+        "Appliance loss = 0 PSI.",
+        "PP = 35 + 50 + 0 + 0.",
+        "PP = 85 PSI."
+      ],
+      "instructorExplanation": "Attack Engine 4 receives water from the relay system and then supplies the attack line. Its pump discharge pressure is based on the attack-line friction loss plus nozzle pressure.",
+      "explainMistake": "Do not use the relay engine pressure for the attack engine. The attack engine must calculate the pressure needed for the attack hose and nozzle."
+    },
+    {
+      "id": "scenario_13_four_engine_relay_pumping_p5",
+      "title": "Total Relay Hose Distance",
+      "question": "There are three relay hose segments between Engine 181 and Attack Engine 4. Each relay segment is 1500 ft. What is the total relay hose distance between Engine 181 and Attack Engine 4?",
+      "answerLabel": "Relay Hose Distance",
+      "answerUnit": "ft",
+      "inputLabel": "Enter total relay distance",
+      "inputPlaceholder": "feet",
+      "answerValue": 4500,
+      "correctPP": 0,
+      "tolerance": 0,
+      "answers": {
+        "frictionLoss": 0,
+        "nozzlePressure": 0,
+        "elevation": 0,
+        "applianceLoss": 0,
+        "totalGpm": 265,
+        "pumpPressure": 0,
+        "tolerance": 0
+      },
+      "overlays": [
+        { "label": "Engine 181", "x": 32, "y": 70 },
+        { "label": "Relay Engine 2", "x": 53, "y": 53 },
+        { "label": "Relay Engine 3", "x": 57, "y": 37 },
+        { "label": "Attack Engine 4", "x": 65, "y": 22 }
+      ],
+      "formulaBreakdown": [
+        "Total relay hose distance = number of relay segments x length per segment.",
+        "Number of relay segments = 3.",
+        "Length per segment = 1500 ft.",
+        "Total relay hose distance = 3 x 1500.",
+        "Total relay hose distance = 4500 ft."
+      ],
+      "instructorExplanation": "The relay operation uses three long LDH segments between Engine 181 and Attack Engine 4. The total relay hose distance is 4500 ft.",
+      "explainMistake": "Do not include the hydrant-to-Engine 181 supply hose or the final attack line. This question asks only for the relay hose distance between Engine 181 and Attack Engine 4."
+    }
+  ],
+  "tags": [
+    "scenario_13",
+    "four_engine_relay",
+    "relay_pumping",
+    "long_distance_water_supply",
+    "commercial_warehouse_fire",
+    "engine_181",
+    "relay_engine_2",
+    "relay_engine_3",
+    "attack_engine_4",
+    "ldh",
+    "desired_intake_pressure",
+    "driver_operator"
+  ]
+}

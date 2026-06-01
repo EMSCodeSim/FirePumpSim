@@ -1,0 +1,217 @@
+{
+  "id": "rural_water_shuttle_operation",
+  "title": "Rural Water Shuttle Operation",
+  "difficulty": "advanced",
+  "category": "tender_shuttle",
+  "type": "tender_shuttle",
+  "image": "rural_water_shuttle_operation.png",
+  "imageRatio": "4:7",
+  "recommendedImageSize": "1080x1890",
+  "sceneElements": {
+    "engine": "Engine 181",
+    "hoses": [
+      "Hard suction hose from portable dump tank to Engine 181 intake",
+      "Attack line: 200 ft of 1.75-inch hose from Engine 181 discharge to firefighter operating on the rural structure fire"
+    ],
+    "nozzles": [
+      "ChiefXD 185 fog nozzle, 185 GPM @ 50 PSI"
+    ],
+    "appliances": [
+      "Portable dump tank",
+      "Water tender actively dumping into portable dump tank",
+      "Second water tender approaching the scene"
+    ],
+    "elevation": "Level rural roadside operation, 0 PSI elevation correction"
+  },
+  "problems": [
+    {
+      "id": "rural_water_shuttle_operation_p1",
+      "title": "Attack Line Pump Pressure",
+      "question": "Engine 181 is supplying one 200 ft 1.75-inch attack line with a ChiefXD 185 fog nozzle operating at 185 GPM @ 50 PSI. What pump discharge pressure should be set?",
+      "answerLabel": "Pump Pressure",
+      "answerUnit": "PSI",
+      "inputLabel": "Enter pump discharge pressure",
+      "inputPlaceholder": "PSI",
+      "answerValue": 155,
+      "correctPP": 155,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 105,
+        "nozzlePressure": 50,
+        "elevation": 0,
+        "applianceLoss": 0,
+        "totalGpm": 185,
+        "pumpPressure": 155,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Engine 181", "x": 55, "y": 48 },
+        { "label": "Attack line", "x": 74, "y": 42 },
+        { "label": "Nozzle crew", "x": 79, "y": 36 },
+        { "label": "Structure fire", "x": 84, "y": 24 }
+      ],
+      "formulaBreakdown": [
+        "PP = FL + NP + elevation + appliance loss.",
+        "FL = C × (GPM / 100)^2 × hose length in hundreds.",
+        "C for 1.75-inch hose = 15.5.",
+        "Flow = 185 GPM.",
+        "Hose length = 200 ft = 2 hundreds.",
+        "FL = 15.5 × (185 / 100)^2 × 2.",
+        "FL = 106 PSI.",
+        "Round FL to 105 PSI.",
+        "PP = 105 + 50 + 0 + 0.",
+        "PP = 155 PSI."
+      ],
+      "instructorExplanation": "For the attack line, Engine 181 must overcome the friction loss in the 200 ft 1.75-inch hose and provide the required nozzle pressure. The correct pump discharge pressure is 155 PSI.",
+      "explainMistake": "Do not include the hard suction or dump tank in the attack line pump pressure calculation. The pump pressure question is based on the discharge hose, nozzle pressure, and any elevation or appliance loss."
+    },
+    {
+      "id": "rural_water_shuttle_operation_p2",
+      "title": "Usable Tender Water",
+      "question": "Each water tender carries 3000 gallons. Using the 90% usable water rule, how many gallons are usable from one tender?",
+      "answerLabel": "Usable Water",
+      "answerUnit": "gal",
+      "inputLabel": "Enter usable water",
+      "inputPlaceholder": "gal",
+      "answerValue": 2700,
+      "correctPP": 0,
+      "tolerance": 0,
+      "answers": {
+        "frictionLoss": 0,
+        "nozzlePressure": 0,
+        "elevation": 0,
+        "applianceLoss": 0,
+        "totalGpm": 0,
+        "pumpPressure": 0,
+        "tolerance": 0
+      },
+      "overlays": [
+        { "label": "Tender dumping", "x": 20, "y": 55 },
+        { "label": "Dump tank", "x": 46, "y": 75 },
+        { "label": "Hard suction", "x": 63, "y": 66 },
+        { "label": "Engine 181", "x": 55, "y": 48 }
+      ],
+      "formulaBreakdown": [
+        "Usable water = tender capacity × 0.90.",
+        "Usable water = 3000 × 0.90.",
+        "Usable water = 2700 gallons."
+      ],
+      "instructorExplanation": "For shuttle calculations, only 90% of the tender capacity is counted as usable water. A 3000-gallon tender provides 2700 usable gallons.",
+      "explainMistake": "Do not use the full tank capacity when calculating shuttle flow. The FirePumpSim tender shuttle rule uses 90% usable water."
+    },
+    {
+      "id": "rural_water_shuttle_operation_p3",
+      "title": "Single Tender Shuttle Flow",
+      "question": "One tender provides 2700 usable gallons and has a 12-minute shuttle cycle time. What sustained flow can one tender provide?",
+      "answerLabel": "Sustained Flow",
+      "answerUnit": "GPM",
+      "inputLabel": "Enter sustained flow",
+      "inputPlaceholder": "GPM",
+      "answerValue": 225,
+      "correctPP": 0,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 0,
+        "nozzlePressure": 0,
+        "elevation": 0,
+        "applianceLoss": 0,
+        "totalGpm": 225,
+        "pumpPressure": 0,
+        "tolerance": 5
+      },
+      "overlays": [
+        { "label": "Tender dumping", "x": 20, "y": 55 },
+        { "label": "Dump tank", "x": 46, "y": 75 },
+        { "label": "Tender enroute", "x": 13, "y": 28 },
+        { "label": "Engine 181", "x": 55, "y": 48 }
+      ],
+      "formulaBreakdown": [
+        "Tender shuttle GPM = usable gallons / cycle time.",
+        "Tender shuttle GPM = 2700 / 12.",
+        "Tender shuttle GPM = 225 GPM."
+      ],
+      "instructorExplanation": "A tender shuttle flow rate is based on usable water divided by total cycle time. One tender can sustain 225 GPM in this setup.",
+      "explainMistake": "Do not divide the full 3000-gallon capacity by the cycle time. Use the 90% usable water value."
+    },
+    {
+      "id": "rural_water_shuttle_operation_p4",
+      "title": "Number of Tenders Needed",
+      "question": "The operation needs a sustained water supply of 450 GPM. If each tender can sustain 225 GPM, how many tenders are needed?",
+      "answerLabel": "Tenders Needed",
+      "answerUnit": "tenders",
+      "inputLabel": "Enter number of tenders",
+      "inputPlaceholder": "whole number",
+      "answerValue": 2,
+      "correctPP": 0,
+      "tolerance": 0,
+      "answers": {
+        "frictionLoss": 0,
+        "nozzlePressure": 0,
+        "elevation": 0,
+        "applianceLoss": 0,
+        "totalGpm": 450,
+        "pumpPressure": 0,
+        "tolerance": 0
+      },
+      "overlays": [
+        { "label": "Tender dumping", "x": 20, "y": 55 },
+        { "label": "Tender enroute", "x": 13, "y": 28 },
+        { "label": "Dump tank", "x": 46, "y": 75 },
+        { "label": "Engine 181", "x": 55, "y": 48 }
+      ],
+      "formulaBreakdown": [
+        "Tenders needed = required sustained flow / flow per tender.",
+        "Tenders needed = 450 / 225.",
+        "Tenders needed = 2."
+      ],
+      "instructorExplanation": "Two tenders are needed because each tender can sustain 225 GPM and the operation requires 450 GPM.",
+      "explainMistake": "Do not count only the tender currently dumping. Shuttle operations require enough tenders cycling to maintain the required sustained flow."
+    },
+    {
+      "id": "rural_water_shuttle_operation_p5",
+      "title": "Dump Tank Water Duration",
+      "question": "If the portable dump tank contains 2500 gallons and Engine 181 is flowing only the 185 GPM attack line, how long will the dump tank supply last with no refill?",
+      "answerLabel": "Water Duration",
+      "answerUnit": "min",
+      "inputLabel": "Enter water duration",
+      "inputPlaceholder": "minutes",
+      "answerValue": 13.5,
+      "correctPP": 0,
+      "tolerance": 0.5,
+      "answers": {
+        "frictionLoss": 0,
+        "nozzlePressure": 0,
+        "elevation": 0,
+        "applianceLoss": 0,
+        "totalGpm": 185,
+        "pumpPressure": 0,
+        "tolerance": 0.5
+      },
+      "overlays": [
+        { "label": "Dump tank", "x": 46, "y": 75 },
+        { "label": "Hard suction", "x": 63, "y": 66 },
+        { "label": "Engine 181", "x": 55, "y": 48 },
+        { "label": "Attack line", "x": 74, "y": 42 }
+      ],
+      "formulaBreakdown": [
+        "Water duration = available gallons / flow.",
+        "Water duration = 2500 / 185.",
+        "Water duration = 13.5 minutes."
+      ],
+      "instructorExplanation": "With no refill, the dump tank duration is the available water divided by the attack line flow. At 185 GPM, 2500 gallons lasts about 13.5 minutes.",
+      "explainMistake": "Do not use tender cycle time for this question. The question asks how long the water already in the dump tank will last if no additional water is added."
+    }
+  ],
+  "tags": [
+    "rural_water_supply",
+    "tender_shuttle",
+    "dump_tank",
+    "hard_suction",
+    "engine_181",
+    "rural_structure_fire",
+    "attack_line",
+    "sustained_flow",
+    "water_duration",
+    "driver_operator"
+  ]
+}
