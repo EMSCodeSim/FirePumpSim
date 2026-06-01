@@ -49,11 +49,31 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Hydrant", "x": 13, "y": 85 },
-        { "label": "Engine 181", "x": 24, "y": 66 },
-        { "label": "Hotel FDC", "x": 75, "y": 69 },
-        { "label": "Main entrance", "x": 55, "y": 65 },
-        { "label": "8th floor fire", "x": 65, "y": 12 }
+        {
+          "label": "Hydrant",
+          "x": 13,
+          "y": 85
+        },
+        {
+          "label": "Engine 181",
+          "x": 24,
+          "y": 66
+        },
+        {
+          "label": "Hotel FDC",
+          "x": 75,
+          "y": 69
+        },
+        {
+          "label": "Main entrance",
+          "x": 55,
+          "y": 65
+        },
+        {
+          "label": "Fire floor",
+          "x": 65,
+          "y": 12
+        }
       ],
       "formulaBreakdown": [
         "Total flow = attack line A flow + attack line B flow.",
@@ -86,10 +106,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 24, "y": 66 },
-        { "label": "FDC line A", "x": 55, "y": 75 },
-        { "label": "FDC line B", "x": 60, "y": 73 },
-        { "label": "Hotel FDC", "x": 75, "y": 69 }
+        {
+          "label": "Engine 181",
+          "x": 24,
+          "y": 66
+        },
+        {
+          "label": "FDC line A",
+          "x": 55,
+          "y": 75
+        },
+        {
+          "label": "FDC line B",
+          "x": 60,
+          "y": 73
+        },
+        {
+          "label": "Hotel FDC",
+          "x": 75,
+          "y": 69
+        }
       ],
       "formulaBreakdown": [
         "Flow per FDC line = total standpipe flow / number of FDC supply lines.",
@@ -122,10 +158,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 24, "y": 66 },
-        { "label": "FDC line A", "x": 55, "y": 75 },
-        { "label": "FDC line B", "x": 60, "y": 73 },
-        { "label": "Hotel FDC", "x": 75, "y": 69 }
+        {
+          "label": "Engine 181",
+          "x": 24,
+          "y": 66
+        },
+        {
+          "label": "FDC line A",
+          "x": 55,
+          "y": 75
+        },
+        {
+          "label": "FDC line B",
+          "x": 60,
+          "y": 73
+        },
+        {
+          "label": "Hotel FDC",
+          "x": 75,
+          "y": 69
+        }
       ],
       "formulaBreakdown": [
         "FL = C x (GPM / 100)^2 x hose length in hundreds.",
@@ -161,9 +213,21 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 24, "y": 66 },
-        { "label": "Hotel FDC", "x": 75, "y": 69 },
-        { "label": "8th floor fire", "x": 65, "y": 12 }
+        {
+          "label": "Engine 181",
+          "x": 24,
+          "y": 66
+        },
+        {
+          "label": "Hotel FDC",
+          "x": 75,
+          "y": 69
+        },
+        {
+          "label": "Fire floor",
+          "x": 65,
+          "y": 12
+        }
       ],
       "formulaBreakdown": [
         "Elevation pressure = floors above 1st floor x 5 PSI.",
@@ -177,7 +241,7 @@
     {
       "id": "hotel_standpipe_fire_operation_p5",
       "title": "Standpipe Pump Pressure",
-      "question": "Engine 181 is supplying the hotel FDC with two 100 ft 2.5-inch lines. The fire is on the 8th floor. Each interior attack line is 150 ft of 2.5-inch hose flowing 265 GPM through a 1 1/8-inch smooth bore nozzle. Use 15 PSI FDC supply line friction loss, 20 PSI interior attack line friction loss, 50 PSI nozzle pressure, 35 PSI elevation, and 25 PSI standpipe/FDC loss. What pump discharge pressure should Engine 181 set?",
+      "question": "Engine 181 is supplying the hotel FDC with two equal 100 ft 2.5-inch FDC supply lines. Total standpipe flow is 530 GPM, so each FDC supply line carries 265 GPM. Each interior attack line is 150 ft of 2.5-inch hose flowing 265 GPM through a 1⅛-inch smooth bore nozzle at 50 PSI. The fire is on the 8th floor, adding 35 PSI elevation. Add 25 PSI standpipe/FDC system loss. What pump discharge pressure should Engine 181 set for one complete standpipe flow path?",
       "answerLabel": "Pump Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
@@ -195,10 +259,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Hydrant", "x": 13, "y": 85 },
-        { "label": "Engine 181", "x": 24, "y": 66 },
-        { "label": "Hotel FDC", "x": 75, "y": 69 },
-        { "label": "8th floor fire", "x": 65, "y": 12 }
+        {
+          "label": "Hydrant",
+          "x": 13,
+          "y": 85
+        },
+        {
+          "label": "Engine 181",
+          "x": 24,
+          "y": 66
+        },
+        {
+          "label": "Hotel FDC",
+          "x": 75,
+          "y": 69
+        },
+        {
+          "label": "Fire floor",
+          "x": 65,
+          "y": 12
+        }
       ],
       "formulaBreakdown": [
         "PP = FL + NP + elevation + appliance loss.",
@@ -234,10 +314,26 @@
         "tolerance": 0
       },
       "overlays": [
-        { "label": "Engine 181", "x": 24, "y": 66 },
-        { "label": "FDC line A", "x": 55, "y": 75 },
-        { "label": "FDC line B", "x": 60, "y": 73 },
-        { "label": "Hotel FDC", "x": 75, "y": 69 }
+        {
+          "label": "Engine 181",
+          "x": 24,
+          "y": 66
+        },
+        {
+          "label": "FDC line A",
+          "x": 55,
+          "y": 75
+        },
+        {
+          "label": "FDC line B",
+          "x": 60,
+          "y": 73
+        },
+        {
+          "label": "Hotel FDC",
+          "x": 75,
+          "y": 69
+        }
       ],
       "formulaBreakdown": [
         "The scene shows two hoses from Engine 181 to the hotel FDC.",

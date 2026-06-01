@@ -36,7 +36,7 @@
     {
       "id": "single_line_heavy_003_q1",
       "title": "Heavy 2½ Smooth Bore Attack Line",
-      "question": "Engine 181 is supplying a 250' 2½\" attack line to the corner of a commercial strip. The nozzle is a 1⅛\" smooth bore flowing about 265 GPM at 50 PSI. No elevation and no appliance loss. What pump pressure should you set?",
+      "question": "Engine 181 is supplying a 250 ft 2.5-inch attack line with a 1⅛-inch smooth bore nozzle flowing 265 GPM at 50 PSI. No elevation and no appliance loss. Use C = 2. What pump pressure should you set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
       "inputLabel": "Your pump pressure answer",
@@ -51,7 +51,11 @@
         "applianceLoss": 0,
         "totalGpm": 265,
         "pumpPressure": 85,
-        "tolerance": 5
+        "tolerance": 5,
+        "answerValue": 85,
+        "correctAnswer": 85,
+        "value": 85,
+        "pp": 85
       },
       "overlays": [
         {
@@ -80,19 +84,18 @@
         }
       ],
       "formulaBreakdown": [
-        "PP = FL + NP + elevation + appliance loss",
-        "FL per 100' = 2 × (265 ÷ 100)^2",
-        "FL per 100' = 2 × 7.0225 = 14.045 PSI",
-        "Total FL = 14.045 × 2.5 = 35.1125 ≈ 35 PSI",
-        "PP = 35 + 50 + 0 + 0 = 85 PSI"
+        "FL = C × (GPM / 100)^2 × hose length in hundreds of feet.",
+        "FL = 2 × (265 / 100)^2 × 2.5.",
+        "FL ≈ 35 PSI.",
+        "PP = 35 + 50 + 0 + 0 = 85 PSI."
       ],
-      "instructorExplanation": "",
-      "explainMistake": ""
+      "instructorExplanation": "This heavy-line variation uses 250 ft of 2.5-inch hose at 265 GPM. Calculate friction loss with C = 2, then add nozzle pressure and elevation.",
+      "explainMistake": "Do not use the same answer for every 2.5-inch line problem. Hose length and elevation can change the final pump pressure."
     },
     {
       "id": "single_line_heavy_003_q2",
       "title": "Heavy 2½ Smooth Bore Attack Line",
-      "question": "Engine 181 is supplying a 250' 2½\" attack line to the corner of a commercial strip. The nozzle is a 1⅛\" smooth bore flowing about 265 GPM at 50 PSI. No elevation and no appliance loss. What pump pressure should you set?",
+      "question": "Engine 181 is supplying a 200 ft 2.5-inch attack line with a 1⅛-inch smooth bore nozzle flowing 265 GPM at 50 PSI. No elevation and no appliance loss. Use C = 2. What pump pressure should you set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
       "inputLabel": "Your pump pressure answer",
@@ -101,13 +104,17 @@
       "correctPP": 78,
       "tolerance": 5,
       "answers": {
-        "frictionLoss": 35,
+        "frictionLoss": 28,
         "nozzlePressure": 50,
         "elevation": 0,
         "applianceLoss": 0,
         "totalGpm": 265,
         "pumpPressure": 78,
-        "tolerance": 5
+        "tolerance": 5,
+        "answerValue": 78,
+        "correctAnswer": 78,
+        "value": 78,
+        "pp": 78
       },
       "overlays": [
         {
@@ -136,34 +143,37 @@
         }
       ],
       "formulaBreakdown": [
-        "PP = FL + NP + elevation + appliance loss",
-        "FL per 100' = 2 × (265 ÷ 100)^2",
-        "FL per 100' = 2 × 7.0225 = 14.045 PSI",
-        "Total FL = 14.045 × 2.5 = 35.1125 ≈ 35 PSI",
-        "PP = 35 + 50 + 0 + 0 = 85 PSI"
+        "FL = C × (GPM / 100)^2 × hose length in hundreds of feet.",
+        "FL = 2 × (265 / 100)^2 × 2.0.",
+        "FL ≈ 28 PSI.",
+        "PP = 28 + 50 + 0 + 0 = 78 PSI."
       ],
-      "instructorExplanation": "",
-      "explainMistake": ""
+      "instructorExplanation": "This heavy-line variation uses 200 ft of 2.5-inch hose at 265 GPM. Calculate friction loss with C = 2, then add nozzle pressure and elevation.",
+      "explainMistake": "Do not use the same answer for every 2.5-inch line problem. Hose length and elevation can change the final pump pressure."
     },
     {
       "id": "single_line_heavy_003_q3",
       "title": "Heavy 2½ Smooth Bore Attack Line",
-      "question": "Engine 181 is supplying a 250' 2½\" attack line to the corner of a commercial strip. The nozzle is a 1⅛\" smooth bore flowing about 265 GPM at 50 PSI. No elevation and no appliance loss. What pump pressure should you set?",
+      "question": "Engine 181 is supplying a 150 ft 2.5-inch attack line with a 1⅛-inch smooth bore nozzle flowing 265 GPM at 50 PSI. No elevation and no appliance loss. Use C = 2. What pump pressure should you set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
       "inputLabel": "Your pump pressure answer",
       "inputPlaceholder": "Enter PSI",
-      "answerValue": 72,
-      "correctPP": 72,
+      "answerValue": 71,
+      "correctPP": 71,
       "tolerance": 5,
       "answers": {
-        "frictionLoss": 35,
+        "frictionLoss": 21,
         "nozzlePressure": 50,
         "elevation": 0,
         "applianceLoss": 0,
         "totalGpm": 265,
-        "pumpPressure": 72,
-        "tolerance": 5
+        "pumpPressure": 71,
+        "tolerance": 5,
+        "answerValue": 71,
+        "correctAnswer": 71,
+        "value": 71,
+        "pp": 71
       },
       "overlays": [
         {
@@ -192,19 +202,18 @@
         }
       ],
       "formulaBreakdown": [
-        "PP = FL + NP + elevation + appliance loss",
-        "FL per 100' = 2 × (265 ÷ 100)^2",
-        "FL per 100' = 2 × 7.0225 = 14.045 PSI",
-        "Total FL = 14.045 × 2.5 = 35.1125 ≈ 35 PSI",
-        "PP = 35 + 50 + 0 + 0 = 85 PSI"
+        "FL = C × (GPM / 100)^2 × hose length in hundreds of feet.",
+        "FL = 2 × (265 / 100)^2 × 1.5.",
+        "FL ≈ 21 PSI.",
+        "PP = 21 + 50 + 0 + 0 = 71 PSI."
       ],
-      "instructorExplanation": "",
-      "explainMistake": ""
+      "instructorExplanation": "This heavy-line variation uses 150 ft of 2.5-inch hose at 265 GPM. Calculate friction loss with C = 2, then add nozzle pressure and elevation.",
+      "explainMistake": "Do not use the same answer for every 2.5-inch line problem. Hose length and elevation can change the final pump pressure."
     },
     {
       "id": "single_line_heavy_003_q4",
       "title": "Heavy 2½ Smooth Bore Attack Line",
-      "question": "Engine 181 is supplying a 250' 2½\" attack line to the corner of a commercial strip. The nozzle is a 1⅛\" smooth bore flowing about 265 GPM at 50 PSI. No elevation and no appliance loss. What pump pressure should you set?",
+      "question": "Engine 181 is supplying a 250 ft 2.5-inch attack line with a 1⅛-inch smooth bore nozzle flowing 265 GPM at 50 PSI. Add 5 PSI elevation and no appliance loss. Use C = 2. What pump pressure should you set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
       "inputLabel": "Your pump pressure answer",
@@ -215,11 +224,15 @@
       "answers": {
         "frictionLoss": 35,
         "nozzlePressure": 50,
-        "elevation": 0,
+        "elevation": 5,
         "applianceLoss": 0,
         "totalGpm": 265,
         "pumpPressure": 90,
-        "tolerance": 5
+        "tolerance": 5,
+        "answerValue": 90,
+        "correctAnswer": 90,
+        "value": 90,
+        "pp": 90
       },
       "overlays": [
         {
@@ -248,14 +261,13 @@
         }
       ],
       "formulaBreakdown": [
-        "PP = FL + NP + elevation + appliance loss",
-        "FL per 100' = 2 × (265 ÷ 100)^2",
-        "FL per 100' = 2 × 7.0225 = 14.045 PSI",
-        "Total FL = 14.045 × 2.5 = 35.1125 ≈ 35 PSI",
-        "PP = 35 + 50 + 0 + 0 = 85 PSI"
+        "FL = C × (GPM / 100)^2 × hose length in hundreds of feet.",
+        "FL = 2 × (265 / 100)^2 × 2.5.",
+        "FL ≈ 35 PSI.",
+        "PP = 35 + 50 + 5 + 0 = 90 PSI."
       ],
-      "instructorExplanation": "",
-      "explainMistake": ""
+      "instructorExplanation": "This heavy-line variation uses 250 ft of 2.5-inch hose at 265 GPM. Calculate friction loss with C = 2, then add nozzle pressure and elevation.",
+      "explainMistake": "Do not use the same answer for every 2.5-inch line problem. Hose length and elevation can change the final pump pressure."
     }
   ],
   "tags": [

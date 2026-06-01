@@ -27,7 +27,7 @@
     {
       "id": "portable_monitor_operation_p1",
       "title": "Master Stream Flow",
-      "question": "Given the portable monitor setup shown, determine the master stream flow.",
+      "question": "The portable monitor uses a 1¾-inch smooth bore master-stream tip at 80 PSI nozzle pressure. Using the FirePumpSim solid-bore flow reference, determine the master stream flow.",
       "answerLabel": "Master Stream Flow",
       "answerUnit": "GPM",
       "inputLabel": "Enter master stream flow",
@@ -45,10 +45,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Hydrant", "x": 11, "y": 72 },
-        { "label": "Engine 181", "x": 28, "y": 62 },
-        { "label": "Monitor", "x": 72, "y": 49 },
-        { "label": "Fire", "x": 82, "y": 31 }
+        {
+          "label": "Hydrant",
+          "x": 11,
+          "y": 72
+        },
+        {
+          "label": "Engine 181",
+          "x": 28,
+          "y": 62
+        },
+        {
+          "label": "Monitor",
+          "x": 72,
+          "y": 49
+        },
+        {
+          "label": "Fire",
+          "x": 82,
+          "y": 31
+        }
       ],
       "formulaBreakdown": [
         "Smooth bore flow formula: GPM = 29.7 × d² × √NP.",
@@ -65,7 +81,7 @@
     {
       "id": "portable_monitor_operation_p2",
       "title": "Line A Flow",
-      "question": "How much water is flowing through Line A while supplying the portable monitor?",
+      "question": "The portable monitor is flowing 815 GPM total and is supplied by two equal lines from Engine 181. How much water is carried by Line A?",
       "answerLabel": "Line A Flow",
       "answerUnit": "GPM",
       "inputLabel": "Enter Line A flow",
@@ -83,10 +99,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 28, "y": 62 },
-        { "label": "Line A", "x": 58, "y": 65 },
-        { "label": "Line B", "x": 66, "y": 72 },
-        { "label": "Monitor", "x": 72, "y": 49 }
+        {
+          "label": "Engine 181",
+          "x": 28,
+          "y": 62
+        },
+        {
+          "label": "Line A",
+          "x": 58,
+          "y": 65
+        },
+        {
+          "label": "Line B",
+          "x": 66,
+          "y": 72
+        },
+        {
+          "label": "Monitor",
+          "x": 72,
+          "y": 49
+        }
       ],
       "formulaBreakdown": [
         "Total monitor flow = 815 GPM.",
@@ -102,7 +134,7 @@
     {
       "id": "portable_monitor_operation_p3",
       "title": "Pump Discharge Pressure",
-      "question": "Determine the required pump discharge pressure for the portable monitor operation shown.",
+      "question": "Engine 181 is supplying a portable monitor flowing 815 GPM total through two equal 200 ft 2.5-inch supply lines. Each line carries about 408 GPM. Use 65 PSI friction loss per supply line, 80 PSI nozzle pressure, 25 PSI portable monitor appliance loss, and no elevation. What pump discharge pressure is required?",
       "answerLabel": "Pump Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
@@ -120,11 +152,31 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Hydrant", "x": 11, "y": 72 },
-        { "label": "Engine 181", "x": 28, "y": 62 },
-        { "label": "Line A", "x": 58, "y": 65 },
-        { "label": "Line B", "x": 66, "y": 72 },
-        { "label": "Monitor", "x": 72, "y": 49 }
+        {
+          "label": "Hydrant",
+          "x": 11,
+          "y": 72
+        },
+        {
+          "label": "Engine 181",
+          "x": 28,
+          "y": 62
+        },
+        {
+          "label": "Line A",
+          "x": 58,
+          "y": 65
+        },
+        {
+          "label": "Line B",
+          "x": 66,
+          "y": 72
+        },
+        {
+          "label": "Monitor",
+          "x": 72,
+          "y": 49
+        }
       ],
       "formulaBreakdown": [
         "PP = FL + NP + elevation + appliance loss.",

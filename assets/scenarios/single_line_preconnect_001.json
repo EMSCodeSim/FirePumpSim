@@ -35,7 +35,7 @@
     {
       "id": "single_line_preconnect_001_q1",
       "title": "Basic 1¾ Preconnect to Front Door",
-      "question": "Engine 181 is stretching a 200' 1¾\" preconnect to the front door of a single-family dwelling. The fog nozzle is flowing 150 GPM at 50 PSI. No elevation and no appliance loss. What pump pressure should you set?",
+      "question": "Engine 181 is stretching 200 ft of 1.75-inch preconnect to the front door. The fog nozzle is flowing 150 GPM at 50 PSI. Use C = 15.5, no elevation, and no appliance loss. What pump pressure should you set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
       "inputLabel": "Your pump pressure answer",
@@ -50,7 +50,11 @@
         "applianceLoss": 0,
         "totalGpm": 150,
         "pumpPressure": 120,
-        "tolerance": 5
+        "tolerance": 5,
+        "answerValue": 120,
+        "correctAnswer": 120,
+        "value": 120,
+        "pp": 120
       },
       "overlays": [
         {
@@ -79,19 +83,18 @@
         }
       ],
       "formulaBreakdown": [
-        "PP = FL + NP + elevation + appliance loss",
-        "FL per 100' = 15.5 × (150 ÷ 100)^2",
-        "FL per 100' = 15.5 × 2.25 = 34.875 PSI",
-        "Total FL = 34.875 × 2 = 69.75 ≈ 70 PSI",
-        "PP = 70 + 50 + 0 + 0 = 120 PSI"
+        "FL = C × (GPM / 100)^2 × hose length in hundreds of feet.",
+        "FL = 15.5 × (150 / 100)^2 × 2.0.",
+        "FL ≈ 70 PSI.",
+        "PP = 70 + 50 + 0 + 0 = 120 PSI."
       ],
-      "instructorExplanation": "",
-      "explainMistake": ""
+      "instructorExplanation": "This variation uses 200 ft of 1.75-inch hose flowing 150 GPM. Calculate the line friction loss, then add 50 PSI nozzle pressure.",
+      "explainMistake": "Do not reuse another variation’s answer. The hose length and/or flow may change even though the picture looks similar."
     },
     {
       "id": "single_line_preconnect_001_q2",
       "title": "Basic 1¾ Preconnect to Front Door",
-      "question": "Engine 181 is stretching a 200' 1¾\" preconnect to the front door of a single-family dwelling. The fog nozzle is flowing 150 GPM at 50 PSI. No elevation and no appliance loss. What pump pressure should you set?",
+      "question": "Engine 181 is stretching 150 ft of 1.75-inch preconnect to the front door. The fog nozzle is flowing 150 GPM at 50 PSI. Use C = 15.5, no elevation, and no appliance loss. What pump pressure should you set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
       "inputLabel": "Your pump pressure answer",
@@ -100,13 +103,17 @@
       "correctPP": 102,
       "tolerance": 5,
       "answers": {
-        "frictionLoss": 70,
+        "frictionLoss": 52,
         "nozzlePressure": 50,
         "elevation": 0,
         "applianceLoss": 0,
         "totalGpm": 150,
         "pumpPressure": 102,
-        "tolerance": 5
+        "tolerance": 5,
+        "answerValue": 102,
+        "correctAnswer": 102,
+        "value": 102,
+        "pp": 102
       },
       "overlays": [
         {
@@ -135,19 +142,18 @@
         }
       ],
       "formulaBreakdown": [
-        "PP = FL + NP + elevation + appliance loss",
-        "FL per 100' = 15.5 × (150 ÷ 100)^2",
-        "FL per 100' = 15.5 × 2.25 = 34.875 PSI",
-        "Total FL = 34.875 × 2 = 69.75 ≈ 70 PSI",
-        "PP = 70 + 50 + 0 + 0 = 120 PSI"
+        "FL = C × (GPM / 100)^2 × hose length in hundreds of feet.",
+        "FL = 15.5 × (150 / 100)^2 × 1.5.",
+        "FL ≈ 52 PSI.",
+        "PP = 52 + 50 + 0 + 0 = 102 PSI."
       ],
-      "instructorExplanation": "",
-      "explainMistake": ""
+      "instructorExplanation": "This variation uses 150 ft of 1.75-inch hose flowing 150 GPM. Calculate the line friction loss, then add 50 PSI nozzle pressure.",
+      "explainMistake": "Do not reuse another variation’s answer. The hose length and/or flow may change even though the picture looks similar."
     },
     {
       "id": "single_line_preconnect_001_q3",
       "title": "Basic 1¾ Preconnect to Front Door",
-      "question": "Engine 181 is stretching a 200' 1¾\" preconnect to the front door of a single-family dwelling. The fog nozzle is flowing 150 GPM at 50 PSI. No elevation and no appliance loss. What pump pressure should you set?",
+      "question": "Engine 181 is stretching 200 ft of 1.75-inch preconnect to the front door. The fog nozzle is flowing 185 GPM at 50 PSI. Use C = 15.5, no elevation, and no appliance loss. What pump pressure should you set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
       "inputLabel": "Your pump pressure answer",
@@ -156,13 +162,17 @@
       "correctPP": 156,
       "tolerance": 5,
       "answers": {
-        "frictionLoss": 70,
+        "frictionLoss": 106,
         "nozzlePressure": 50,
         "elevation": 0,
         "applianceLoss": 0,
-        "totalGpm": 150,
+        "totalGpm": 185,
         "pumpPressure": 156,
-        "tolerance": 5
+        "tolerance": 5,
+        "answerValue": 156,
+        "correctAnswer": 156,
+        "value": 156,
+        "pp": 156
       },
       "overlays": [
         {
@@ -191,19 +201,18 @@
         }
       ],
       "formulaBreakdown": [
-        "PP = FL + NP + elevation + appliance loss",
-        "FL per 100' = 15.5 × (150 ÷ 100)^2",
-        "FL per 100' = 15.5 × 2.25 = 34.875 PSI",
-        "Total FL = 34.875 × 2 = 69.75 ≈ 70 PSI",
-        "PP = 70 + 50 + 0 + 0 = 120 PSI"
+        "FL = C × (GPM / 100)^2 × hose length in hundreds of feet.",
+        "FL = 15.5 × (185 / 100)^2 × 2.0.",
+        "FL ≈ 106 PSI.",
+        "PP = 106 + 50 + 0 + 0 = 156 PSI."
       ],
-      "instructorExplanation": "",
-      "explainMistake": ""
+      "instructorExplanation": "This variation uses 200 ft of 1.75-inch hose flowing 185 GPM. Calculate the line friction loss, then add 50 PSI nozzle pressure.",
+      "explainMistake": "Do not reuse another variation’s answer. The hose length and/or flow may change even though the picture looks similar."
     },
     {
       "id": "single_line_preconnect_001_q4",
       "title": "Basic 1¾ Preconnect to Front Door",
-      "question": "Engine 181 is stretching a 200' 1¾\" preconnect to the front door of a single-family dwelling. The fog nozzle is flowing 150 GPM at 50 PSI. No elevation and no appliance loss. What pump pressure should you set?",
+      "question": "Engine 181 is stretching 200 ft of 1.75-inch preconnect to the front door. The fog nozzle is flowing 175 GPM at 50 PSI. Use C = 15.5, no elevation, and no appliance loss. What pump pressure should you set?",
       "answerLabel": "Pump discharge pressure",
       "answerUnit": "PSI",
       "inputLabel": "Your pump pressure answer",
@@ -212,13 +221,17 @@
       "correctPP": 145,
       "tolerance": 5,
       "answers": {
-        "frictionLoss": 70,
+        "frictionLoss": 95,
         "nozzlePressure": 50,
         "elevation": 0,
         "applianceLoss": 0,
-        "totalGpm": 150,
+        "totalGpm": 175,
         "pumpPressure": 145,
-        "tolerance": 5
+        "tolerance": 5,
+        "answerValue": 145,
+        "correctAnswer": 145,
+        "value": 145,
+        "pp": 145
       },
       "overlays": [
         {
@@ -247,14 +260,13 @@
         }
       ],
       "formulaBreakdown": [
-        "PP = FL + NP + elevation + appliance loss",
-        "FL per 100' = 15.5 × (150 ÷ 100)^2",
-        "FL per 100' = 15.5 × 2.25 = 34.875 PSI",
-        "Total FL = 34.875 × 2 = 69.75 ≈ 70 PSI",
-        "PP = 70 + 50 + 0 + 0 = 120 PSI"
+        "FL = C × (GPM / 100)^2 × hose length in hundreds of feet.",
+        "FL = 15.5 × (175 / 100)^2 × 2.0.",
+        "FL ≈ 95 PSI.",
+        "PP = 95 + 50 + 0 + 0 = 145 PSI."
       ],
-      "instructorExplanation": "",
-      "explainMistake": ""
+      "instructorExplanation": "This variation uses 200 ft of 1.75-inch hose flowing 175 GPM. Calculate the line friction loss, then add 50 PSI nozzle pressure.",
+      "explainMistake": "Do not reuse another variation’s answer. The hose length and/or flow may change even though the picture looks similar."
     }
   ],
   "tags": [

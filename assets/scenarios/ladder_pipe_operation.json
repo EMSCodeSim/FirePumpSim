@@ -28,14 +28,14 @@
     {
       "id": "ladder_pipe_operation_p1",
       "title": "Total Ladder Pipe Flow",
-      "question": "Engine 181 is supplying a ladder pipe flowing 750 GPM. What is the total flow for the ladder pipe operation?",
+      "question": "A ladder pipe is supplied by two equal supply lines. Each supply line is carrying 375 GPM to the ladder truck. What is the total ladder pipe flow?",
       "answerLabel": "Total Flow",
       "answerUnit": "GPM",
       "inputLabel": "Enter total flow",
       "inputPlaceholder": "GPM",
       "answerValue": 750,
       "correctPP": 0,
-      "tolerance": 5,
+      "tolerance": 10,
       "answers": {
         "frictionLoss": 0,
         "nozzlePressure": 80,
@@ -43,21 +43,43 @@
         "applianceLoss": 25,
         "totalGpm": 750,
         "pumpPressure": 0,
-        "tolerance": 5
+        "tolerance": 10,
+        "answerValue": 750,
+        "correctAnswer": 750,
+        "value": 750
       },
       "overlays": [
-        { "label": "Hydrant", "x": 13, "y": 83 },
-        { "label": "Engine 181", "x": 34, "y": 64 },
-        { "label": "Ladder truck", "x": 74, "y": 49 },
-        { "label": "Ladder pipe", "x": 45, "y": 10 },
-        { "label": "Fire area", "x": 31, "y": 18 }
+        {
+          "label": "Hydrant",
+          "x": 13,
+          "y": 83
+        },
+        {
+          "label": "Engine 181",
+          "x": 34,
+          "y": 64
+        },
+        {
+          "label": "Ladder truck",
+          "x": 74,
+          "y": 49
+        },
+        {
+          "label": "Ladder pipe",
+          "x": 45,
+          "y": 10
+        },
+        {
+          "label": "Fire area",
+          "x": 31,
+          "y": 18
+        }
       ],
       "formulaBreakdown": [
-        "The ladder pipe operation is flowing 750 GPM.",
-        "Total flow = 750 GPM."
+        "Total ladder pipe flow = 375 + 375 = 750 GPM."
       ],
-      "instructorExplanation": "The total flow is the amount being delivered through the aerial ladder pipe. In this operation, the ladder pipe flow is 750 GPM.",
-      "explainMistake": "Do not divide the ladder pipe flow unless the question asks for flow per supply line."
+      "instructorExplanation": "The two supply lines combine to feed one ladder pipe. Add the equal line flows to find total ladder pipe flow.",
+      "explainMistake": "Do not count the ladder pipe as an additional separate flow beyond the water carried in the two supply lines."
     },
     {
       "id": "ladder_pipe_operation_p2",
@@ -80,10 +102,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 34, "y": 64 },
-        { "label": "Supply A", "x": 57, "y": 67 },
-        { "label": "Supply B", "x": 67, "y": 70 },
-        { "label": "Ladder truck", "x": 74, "y": 49 }
+        {
+          "label": "Engine 181",
+          "x": 34,
+          "y": 64
+        },
+        {
+          "label": "Supply A",
+          "x": 57,
+          "y": 67
+        },
+        {
+          "label": "Supply B",
+          "x": 67,
+          "y": 70
+        },
+        {
+          "label": "Ladder truck",
+          "x": 74,
+          "y": 49
+        }
       ],
       "formulaBreakdown": [
         "Flow per line = total ladder pipe flow / number of supply lines.",
@@ -116,10 +154,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 34, "y": 64 },
-        { "label": "Supply A", "x": 57, "y": 67 },
-        { "label": "Supply B", "x": 67, "y": 70 },
-        { "label": "Ladder truck", "x": 74, "y": 49 }
+        {
+          "label": "Engine 181",
+          "x": 34,
+          "y": 64
+        },
+        {
+          "label": "Supply A",
+          "x": 57,
+          "y": 67
+        },
+        {
+          "label": "Supply B",
+          "x": 67,
+          "y": 70
+        },
+        {
+          "label": "Ladder truck",
+          "x": 74,
+          "y": 49
+        }
       ],
       "formulaBreakdown": [
         "FL = C x (GPM / 100)^2 x hose length in hundreds.",
@@ -155,10 +209,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 34, "y": 64 },
-        { "label": "Ladder truck", "x": 74, "y": 49 },
-        { "label": "Aerial ladder", "x": 62, "y": 29 },
-        { "label": "Ladder pipe", "x": 45, "y": 10 }
+        {
+          "label": "Engine 181",
+          "x": 34,
+          "y": 64
+        },
+        {
+          "label": "Ladder truck",
+          "x": 74,
+          "y": 49
+        },
+        {
+          "label": "Aerial ladder",
+          "x": 62,
+          "y": 29
+        },
+        {
+          "label": "Ladder pipe",
+          "x": 45,
+          "y": 10
+        }
       ],
       "formulaBreakdown": [
         "Elevation pressure = elevation height x 0.5 PSI per foot.",
@@ -172,7 +242,7 @@
     {
       "id": "ladder_pipe_operation_p5",
       "title": "Ladder Pipe Pump Pressure",
-      "question": "Engine 181 supplies the ladder truck with two 200 ft 2.5-inch supply lines. The ladder pipe flows 750 GPM total, each supply line carries 375 GPM, friction loss is 55 PSI, nozzle pressure is 80 PSI, elevation is 30 PSI, and ladder waterway appliance loss is 25 PSI. What pump discharge pressure should Engine 181 set?",
+      "question": "Engine 181 supplies a ladder truck with two equal 200 ft 2.5-inch supply lines. The ladder pipe flows 750 GPM total, so each supply line carries 375 GPM. The ladder pipe nozzle pressure is 80 PSI, the nozzle is 60 ft above Engine 181 so elevation is 30 PSI, and ladder waterway appliance loss is 25 PSI. Using C = 2 for each 2.5-inch supply line, what pump discharge pressure should Engine 181 set?",
       "answerLabel": "Pump Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
@@ -190,11 +260,31 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Hydrant", "x": 13, "y": 83 },
-        { "label": "Engine 181", "x": 34, "y": 64 },
-        { "label": "Two supply lines", "x": 63, "y": 68 },
-        { "label": "Ladder truck", "x": 74, "y": 49 },
-        { "label": "Ladder pipe", "x": 45, "y": 10 }
+        {
+          "label": "Hydrant",
+          "x": 13,
+          "y": 83
+        },
+        {
+          "label": "Engine 181",
+          "x": 34,
+          "y": 64
+        },
+        {
+          "label": "Two supply lines",
+          "x": 63,
+          "y": 68
+        },
+        {
+          "label": "Ladder truck",
+          "x": 74,
+          "y": 49
+        },
+        {
+          "label": "Ladder pipe",
+          "x": 45,
+          "y": 10
+        }
       ],
       "formulaBreakdown": [
         "PP = FL + NP + elevation + appliance loss.",
@@ -229,10 +319,26 @@
         "tolerance": 0
       },
       "overlays": [
-        { "label": "Engine 181", "x": 34, "y": 64 },
-        { "label": "Supply A", "x": 57, "y": 67 },
-        { "label": "Supply B", "x": 67, "y": 70 },
-        { "label": "Ladder truck", "x": 74, "y": 49 }
+        {
+          "label": "Engine 181",
+          "x": 34,
+          "y": 64
+        },
+        {
+          "label": "Supply A",
+          "x": 57,
+          "y": 67
+        },
+        {
+          "label": "Supply B",
+          "x": 67,
+          "y": 70
+        },
+        {
+          "label": "Ladder truck",
+          "x": 74,
+          "y": 49
+        }
       ],
       "formulaBreakdown": [
         "The scene shows two supply hoses from Engine 181 to the ladder truck.",

@@ -25,41 +25,62 @@
   "problems": [
     {
       "id": "mid_rise_standpipe_operation_p1",
-      "title": "Standpipe System Pressure Change",
-      "question": "What pump pressure change is required for the standpipe system in this operation?",
+      "title": "Sixth-Floor Standpipe Elevation",
+      "question": "The standpipe attack is operating on the 6th floor. Use the FirePumpSim floor rule: 1st floor = 0 ft, each floor above the 1st adds 10 ft, and elevation adds 0.5 PSI per foot. What elevation pressure must be added?",
       "answerLabel": "Standpipe System Loss",
       "answerUnit": "PSI",
       "inputLabel": "Enter pressure change",
       "inputPlaceholder": "PSI",
       "answerValue": 25,
-      "correctPP": 0,
+      "correctPP": 25,
       "tolerance": 5,
       "answers": {
         "frictionLoss": 0,
         "nozzlePressure": 0,
-        "elevation": 0,
-        "applianceLoss": 25,
+        "elevation": 25,
+        "applianceLoss": 0,
         "totalGpm": 265,
-        "pumpPressure": 0,
-        "tolerance": 5
+        "pumpPressure": 25,
+        "tolerance": 5,
+        "answerValue": 25,
+        "correctAnswer": 25,
+        "value": 25,
+        "pp": 25
       },
       "overlays": [
-        { "label": "Engine 181", "x": 20, "y": 60 },
-        { "label": "FDC", "x": 70, "y": 55 },
-        { "label": "Standpipe", "x": 68, "y": 42 },
-        { "label": "Attack crew", "x": 72, "y": 28 }
+        {
+          "label": "Engine 181",
+          "x": 20,
+          "y": 60
+        },
+        {
+          "label": "FDC",
+          "x": 70,
+          "y": 55
+        },
+        {
+          "label": "Standpipe",
+          "x": 68,
+          "y": 42
+        },
+        {
+          "label": "Attack crew",
+          "x": 72,
+          "y": 28
+        }
       ],
       "formulaBreakdown": [
-        "FirePumpSim standard FDC / standpipe system loss applies.",
-        "Standpipe system pressure change = 25 PSI."
+        "6th floor is 5 floors above the 1st floor.",
+        "Height = 5 × 10 ft = 50 ft.",
+        "Elevation pressure = 50 × 0.5 = 25 PSI."
       ],
-      "instructorExplanation": "The standpipe system adds a standard 25 PSI system loss. This pressure is added to the pump discharge pressure along with friction loss, nozzle pressure, and elevation.",
-      "explainMistake": "Do not treat the standpipe system as zero loss. The FDC / standpipe system adds pressure demand before the attack line and nozzle are supplied."
+      "instructorExplanation": "Use the number of floors above the first floor, then multiply by 10 ft and 0.5 PSI per foot.",
+      "explainMistake": "Do not use the floor number as the elevation height. The first floor counts as 0 ft in this rule."
     },
     {
       "id": "mid_rise_standpipe_operation_p2",
       "title": "Elevation Pressure Change",
-      "question": "What pump pressure change is required due to elevation for the fifth-floor fire attack?",
+      "question": "The attack is operating from the 5th floor. Using the floor-height rule, 1st floor = 0 ft and 5th floor = 40 ft. At 0.5 PSI per foot, what elevation pressure must be added?",
       "answerLabel": "Elevation Pressure Change",
       "answerUnit": "PSI",
       "inputLabel": "Enter elevation pressure",
@@ -77,10 +98,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 20, "y": 60 },
-        { "label": "FDC", "x": 70, "y": 55 },
-        { "label": "Fire floor", "x": 74, "y": 25 },
-        { "label": "Attack crew", "x": 72, "y": 28 }
+        {
+          "label": "Engine 181",
+          "x": 20,
+          "y": 60
+        },
+        {
+          "label": "FDC",
+          "x": 70,
+          "y": 55
+        },
+        {
+          "label": "Fire floor",
+          "x": 74,
+          "y": 25
+        },
+        {
+          "label": "Attack crew",
+          "x": 72,
+          "y": 28
+        }
       ],
       "formulaBreakdown": [
         "Floor rule: 1st floor = 0 ft.",
@@ -96,7 +133,7 @@
     {
       "id": "mid_rise_standpipe_operation_p3",
       "title": "Total Pump Discharge Pressure",
-      "question": "Determine the total pump discharge pressure required for the standpipe operation shown.",
+      "question": "Engine 181 is supplying a 5th-floor standpipe operation through 100 ft of 2.5-inch hose to the FDC and 150 ft of 2.5-inch attack hose from the outlet to a 1⅛-inch smooth bore nozzle flowing 265 GPM at 50 PSI. Add 20 PSI elevation and 25 PSI standpipe/FDC system loss. What pump discharge pressure is required?",
       "answerLabel": "Pump Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
@@ -114,11 +151,31 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Hydrant", "x": 12, "y": 69 },
-        { "label": "Engine 181", "x": 20, "y": 60 },
-        { "label": "FDC", "x": 70, "y": 55 },
-        { "label": "Fire floor", "x": 74, "y": 25 },
-        { "label": "Attack crew", "x": 72, "y": 28 }
+        {
+          "label": "Hydrant",
+          "x": 12,
+          "y": 69
+        },
+        {
+          "label": "Engine 181",
+          "x": 20,
+          "y": 60
+        },
+        {
+          "label": "FDC",
+          "x": 70,
+          "y": 55
+        },
+        {
+          "label": "Fire floor",
+          "x": 74,
+          "y": 25
+        },
+        {
+          "label": "Attack crew",
+          "x": 72,
+          "y": 28
+        }
       ],
       "formulaBreakdown": [
         "PP = FL + NP + elevation + appliance loss.",

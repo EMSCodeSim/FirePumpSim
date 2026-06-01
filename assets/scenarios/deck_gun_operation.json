@@ -25,7 +25,7 @@
     {
       "id": "deck_gun_operation_p1",
       "title": "Deck Gun Flow",
-      "question": "What is the total flow requirement for the deck gun operation shown?",
+      "question": "Engine 181 is operating a deck gun with a 1¾-inch smooth bore tip at 80 PSI nozzle pressure. Using the FirePumpSim solid-bore flow reference, what is the approximate total deck gun flow?",
       "answerLabel": "Deck Gun Flow",
       "answerUnit": "GPM",
       "inputLabel": "Enter deck gun flow",
@@ -43,10 +43,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Hydrant", "x": 13, "y": 73 },
-        { "label": "Engine 181", "x": 43, "y": 58 },
-        { "label": "Deck Gun", "x": 37, "y": 39 },
-        { "label": "Roof Fire", "x": 70, "y": 21 }
+        {
+          "label": "Hydrant",
+          "x": 13,
+          "y": 73
+        },
+        {
+          "label": "Engine 181",
+          "x": 43,
+          "y": 58
+        },
+        {
+          "label": "Deck Gun",
+          "x": 37,
+          "y": 39
+        },
+        {
+          "label": "Roof Fire",
+          "x": 70,
+          "y": 21
+        }
       ],
       "formulaBreakdown": [
         "Smooth bore flow formula: GPM = 29.7 × d² × √NP.",
@@ -63,45 +79,60 @@
     {
       "id": "deck_gun_operation_p2",
       "title": "Pump Discharge Pressure",
-      "question": "Determine the required pump discharge pressure for the deck gun operation shown.",
+      "question": "Engine 181 is operating a deck gun mounted directly on the apparatus with a 1¾-inch smooth bore tip flowing approximately 815 GPM at 80 PSI nozzle pressure. The stream is operating 30 ft above the pump, so add 15 PSI elevation. There is no hose friction loss and no appliance loss. What pump discharge pressure is required?",
       "answerLabel": "Pump Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
       "inputPlaceholder": "PSI",
-      "answerValue": 80,
-      "correctPP": 80,
+      "answerValue": 95,
+      "correctPP": 95,
       "tolerance": 5,
       "answers": {
         "frictionLoss": 0,
         "nozzlePressure": 80,
-        "elevation": 0,
+        "elevation": 15,
         "applianceLoss": 0,
         "totalGpm": 815,
-        "pumpPressure": 80,
-        "tolerance": 5
+        "pumpPressure": 95,
+        "tolerance": 5,
+        "answerValue": 95,
+        "correctAnswer": 95,
+        "value": 95,
+        "pp": 95
       },
       "overlays": [
-        { "label": "Hydrant", "x": 13, "y": 73 },
-        { "label": "Engine 181", "x": 43, "y": 58 },
-        { "label": "Deck Gun", "x": 37, "y": 39 },
-        { "label": "Roof Fire", "x": 70, "y": 21 }
+        {
+          "label": "Hydrant",
+          "x": 13,
+          "y": 73
+        },
+        {
+          "label": "Engine 181",
+          "x": 43,
+          "y": 58
+        },
+        {
+          "label": "Deck Gun",
+          "x": 37,
+          "y": 39
+        },
+        {
+          "label": "Roof Fire",
+          "x": 70,
+          "y": 21
+        }
       ],
       "formulaBreakdown": [
         "PP = FL + NP + elevation + appliance loss.",
-        "Deck gun is mounted on the engine, so hose friction loss = 0 PSI.",
-        "Nozzle pressure = 80 PSI.",
-        "Elevation = 0 PSI.",
-        "Appliance loss = 0 PSI.",
-        "PP = 0 + 80 + 0 + 0.",
-        "PP = 80 PSI."
+        "PP = 0 + 80 + 15 + 0 = 95 PSI."
       ],
-      "instructorExplanation": "Because the deck gun is mounted directly on Engine 181, there is no attack hose friction loss. The required pump discharge pressure is the master stream nozzle pressure.",
-      "explainMistake": "Do not add attack-line friction loss when the deck gun is mounted on the engine. Only add friction loss when hose is supplying a remote appliance."
+      "instructorExplanation": "A mounted deck gun may have no hose friction loss, but the pump still must cover nozzle pressure plus any stated elevation.",
+      "explainMistake": "Do not stop at nozzle pressure when the question gives an elevation add-on."
     },
     {
       "id": "deck_gun_operation_p3",
       "title": "Friction Loss",
-      "question": "How much friction loss is present in the deck gun operation shown?",
+      "question": "The deck gun is mounted directly on Engine 181, so there is no attack hose between the pump and the deck gun nozzle. How much hose friction loss should be added to the deck gun pump-pressure calculation?",
       "answerLabel": "Friction Loss",
       "answerUnit": "PSI",
       "inputLabel": "Enter friction loss",
@@ -119,10 +150,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 43, "y": 58 },
-        { "label": "Deck Gun", "x": 37, "y": 39 },
-        { "label": "Stream", "x": 53, "y": 29 },
-        { "label": "Roof Fire", "x": 70, "y": 21 }
+        {
+          "label": "Engine 181",
+          "x": 43,
+          "y": 58
+        },
+        {
+          "label": "Deck Gun",
+          "x": 37,
+          "y": 39
+        },
+        {
+          "label": "Stream",
+          "x": 53,
+          "y": 29
+        },
+        {
+          "label": "Roof Fire",
+          "x": 70,
+          "y": 21
+        }
       ],
       "formulaBreakdown": [
         "Friction loss is calculated for hose lines.",
@@ -135,41 +182,62 @@
     },
     {
       "id": "deck_gun_operation_p4",
-      "title": "Nozzle Pressure",
-      "question": "What pressure is required at the deck gun nozzle?",
+      "title": "Alternate Deck Gun Tip Flow",
+      "question": "Engine 181 switches to a 1½-inch smooth bore deck gun tip operating at 80 PSI nozzle pressure. Using the FirePumpSim solid-bore flow formula, what is the approximate flow?",
       "answerLabel": "Nozzle Pressure",
-      "answerUnit": "PSI",
+      "answerUnit": "GPM",
       "inputLabel": "Enter nozzle pressure",
       "inputPlaceholder": "PSI",
-      "answerValue": 80,
+      "answerValue": 600,
       "correctPP": 0,
-      "tolerance": 5,
+      "tolerance": 25,
       "answers": {
         "frictionLoss": 0,
         "nozzlePressure": 80,
         "elevation": 0,
         "applianceLoss": 0,
-        "totalGpm": 815,
+        "totalGpm": 600,
         "pumpPressure": 0,
-        "tolerance": 5
+        "tolerance": 25,
+        "answerValue": 600,
+        "correctAnswer": 600,
+        "value": 600
       },
       "overlays": [
-        { "label": "Engine 181", "x": 43, "y": 58 },
-        { "label": "Deck Gun", "x": 37, "y": 39 },
-        { "label": "Stream", "x": 53, "y": 29 },
-        { "label": "Roof Fire", "x": 70, "y": 21 }
+        {
+          "label": "Engine 181",
+          "x": 43,
+          "y": 58
+        },
+        {
+          "label": "Deck Gun",
+          "x": 37,
+          "y": 39
+        },
+        {
+          "label": "Stream",
+          "x": 53,
+          "y": 29
+        },
+        {
+          "label": "Roof Fire",
+          "x": 70,
+          "y": 21
+        }
       ],
       "formulaBreakdown": [
-        "Master stream nozzle pressure = 80 PSI.",
-        "Deck gun nozzle pressure answer = 80 PSI."
+        "GPM = 29.7 × d² × √NP.",
+        "GPM = 29.7 × 1.5² × √80.",
+        "GPM ≈ 29.7 × 2.25 × 8.94 ≈ 598 GPM.",
+        "Rounded answer ≈ 600 GPM."
       ],
-      "instructorExplanation": "The scenario information panel identifies this as a master stream deck gun operation. The required nozzle pressure is 80 PSI.",
-      "explainMistake": "Do not confuse nozzle pressure with total pump discharge pressure. In this setup they are the same only because there is no hose friction loss, elevation, or appliance loss."
+      "instructorExplanation": "This requires using the smooth-bore flow formula instead of repeating a nozzle pressure value.",
+      "explainMistake": "Do not enter the 80 PSI nozzle pressure as the answer. The question asks for flow in GPM."
     },
     {
       "id": "deck_gun_operation_p5",
       "title": "Hydrant Pressure Drop",
-      "question": "The hydrant static pressure is 80 PSI and the residual pressure is 65 PSI while supplying the current operation. Based on the pressure drop, how many additional equivalent deck gun streams could be supplied?",
+      "question": "Engine 181 is supplying one deck gun flowing 815 GPM. Hydrant static pressure is 80 PSI and residual pressure is 65 PSI. Using the FirePumpSim hydrant-drop rule, how many additional equivalent 815 GPM deck gun streams could likely be supplied?",
       "answerLabel": "Additional Equivalent Streams",
       "answerUnit": "streams",
       "inputLabel": "Enter additional equivalent streams",
@@ -187,27 +255,35 @@
         "tolerance": 0
       },
       "overlays": [
-        { "label": "Hydrant", "x": 13, "y": 73 },
-        { "label": "Engine 181", "x": 43, "y": 58 },
-        { "label": "Deck Gun", "x": 37, "y": 39 }
+        {
+          "label": "Hydrant",
+          "x": 13,
+          "y": 73
+        },
+        {
+          "label": "Engine 181",
+          "x": 43,
+          "y": 58
+        },
+        {
+          "label": "Deck Gun",
+          "x": 37,
+          "y": 39
+        }
       ],
       "formulaBreakdown": [
-        "Pressure drop = static pressure − residual pressure.",
-        "Pressure drop = 80 − 65.",
-        "Pressure drop = 15 PSI.",
-        "Percent drop = pressure drop ÷ static pressure × 100.",
-        "Percent drop = 15 ÷ 80 × 100.",
-        "Percent drop = 18.75%.",
-        "Driver Operator hydrant rule: 16–25% drop supports 1 additional equivalent stream.",
-        "Additional equivalent streams = 1."
+        "Pressure drop = 80 - 65 = 15 PSI.",
+        "Percent drop = 15 / 80 = 18.75%.",
+        "A 10–24% pressure drop indicates approximately 1 additional equivalent line/stream may be available.",
+        "Additional equivalent deck gun streams = 1."
       ],
-      "instructorExplanation": "The hydrant pressure drop is 18.75 percent. Under the standard pressure-drop rule, that indicates the hydrant can support one additional equivalent stream.",
-      "explainMistake": "Do not treat the 15 PSI drop as 15 percent. The percentage must be calculated from the static pressure."
+      "instructorExplanation": "This asks for available additional capacity using the hydrant drop rule, not total GPM. A 15 PSI drop from an 80 PSI static pressure is about a 19% drop, which supports about one more equivalent stream in FirePumpSim.",
+      "explainMistake": "Do not answer with the 815 GPM deck gun flow. First calculate the pressure-drop percentage, then apply the hydrant-drop rule."
     },
     {
       "id": "deck_gun_operation_p6",
       "title": "Additional Attack Line Flow",
-      "question": "If one additional attack line is placed in service, what is the new total flow requirement for the operation?",
+      "question": "The deck gun is flowing 815 GPM. If one additional 185 GPM attack line is placed in service, what is the new total flow requirement?",
       "answerLabel": "New Total Flow",
       "answerUnit": "GPM",
       "inputLabel": "Enter new total flow",
@@ -225,10 +301,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Hydrant", "x": 13, "y": 73 },
-        { "label": "Engine 181", "x": 43, "y": 58 },
-        { "label": "Deck Gun", "x": 37, "y": 39 },
-        { "label": "Roof Fire", "x": 70, "y": 21 }
+        {
+          "label": "Hydrant",
+          "x": 13,
+          "y": 73
+        },
+        {
+          "label": "Engine 181",
+          "x": 43,
+          "y": 58
+        },
+        {
+          "label": "Deck Gun",
+          "x": 37,
+          "y": 39
+        },
+        {
+          "label": "Roof Fire",
+          "x": 70,
+          "y": 21
+        }
       ],
       "formulaBreakdown": [
         "Current deck gun flow = 815 GPM.",

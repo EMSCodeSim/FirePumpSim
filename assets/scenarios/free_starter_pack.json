@@ -436,7 +436,7 @@
         {
           "id": "starter_wye_operation_006_p1",
           "title": "Set PDP for Wye Operation",
-          "question": "Engine 181 is pumping 200′ of 2½″ hose to a wye. Branch A is 150′ of 1¾″ with a ChiefXD 185. Branch B is 200′ of 1¾″ with a ChiefXD 185. Both nozzles flow 185 GPM at 50 PSI. What pump pressure should the driver/operator set?",
+          "question": "Engine 181 is pumping 200 ft of 2.5-inch hose to a wye. Branch A is 150 ft of 1.75-inch hose with a ChiefXD 185, and Branch B is 200 ft of 1.75-inch hose with a ChiefXD 185. Both nozzles flow 185 GPM at 50 PSI. Add 10 PSI appliance loss for the wye. What pump pressure should the driver/operator set for the governing branch?",
           "answerLabel": "Pump Pressure",
           "answerUnit": "psi",
           "inputLabel": "Enter PDP",
@@ -496,7 +496,7 @@
             "Rounded PDP = 220 PSI"
           ],
           "instructorExplanation": "For a wye, calculate the supply line carrying total flow, then calculate each branch. The highest pressure branch governs. Branch B has more hose than Branch A, so Branch B controls the pump pressure. Add supply friction loss, Branch B friction loss, wye loss, and nozzle pressure.",
-          "explainMistake": "If you used Branch A, your PDP will be too low for the longer Branch B line. In a wye operation, the highest pressure branch governs."
+          "explainMistake": "Do not add Branch A and Branch B pump pressures together. Use total flow for the main line to the wye, calculate each branch path, add the wye loss, and pump the highest-pressure branch."
         }
       ],
       "tags": [

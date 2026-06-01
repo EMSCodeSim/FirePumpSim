@@ -26,43 +26,61 @@
   "problems": [
     {
       "id": "commercial_fdc_standpipe_supply_p1",
-      "title": "Total Flow Requirement",
-      "question": "What is the total flow requirement for the operation shown?",
+      "title": "Standpipe Attack Plus Sprinkler Support Flow",
+      "question": "Engine 181 is supplying one interior standpipe attack line flowing 265 GPM and also assigning 250 GPM for sprinkler-system support through the FDC. What is the combined flow demand for the FDC operation?",
       "answerLabel": "Total Flow",
       "answerUnit": "GPM",
       "inputLabel": "Enter total flow",
       "inputPlaceholder": "GPM",
-      "answerValue": 265,
+      "answerValue": 515,
       "correctPP": 0,
       "tolerance": 5,
       "answers": {
-        "frictionLoss": 25,
-        "nozzlePressure": 50,
+        "frictionLoss": 0,
+        "nozzlePressure": 0,
         "elevation": 0,
-        "applianceLoss": 25,
-        "totalGpm": 265,
+        "applianceLoss": 0,
+        "totalGpm": 515,
         "pumpPressure": 0,
-        "tolerance": 5
+        "tolerance": 5,
+        "answerValue": 515,
+        "correctAnswer": 515,
+        "value": 515
       },
       "overlays": [
-        { "label": "Hydrant", "x": 10, "y": 75 },
-        { "label": "Engine 181", "x": 34, "y": 50 },
-        { "label": "FDC", "x": 86, "y": 47 },
-        { "label": "Fire area", "x": 76, "y": 26 }
+        {
+          "label": "Hydrant",
+          "x": 10,
+          "y": 75
+        },
+        {
+          "label": "Engine 181",
+          "x": 34,
+          "y": 50
+        },
+        {
+          "label": "FDC",
+          "x": 86,
+          "y": 47
+        },
+        {
+          "label": "Fire area",
+          "x": 76,
+          "y": 26
+        }
       ],
       "formulaBreakdown": [
-        "The operation has one flowing interior attack line.",
-        "The nozzle is a 1 1/8-inch smooth bore.",
-        "FirePumpSim standard flow for a 1 1/8-inch smooth bore is 265 GPM.",
-        "Total flow requirement = 265 GPM."
+        "Interior attack flow = 265 GPM.",
+        "Sprinkler support flow = 250 GPM.",
+        "Combined FDC demand = 265 + 250 = 515 GPM."
       ],
-      "instructorExplanation": "The total flow requirement is based on the flowing interior attack line supplied through the FDC / standpipe system. The 1 1/8-inch smooth bore line requires 265 GPM.",
-      "explainMistake": "Do not add flow for the two FDC supply hoses. Those hoses are supplying the same standpipe operation, not two separate attack lines."
+      "instructorExplanation": "This problem separates flow demand from pump pressure. Add the standpipe attack flow and sprinkler-support flow; do not add duplicate flow just because multiple FDC hoses are connected.",
+      "explainMistake": "Do not count each FDC hose as a separate attack line. Add only the actual assigned flowing devices or system support demand."
     },
     {
       "id": "commercial_fdc_standpipe_supply_p2",
       "title": "FDC Supply Line Friction Loss",
-      "question": "How much friction loss is present in each FDC supply line?",
+      "question": "The building FDC is supplied by two equal 100 ft 2.5-inch lines. The single interior attack line requires 265 GPM total, so each FDC supply line carries 132.5 GPM. Using C = 2, what is the friction loss in each FDC supply line?",
       "answerLabel": "FDC Line Friction Loss",
       "answerUnit": "PSI",
       "inputLabel": "Enter friction loss",
@@ -80,10 +98,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 34, "y": 50 },
-        { "label": "Line A", "x": 57, "y": 54 },
-        { "label": "Line B", "x": 60, "y": 58 },
-        { "label": "FDC", "x": 86, "y": 47 }
+        {
+          "label": "Engine 181",
+          "x": 34,
+          "y": 50
+        },
+        {
+          "label": "Line A",
+          "x": 57,
+          "y": 54
+        },
+        {
+          "label": "Line B",
+          "x": 60,
+          "y": 58
+        },
+        {
+          "label": "FDC",
+          "x": 86,
+          "y": 47
+        }
       ],
       "formulaBreakdown": [
         "The FDC is supplied by two equal supply lines.",
@@ -102,41 +136,62 @@
     },
     {
       "id": "commercial_fdc_standpipe_supply_p3",
-      "title": "FDC / Standpipe System Loss",
-      "question": "What pump pressure change is required for the building FDC / standpipe system?",
+      "title": "Sixth-Floor Standpipe Elevation",
+      "question": "An interior standpipe attack is operating on the 6th floor. Use the FirePumpSim floor rule: 1st floor = 0 ft, each floor above the 1st adds 10 ft, and elevation adds 0.5 PSI per foot. What elevation pressure must be added?",
       "answerLabel": "System Loss",
       "answerUnit": "PSI",
       "inputLabel": "Enter system loss",
       "inputPlaceholder": "PSI",
       "answerValue": 25,
-      "correctPP": 0,
+      "correctPP": 25,
       "tolerance": 5,
       "answers": {
         "frictionLoss": 0,
         "nozzlePressure": 0,
-        "elevation": 0,
-        "applianceLoss": 25,
+        "elevation": 25,
+        "applianceLoss": 0,
         "totalGpm": 265,
-        "pumpPressure": 0,
-        "tolerance": 5
+        "pumpPressure": 25,
+        "tolerance": 5,
+        "answerValue": 25,
+        "correctAnswer": 25,
+        "value": 25,
+        "pp": 25
       },
       "overlays": [
-        { "label": "Engine 181", "x": 34, "y": 50 },
-        { "label": "FDC", "x": 86, "y": 47 },
-        { "label": "Interior system", "x": 75, "y": 37 },
-        { "label": "Fire area", "x": 76, "y": 26 }
+        {
+          "label": "Engine 181",
+          "x": 34,
+          "y": 50
+        },
+        {
+          "label": "FDC",
+          "x": 86,
+          "y": 47
+        },
+        {
+          "label": "Interior system",
+          "x": 75,
+          "y": 37
+        },
+        {
+          "label": "Fire area",
+          "x": 76,
+          "y": 26
+        }
       ],
       "formulaBreakdown": [
-        "FirePumpSim standard FDC / standpipe system loss applies.",
-        "FDC / standpipe system loss = 25 PSI."
+        "6th floor is 5 floors above the 1st floor.",
+        "Elevation height = 5 × 10 ft = 50 ft.",
+        "Elevation pressure = 50 × 0.5 = 25 PSI."
       ],
-      "instructorExplanation": "The building FDC / standpipe system adds 25 PSI to the pump discharge pressure requirement.",
-      "explainMistake": "Do not treat the FDC connection as zero loss. The standpipe system loss must be added when calculating pump discharge pressure."
+      "instructorExplanation": "Elevation is based on floors above the first floor, not the floor number itself.",
+      "explainMistake": "Do not multiply the 6th floor by 10 ft. The 1st floor is treated as 0 ft in this FirePumpSim rule."
     },
     {
       "id": "commercial_fdc_standpipe_supply_p4",
       "title": "Total Pump Discharge Pressure",
-      "question": "Determine the required pump discharge pressure for the operation shown.",
+      "question": "Engine 181 is supplying a grade-level standpipe attack through two equal 100 ft 2.5-inch FDC supply lines. Total attack flow is 265 GPM, so each FDC supply line carries 132.5 GPM. The interior attack line is 150 ft of 2.5-inch hose flowing 265 GPM through a 1⅛-inch smooth bore at 50 PSI. Add 25 PSI FDC/standpipe system loss and no elevation. What pump discharge pressure should be set?",
       "answerLabel": "Pump Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
@@ -154,10 +209,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Hydrant", "x": 10, "y": 75 },
-        { "label": "Engine 181", "x": 34, "y": 50 },
-        { "label": "FDC", "x": 86, "y": 47 },
-        { "label": "Fire area", "x": 76, "y": 26 }
+        {
+          "label": "Hydrant",
+          "x": 10,
+          "y": 75
+        },
+        {
+          "label": "Engine 181",
+          "x": 34,
+          "y": 50
+        },
+        {
+          "label": "FDC",
+          "x": 86,
+          "y": 47
+        },
+        {
+          "label": "Fire area",
+          "x": 76,
+          "y": 26
+        }
       ],
       "formulaBreakdown": [
         "PP = FL + NP + elevation + appliance loss.",
@@ -182,36 +253,57 @@
     },
     {
       "id": "commercial_fdc_standpipe_supply_p5",
-      "title": "Sprinkler System Only",
-      "question": "If the FDC is being used only to supply the building sprinkler system, what pump discharge pressure should be set?",
+      "title": "Elevated Sprinkler FDC Support Pressure",
+      "question": "For a sprinkler-only FDC support operation, FirePumpSim uses a 150 PSI base setting. The sprinkler area being supported is on the 4th floor, so add 15 PSI elevation. No other losses are used. What pump discharge pressure should be set?",
       "answerLabel": "Pump Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
       "inputPlaceholder": "PSI",
-      "answerValue": 150,
-      "correctPP": 150,
+      "answerValue": 165,
+      "correctPP": 165,
       "tolerance": 5,
       "answers": {
         "frictionLoss": 0,
-        "nozzlePressure": 0,
-        "elevation": 0,
+        "nozzlePressure": 150,
+        "elevation": 15,
         "applianceLoss": 0,
         "totalGpm": 0,
-        "pumpPressure": 150,
-        "tolerance": 5
+        "pumpPressure": 165,
+        "tolerance": 5,
+        "answerValue": 165,
+        "correctAnswer": 165,
+        "value": 165,
+        "pp": 165
       },
       "overlays": [
-        { "label": "Hydrant", "x": 10, "y": 75 },
-        { "label": "Engine 181", "x": 34, "y": 50 },
-        { "label": "FDC", "x": 86, "y": 47 },
-        { "label": "Sprinkler system", "x": 74, "y": 34 }
+        {
+          "label": "Hydrant",
+          "x": 10,
+          "y": 75
+        },
+        {
+          "label": "Engine 181",
+          "x": 34,
+          "y": 50
+        },
+        {
+          "label": "FDC",
+          "x": 86,
+          "y": 47
+        },
+        {
+          "label": "Sprinkler system",
+          "x": 74,
+          "y": 34
+        }
       ],
       "formulaBreakdown": [
-        "For FirePumpSim sprinkler-only FDC support, use the standard sprinkler supply pressure unless a building placard or department SOP gives a different value.",
-        "Standard sprinkler-only FDC pump pressure = 150 PSI."
+        "Base sprinkler FDC support setting = 150 PSI.",
+        "4th-floor elevation add-on = 15 PSI.",
+        "Pump pressure = 150 + 15 = 165 PSI."
       ],
-      "instructorExplanation": "When the FDC is being used only to support the sprinkler system, the FirePumpSim standard setting is 150 PSI. This is a sprinkler-system support pressure rather than an interior attack-line pump pressure calculation.",
-      "explainMistake": "Do not calculate this as a standpipe handline operation. If the FDC is only supporting sprinklers, use the sprinkler-system FDC supply pressure unless a specific placard or local SOP states otherwise."
+      "instructorExplanation": "Use the sprinkler-only support base setting, then add the stated elevation correction for the supported area.",
+      "explainMistake": "Do not calculate this like an interior handline. It is a sprinkler-support setting with the stated elevation correction."
     }
   ],
   "tags": [

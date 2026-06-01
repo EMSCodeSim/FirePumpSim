@@ -51,10 +51,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 70, "y": 41 },
-        { "label": "Attack line", "x": 65, "y": 35 },
-        { "label": "Nozzle crew", "x": 33, "y": 27 },
-        { "label": "Structure fire", "x": 24, "y": 17 }
+        {
+          "label": "Engine 181",
+          "x": 70,
+          "y": 41
+        },
+        {
+          "label": "Attack line",
+          "x": 65,
+          "y": 35
+        },
+        {
+          "label": "Nozzle crew",
+          "x": 33,
+          "y": 27
+        },
+        {
+          "label": "Structure fire",
+          "x": 24,
+          "y": 17
+        }
       ],
       "formulaBreakdown": [
         "PP = FL + NP + elevation + appliance loss.",
@@ -96,10 +112,26 @@
         "tolerance": 0
       },
       "overlays": [
-        { "label": "Tender dumping", "x": 17, "y": 48 },
-        { "label": "Left dump tank", "x": 29, "y": 62 },
-        { "label": "Jet siphon", "x": 47, "y": 63 },
-        { "label": "Right dump tank", "x": 69, "y": 62 }
+        {
+          "label": "Tender dumping",
+          "x": 17,
+          "y": 48
+        },
+        {
+          "label": "Left dump tank",
+          "x": 29,
+          "y": 62
+        },
+        {
+          "label": "Jet siphon",
+          "x": 47,
+          "y": 63
+        },
+        {
+          "label": "Right dump tank",
+          "x": 69,
+          "y": 62
+        }
       ],
       "formulaBreakdown": [
         "Usable water = tender capacity × 0.90.",
@@ -131,10 +163,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Tender dumping", "x": 17, "y": 48 },
-        { "label": "Left dump tank", "x": 29, "y": 62 },
-        { "label": "Second tender", "x": 66, "y": 80 },
-        { "label": "Engine 181", "x": 70, "y": 41 }
+        {
+          "label": "Tender dumping",
+          "x": 17,
+          "y": 48
+        },
+        {
+          "label": "Left dump tank",
+          "x": 29,
+          "y": 62
+        },
+        {
+          "label": "Second tender",
+          "x": 66,
+          "y": 80
+        },
+        {
+          "label": "Engine 181",
+          "x": 70,
+          "y": 41
+        }
       ],
       "formulaBreakdown": [
         "Tender shuttle GPM = usable gallons / cycle time.",
@@ -167,10 +215,26 @@
         "tolerance": 0
       },
       "overlays": [
-        { "label": "Tender dumping", "x": 17, "y": 48 },
-        { "label": "Second tender", "x": 66, "y": 80 },
-        { "label": "Two dump tanks", "x": 49, "y": 62 },
-        { "label": "Engine 181", "x": 70, "y": 41 }
+        {
+          "label": "Tender dumping",
+          "x": 17,
+          "y": 48
+        },
+        {
+          "label": "Second tender",
+          "x": 66,
+          "y": 80
+        },
+        {
+          "label": "Two dump tanks",
+          "x": 49,
+          "y": 62
+        },
+        {
+          "label": "Engine 181",
+          "x": 70,
+          "y": 41
+        }
       ],
       "formulaBreakdown": [
         "Tenders needed = required sustained flow / flow per tender.",
@@ -203,10 +267,26 @@
         "tolerance": 0.5
       },
       "overlays": [
-        { "label": "Left dump tank", "x": 29, "y": 62 },
-        { "label": "Jet siphon", "x": 47, "y": 63 },
-        { "label": "Right dump tank", "x": 69, "y": 62 },
-        { "label": "Hard suction", "x": 67, "y": 52 }
+        {
+          "label": "Left dump tank",
+          "x": 29,
+          "y": 62
+        },
+        {
+          "label": "Jet siphon",
+          "x": 47,
+          "y": 63
+        },
+        {
+          "label": "Right dump tank",
+          "x": 69,
+          "y": 62
+        },
+        {
+          "label": "Hard suction",
+          "x": 67,
+          "y": 52
+        }
       ],
       "formulaBreakdown": [
         "Combined water = tank 1 + tank 2.",
@@ -240,10 +320,26 @@
         "tolerance": 0
       },
       "overlays": [
-        { "label": "Right dump tank", "x": 69, "y": 62 },
-        { "label": "Hard suction", "x": 67, "y": 52 },
-        { "label": "Engine 181", "x": 70, "y": 41 },
-        { "label": "Jet siphon", "x": 47, "y": 63 }
+        {
+          "label": "Right dump tank",
+          "x": 69,
+          "y": 62
+        },
+        {
+          "label": "Hard suction",
+          "x": 67,
+          "y": 52
+        },
+        {
+          "label": "Engine 181",
+          "x": 70,
+          "y": 41
+        },
+        {
+          "label": "Jet siphon",
+          "x": 47,
+          "y": 63
+        }
       ],
       "formulaBreakdown": [
         "The large black hard suction connects Engine 181 to the right dump tank only.",

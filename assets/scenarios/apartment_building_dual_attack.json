@@ -25,7 +25,7 @@
     {
       "id": "apartment_building_dual_attack_p1",
       "title": "Total Flow Requirement",
-      "question": "What is the total flow requirement for the operation shown?",
+      "question": "Engine 181 is supplying two flowing 1.75-inch ChiefXD 185 attack lines. Attack Line A flows 185 GPM to a 3rd-floor interior position, and Attack Line B flows 185 GPM at ground level. What is the total flow requirement?",
       "answerLabel": "Total Flow",
       "answerUnit": "GPM",
       "inputLabel": "Enter total flow",
@@ -43,10 +43,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Hydrant", "x": 12, "y": 82 },
-        { "label": "Engine 181", "x": 39, "y": 67 },
-        { "label": "Line A", "x": 47, "y": 49 },
-        { "label": "Line B", "x": 86, "y": 50 }
+        {
+          "label": "Hydrant",
+          "x": 12,
+          "y": 82
+        },
+        {
+          "label": "Engine 181",
+          "x": 39,
+          "y": 67
+        },
+        {
+          "label": "Line A",
+          "x": 47,
+          "y": 49
+        },
+        {
+          "label": "Line B",
+          "x": 86,
+          "y": 50
+        }
       ],
       "formulaBreakdown": [
         "Total flow = Line A flow + Line B flow.",
@@ -61,7 +77,7 @@
     {
       "id": "apartment_building_dual_attack_p2",
       "title": "Interior Attack Elevation",
-      "question": "What pump pressure change is required due to elevation for the interior attack line?",
+      "question": "Attack Line A is operating on the 3rd floor. Using the FirePumpSim floor rule, 1st floor = 0 ft and 3rd floor = 20 ft. At 0.5 PSI per foot, what elevation pressure must be added for Line A?",
       "answerLabel": "Elevation Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter elevation pressure",
@@ -79,9 +95,21 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 39, "y": 67 },
-        { "label": "Line A", "x": 47, "y": 49 },
-        { "label": "3rd floor", "x": 79, "y": 24 }
+        {
+          "label": "Engine 181",
+          "x": 39,
+          "y": 67
+        },
+        {
+          "label": "Line A",
+          "x": 47,
+          "y": 49
+        },
+        {
+          "label": "Fire floor",
+          "x": 79,
+          "y": 24
+        }
       ],
       "formulaBreakdown": [
         "Floor rule: 1st floor = 0 ft.",
@@ -96,7 +124,7 @@
     {
       "id": "apartment_building_dual_attack_p3",
       "title": "Attack Line A Friction Loss",
-      "question": "How much friction loss is present in Attack Line A?",
+      "question": "Attack Line A is 250 ft of 1.75-inch hose flowing 185 GPM. Using C = 15.5, what is the friction loss in Attack Line A?",
       "answerLabel": "Line A Friction Loss",
       "answerUnit": "PSI",
       "inputLabel": "Enter friction loss",
@@ -114,9 +142,21 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 39, "y": 67 },
-        { "label": "Line A", "x": 47, "y": 49 },
-        { "label": "Front entrance", "x": 47, "y": 42 }
+        {
+          "label": "Engine 181",
+          "x": 39,
+          "y": 67
+        },
+        {
+          "label": "Line A",
+          "x": 47,
+          "y": 49
+        },
+        {
+          "label": "Front entrance",
+          "x": 47,
+          "y": 42
+        }
       ],
       "formulaBreakdown": [
         "FL = C × (GPM / 100)^2 × hose length in hundreds.",
@@ -134,7 +174,7 @@
     {
       "id": "apartment_building_dual_attack_p4",
       "title": "Attack Line B Friction Loss",
-      "question": "How much friction loss is present in Attack Line B?",
+      "question": "Attack Line B is 200 ft of 1.75-inch hose flowing 185 GPM. Using C = 15.5, what is the friction loss in Attack Line B?",
       "answerLabel": "Line B Friction Loss",
       "answerUnit": "PSI",
       "inputLabel": "Enter friction loss",
@@ -152,9 +192,21 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 39, "y": 67 },
-        { "label": "Line B", "x": 86, "y": 50 },
-        { "label": "Exterior stream", "x": 82, "y": 34 }
+        {
+          "label": "Engine 181",
+          "x": 39,
+          "y": 67
+        },
+        {
+          "label": "Line B",
+          "x": 86,
+          "y": 50
+        },
+        {
+          "label": "Exterior stream",
+          "x": 82,
+          "y": 34
+        }
       ],
       "formulaBreakdown": [
         "FL = C × (GPM / 100)^2 × hose length in hundreds.",
@@ -172,7 +224,7 @@
     {
       "id": "apartment_building_dual_attack_p5",
       "title": "Governing Attack Line",
-      "question": "Which attack line governs the pump discharge pressure for this operation?",
+      "question": "Line A is 250 ft of 1.75-inch hose flowing 185 GPM at 50 PSI to the 3rd floor, adding 10 PSI elevation. Line B is 200 ft of 1.75-inch hose flowing 185 GPM at 50 PSI at ground level. Which attack line governs the pump discharge pressure?",
       "answerLabel": "Governing Line",
       "answerUnit": "line number",
       "inputLabel": "Enter 1 for Line A or 2 for Line B",
@@ -190,9 +242,21 @@
         "tolerance": 0
       },
       "overlays": [
-        { "label": "Line A", "x": 47, "y": 49 },
-        { "label": "Line B", "x": 86, "y": 50 },
-        { "label": "Engine 181", "x": 39, "y": 67 }
+        {
+          "label": "Line A",
+          "x": 47,
+          "y": 49
+        },
+        {
+          "label": "Line B",
+          "x": 86,
+          "y": 50
+        },
+        {
+          "label": "Engine 181",
+          "x": 39,
+          "y": 67
+        }
       ],
       "formulaBreakdown": [
         "Line A PP = FL + NP + elevation + appliance loss.",
@@ -207,7 +271,7 @@
     {
       "id": "apartment_building_dual_attack_p6",
       "title": "Required Pump Discharge Pressure",
-      "question": "Determine the required pump discharge pressure for Engine 181.",
+      "question": "Engine 181 is supplying Line A and Line B. Line A is 250 ft of 1.75-inch hose flowing 185 GPM at 50 PSI to the 3rd floor, adding 10 PSI elevation. Line B is 200 ft of 1.75-inch hose flowing 185 GPM at 50 PSI at ground level. What pump discharge pressure should Engine 181 set for the governing line?",
       "answerLabel": "Pump Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
@@ -225,10 +289,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Hydrant", "x": 12, "y": 82 },
-        { "label": "Engine 181", "x": 39, "y": 67 },
-        { "label": "Line A", "x": 47, "y": 49 },
-        { "label": "Line B", "x": 86, "y": 50 }
+        {
+          "label": "Hydrant",
+          "x": 12,
+          "y": 82
+        },
+        {
+          "label": "Engine 181",
+          "x": 39,
+          "y": 67
+        },
+        {
+          "label": "Line A",
+          "x": 47,
+          "y": 49
+        },
+        {
+          "label": "Line B",
+          "x": 86,
+          "y": 50
+        }
       ],
       "formulaBreakdown": [
         "PP = FL + NP + elevation + appliance loss.",

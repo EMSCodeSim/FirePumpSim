@@ -28,7 +28,7 @@
     {
       "id": "residential_wye_operation_p1",
       "title": "Branch A Friction Loss",
-      "question": "What is the friction loss in Branch A?",
+      "question": "Branch A is 150 ft of 1.75-inch hose flowing 185 GPM from the wye to a ChiefXD 185 nozzle at 50 PSI. Using C = 15.5, what is the friction loss in Branch A?",
       "answerLabel": "Branch A Friction Loss",
       "answerUnit": "PSI",
       "inputLabel": "Enter Branch A friction loss",
@@ -46,10 +46,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 30, "y": 61 },
-        { "label": "Wye", "x": 63, "y": 58 },
-        { "label": "Branch A", "x": 58, "y": 44 },
-        { "label": "Front door", "x": 56, "y": 36 }
+        {
+          "label": "Engine 181",
+          "x": 30,
+          "y": 61
+        },
+        {
+          "label": "Wye",
+          "x": 63,
+          "y": 58
+        },
+        {
+          "label": "Branch A",
+          "x": 58,
+          "y": 44
+        },
+        {
+          "label": "Front door",
+          "x": 56,
+          "y": 36
+        }
       ],
       "formulaBreakdown": [
         "FL = C × (GPM / 100)^2 × hose length in hundreds.",
@@ -67,7 +83,7 @@
     {
       "id": "residential_wye_operation_p2",
       "title": "Branch B Friction Loss",
-      "question": "What is the friction loss in Branch B?",
+      "question": "Branch B is 200 ft of 1.75-inch hose flowing 185 GPM from the wye to a ChiefXD 185 nozzle at 50 PSI. Using C = 15.5, what is the friction loss in Branch B?",
       "answerLabel": "Branch B Friction Loss",
       "answerUnit": "PSI",
       "inputLabel": "Enter Branch B friction loss",
@@ -85,10 +101,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 30, "y": 61 },
-        { "label": "Wye", "x": 63, "y": 58 },
-        { "label": "Branch B", "x": 78, "y": 47 },
-        { "label": "Alpha side", "x": 84, "y": 39 }
+        {
+          "label": "Engine 181",
+          "x": 30,
+          "y": 61
+        },
+        {
+          "label": "Wye",
+          "x": 63,
+          "y": 58
+        },
+        {
+          "label": "Branch B",
+          "x": 78,
+          "y": 47
+        },
+        {
+          "label": "Alpha side",
+          "x": 84,
+          "y": 39
+        }
       ],
       "formulaBreakdown": [
         "FL = C × (GPM / 100)^2 × hose length in hundreds.",
@@ -106,7 +138,7 @@
     {
       "id": "residential_wye_operation_p3",
       "title": "Main Line Friction Loss",
-      "question": "What is the friction loss in the main line supplying the wye?",
+      "question": "The main line supplying the wye is 200 ft of 2.5-inch hose carrying the combined 370 GPM from Branch A and Branch B. Using C = 2, what is the friction loss in the main line?",
       "answerLabel": "Main Line Friction Loss",
       "answerUnit": "PSI",
       "inputLabel": "Enter main line friction loss",
@@ -124,10 +156,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 30, "y": 61 },
-        { "label": "Main line", "x": 47, "y": 63 },
-        { "label": "Wye", "x": 63, "y": 58 },
-        { "label": "Two branches", "x": 72, "y": 49 }
+        {
+          "label": "Engine 181",
+          "x": 30,
+          "y": 61
+        },
+        {
+          "label": "Main line",
+          "x": 47,
+          "y": 63
+        },
+        {
+          "label": "Wye",
+          "x": 63,
+          "y": 58
+        },
+        {
+          "label": "Two branches",
+          "x": 72,
+          "y": 49
+        }
       ],
       "formulaBreakdown": [
         "FL = C × (GPM / 100)^2 × hose length in hundreds.",

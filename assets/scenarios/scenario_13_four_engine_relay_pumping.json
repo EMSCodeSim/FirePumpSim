@@ -44,11 +44,31 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Hydrant", "x": 12, "y": 84 },
-        { "label": "Engine 181", "x": 32, "y": 70 },
-        { "label": "1500' 5\" LDH", "x": 42, "y": 61 },
-        { "label": "Relay Engine 2", "x": 53, "y": 53 },
-        { "label": "Intake 20", "x": 57, "y": 49 }
+        {
+          "label": "Hydrant",
+          "x": 12,
+          "y": 84
+        },
+        {
+          "label": "Engine 181",
+          "x": 32,
+          "y": 70
+        },
+        {
+          "label": "LDH relay segment",
+          "x": 42,
+          "y": 61
+        },
+        {
+          "label": "Relay Engine 2",
+          "x": 53,
+          "y": 53
+        },
+        {
+          "label": "Relay intake",
+          "x": 57,
+          "y": 49
+        }
       ],
       "formulaBreakdown": [
         "Relay PDP = relay hose FL + elevation + desired intake pressure.",
@@ -88,10 +108,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Relay Engine 2", "x": 53, "y": 53 },
-        { "label": "1500' 5\" LDH", "x": 55, "y": 45 },
-        { "label": "Relay Engine 3", "x": 57, "y": 37 },
-        { "label": "Intake 20", "x": 61, "y": 33 }
+        {
+          "label": "Relay Engine 2",
+          "x": 53,
+          "y": 53
+        },
+        {
+          "label": "LDH relay segment",
+          "x": 55,
+          "y": 45
+        },
+        {
+          "label": "Relay Engine 3",
+          "x": 57,
+          "y": 37
+        },
+        {
+          "label": "Relay intake",
+          "x": 61,
+          "y": 33
+        }
       ],
       "formulaBreakdown": [
         "Relay PDP = relay hose FL + elevation + desired intake pressure.",
@@ -130,10 +166,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Relay Engine 3", "x": 57, "y": 37 },
-        { "label": "1500' 5\" LDH", "x": 61, "y": 29 },
-        { "label": "Attack Engine 4", "x": 65, "y": 22 },
-        { "label": "Intake 20", "x": 69, "y": 19 }
+        {
+          "label": "Relay Engine 3",
+          "x": 57,
+          "y": 37
+        },
+        {
+          "label": "LDH relay segment",
+          "x": 61,
+          "y": 29
+        },
+        {
+          "label": "Attack Engine 4",
+          "x": 65,
+          "y": 22
+        },
+        {
+          "label": "Relay intake",
+          "x": 69,
+          "y": 19
+        }
       ],
       "formulaBreakdown": [
         "Relay PDP = relay hose FL + elevation + desired intake pressure.",
@@ -172,10 +224,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Attack Engine 4", "x": 65, "y": 22 },
-        { "label": "250' 2.5\"", "x": 72, "y": 19 },
-        { "label": "1 1/8\" SB", "x": 79, "y": 16 },
-        { "label": "Warehouse fire", "x": 83, "y": 13 }
+        {
+          "label": "Attack Engine 4",
+          "x": 65,
+          "y": 22
+        },
+        {
+          "label": "Attack line",
+          "x": 72,
+          "y": 19
+        },
+        {
+          "label": "Smooth bore nozzle",
+          "x": 79,
+          "y": 16
+        },
+        {
+          "label": "Warehouse fire",
+          "x": 83,
+          "y": 13
+        }
       ],
       "formulaBreakdown": [
         "PP = FL + NP + elevation + appliance loss.",
@@ -217,10 +285,26 @@
         "tolerance": 0
       },
       "overlays": [
-        { "label": "Engine 181", "x": 32, "y": 70 },
-        { "label": "Relay Engine 2", "x": 53, "y": 53 },
-        { "label": "Relay Engine 3", "x": 57, "y": 37 },
-        { "label": "Attack Engine 4", "x": 65, "y": 22 }
+        {
+          "label": "Engine 181",
+          "x": 32,
+          "y": 70
+        },
+        {
+          "label": "Relay Engine 2",
+          "x": 53,
+          "y": 53
+        },
+        {
+          "label": "Relay Engine 3",
+          "x": 57,
+          "y": 37
+        },
+        {
+          "label": "Attack Engine 4",
+          "x": 65,
+          "y": 22
+        }
       ],
       "formulaBreakdown": [
         "Total relay hose distance = number of relay segments x length per segment.",

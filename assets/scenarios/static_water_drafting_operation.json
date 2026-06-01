@@ -44,12 +44,36 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Pond", "x": 39, "y": 86 },
-        { "label": "Floating strainer", "x": 49, "y": 80 },
-        { "label": "Engine 181", "x": 36, "y": 47 },
-        { "label": "Attack line", "x": 70, "y": 52 },
-        { "label": "Nozzle crew", "x": 84, "y": 33 },
-        { "label": "Grass fire", "x": 59, "y": 22 }
+        {
+          "label": "Pond",
+          "x": 39,
+          "y": 86
+        },
+        {
+          "label": "Floating strainer",
+          "x": 49,
+          "y": 80
+        },
+        {
+          "label": "Engine 181",
+          "x": 36,
+          "y": 47
+        },
+        {
+          "label": "Attack line",
+          "x": 70,
+          "y": 52
+        },
+        {
+          "label": "Nozzle crew",
+          "x": 84,
+          "y": 33
+        },
+        {
+          "label": "Grass fire",
+          "x": 59,
+          "y": 22
+        }
       ],
       "formulaBreakdown": [
         "PP = FL + NP + elevation + appliance loss.",
@@ -91,10 +115,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 36, "y": 47 },
-        { "label": "Attack line", "x": 70, "y": 52 },
-        { "label": "Nozzle crew", "x": 84, "y": 33 },
-        { "label": "Grass fire", "x": 59, "y": 22 }
+        {
+          "label": "Engine 181",
+          "x": 36,
+          "y": 47
+        },
+        {
+          "label": "Attack line",
+          "x": 70,
+          "y": 52
+        },
+        {
+          "label": "Nozzle crew",
+          "x": 84,
+          "y": 33
+        },
+        {
+          "label": "Grass fire",
+          "x": 59,
+          "y": 22
+        }
       ],
       "formulaBreakdown": [
         "FL = C × (GPM / 100)^2 × hose length in hundreds.",
@@ -111,12 +151,12 @@
     {
       "id": "static_water_drafting_operation_p3",
       "title": "Total Flow",
-      "question": "Engine 181 is operating one ChiefXD 185 nozzle from the drafting setup. What is the total flow from Engine 181?",
+      "question": "Engine 181 is drafting from the pond and operating one ChiefXD 185 line plus one backup line flowing 150 GPM. What is the total flow from Engine 181?",
       "answerLabel": "Total Flow",
       "answerUnit": "GPM",
       "inputLabel": "Enter total flow",
       "inputPlaceholder": "GPM",
-      "answerValue": 185,
+      "answerValue": 335,
       "correctPP": 0,
       "tolerance": 5,
       "answers": {
@@ -124,23 +164,42 @@
         "nozzlePressure": 50,
         "elevation": 0,
         "applianceLoss": 0,
-        "totalGpm": 185,
+        "totalGpm": 335,
         "pumpPressure": 0,
-        "tolerance": 5
+        "tolerance": 5,
+        "answerValue": 335,
+        "correctAnswer": 335,
+        "value": 335
       },
       "overlays": [
-        { "label": "Engine 181", "x": 36, "y": 47 },
-        { "label": "Attack line", "x": 70, "y": 52 },
-        { "label": "Nozzle crew", "x": 84, "y": 33 },
-        { "label": "Grass fire", "x": 59, "y": 22 }
+        {
+          "label": "Engine 181",
+          "x": 36,
+          "y": 47
+        },
+        {
+          "label": "Attack line",
+          "x": 70,
+          "y": 52
+        },
+        {
+          "label": "Nozzle crew",
+          "x": 84,
+          "y": 33
+        },
+        {
+          "label": "Grass fire",
+          "x": 59,
+          "y": 22
+        }
       ],
       "formulaBreakdown": [
-        "One ChiefXD 185 nozzle is operating.",
-        "ChiefXD 185 flow = 185 GPM.",
-        "Total flow = 185 GPM."
+        "ChiefXD line flow = 185 GPM.",
+        "Backup line flow = 150 GPM.",
+        "Total flow = 185 + 150 = 335 GPM."
       ],
-      "instructorExplanation": "Only one attack line is flowing, so the total flow is the rated flow of that nozzle: 185 GPM.",
-      "explainMistake": "Do not count the hard suction as a separate discharge flow. It is the intake supply path from the pond to the pump."
+      "instructorExplanation": "When drafting, the pump still has to support total discharge flow from all operating lines.",
+      "explainMistake": "Do not use only the first attack line flow when a backup line is also flowing."
     },
     {
       "id": "static_water_drafting_operation_p4",
@@ -163,10 +222,26 @@
         "tolerance": 0.5
       },
       "overlays": [
-        { "label": "Pond", "x": 39, "y": 86 },
-        { "label": "Floating strainer", "x": 49, "y": 80 },
-        { "label": "Hard suction", "x": 49, "y": 63 },
-        { "label": "Engine 181", "x": 36, "y": 47 }
+        {
+          "label": "Pond",
+          "x": 39,
+          "y": 86
+        },
+        {
+          "label": "Floating strainer",
+          "x": 49,
+          "y": 80
+        },
+        {
+          "label": "Hard suction",
+          "x": 49,
+          "y": 63
+        },
+        {
+          "label": "Engine 181",
+          "x": 36,
+          "y": 47
+        }
       ],
       "formulaBreakdown": [
         "Lift pressure = lift height × 0.5 PSI per foot.",
@@ -198,10 +273,26 @@
         "tolerance": 0.5
       },
       "overlays": [
-        { "label": "Pond", "x": 39, "y": 86 },
-        { "label": "Floating strainer", "x": 49, "y": 80 },
-        { "label": "Engine 181", "x": 36, "y": 47 },
-        { "label": "Attack line", "x": 70, "y": 52 }
+        {
+          "label": "Pond",
+          "x": 39,
+          "y": 86
+        },
+        {
+          "label": "Floating strainer",
+          "x": 49,
+          "y": 80
+        },
+        {
+          "label": "Engine 181",
+          "x": 36,
+          "y": 47
+        },
+        {
+          "label": "Attack line",
+          "x": 70,
+          "y": 52
+        }
       ],
       "formulaBreakdown": [
         "Water duration = usable gallons / flow.",
@@ -235,10 +326,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 36, "y": 47 },
-        { "label": "Attack line", "x": 70, "y": 52 },
-        { "label": "Nozzle crew", "x": 84, "y": 33 },
-        { "label": "Grass fire", "x": 59, "y": 22 }
+        {
+          "label": "Engine 181",
+          "x": 36,
+          "y": 47
+        },
+        {
+          "label": "Attack line",
+          "x": 70,
+          "y": 52
+        },
+        {
+          "label": "Nozzle crew",
+          "x": 84,
+          "y": 33
+        },
+        {
+          "label": "Grass fire",
+          "x": 59,
+          "y": 22
+        }
       ],
       "formulaBreakdown": [
         "Total flow = flow per line × number of lines.",
@@ -252,36 +359,57 @@
     },
     {
       "id": "static_water_drafting_operation_p7",
-      "title": "Drafting Intake Setup",
-      "question": "How many hard suction hoses are shown drafting from the pond into Engine 181?",
-      "answerLabel": "Hard Suction Hoses",
-      "answerUnit": "hose",
-      "inputLabel": "Enter number of hoses",
-      "inputPlaceholder": "whole number",
-      "answerValue": 1,
+      "title": "Two-Line Drafting Water Duration",
+      "question": "Engine 181 is drafting from a pond with 12,000 usable gallons available. If two identical ChiefXD 185 attack lines are placed in service, each flowing 185 GPM, about how many minutes can the static water supply support the operation?",
+      "answerLabel": "Operating Time",
+      "answerUnit": "min",
+      "inputLabel": "Enter minutes",
+      "inputPlaceholder": "minutes",
+      "answerValue": 32,
       "correctPP": 0,
-      "tolerance": 0,
+      "tolerance": 2,
       "answers": {
         "frictionLoss": 0,
         "nozzlePressure": 0,
         "elevation": 0,
         "applianceLoss": 0,
-        "totalGpm": 0,
+        "totalGpm": 370,
         "pumpPressure": 0,
-        "tolerance": 0
+        "tolerance": 2,
+        "answerValue": 32,
+        "correctAnswer": 32,
+        "value": 32
       },
       "overlays": [
-        { "label": "Pond", "x": 39, "y": 86 },
-        { "label": "Floating strainer", "x": 49, "y": 80 },
-        { "label": "Hard suction", "x": 49, "y": 63 },
-        { "label": "Engine 181", "x": 36, "y": 47 }
+        {
+          "label": "Pond",
+          "x": 39,
+          "y": 86
+        },
+        {
+          "label": "Floating strainer",
+          "x": 49,
+          "y": 80
+        },
+        {
+          "label": "Hard suction",
+          "x": 49,
+          "y": 63
+        },
+        {
+          "label": "Engine 181",
+          "x": 36,
+          "y": 47
+        }
       ],
       "formulaBreakdown": [
-        "The scene shows one hard suction hose connected from the pond to Engine 181.",
-        "Hard suction hoses drafting from pond = 1."
+        "Total flow = 185 + 185 = 370 GPM.",
+        "Operating time = usable gallons ÷ total GPM.",
+        "12,000 ÷ 370 ≈ 32.4 minutes.",
+        "Rounded answer ≈ 32 minutes."
       ],
-      "instructorExplanation": "Engine 181 is drafting through one large hard suction hose with a floating strainer at the water source.",
-      "explainMistake": "Do not count the attack hose as a drafting hose. The attack hose is connected to a discharge, while the hard suction is connected to the intake."
+      "instructorExplanation": "Static-water duration problems require the operator to total all operating flows, then divide the usable water supply by that total flow. Two 185 GPM lines use 370 GPM together.",
+      "explainMistake": "Do not use only one line when two lines are operating. The water supply duration is based on total flow from the static water source."
     }
   ],
   "tags": [

@@ -45,10 +45,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 55, "y": 48 },
-        { "label": "Attack line", "x": 74, "y": 42 },
-        { "label": "Nozzle crew", "x": 79, "y": 36 },
-        { "label": "Structure fire", "x": 84, "y": 24 }
+        {
+          "label": "Engine 181",
+          "x": 55,
+          "y": 48
+        },
+        {
+          "label": "Attack line",
+          "x": 74,
+          "y": 42
+        },
+        {
+          "label": "Nozzle crew",
+          "x": 79,
+          "y": 36
+        },
+        {
+          "label": "Structure fire",
+          "x": 84,
+          "y": 24
+        }
       ],
       "formulaBreakdown": [
         "PP = FL + NP + elevation + appliance loss.",
@@ -86,10 +102,26 @@
         "tolerance": 0
       },
       "overlays": [
-        { "label": "Tender dumping", "x": 20, "y": 55 },
-        { "label": "Dump tank", "x": 46, "y": 75 },
-        { "label": "Hard suction", "x": 63, "y": 66 },
-        { "label": "Engine 181", "x": 55, "y": 48 }
+        {
+          "label": "Tender dumping",
+          "x": 20,
+          "y": 55
+        },
+        {
+          "label": "Dump tank",
+          "x": 46,
+          "y": 75
+        },
+        {
+          "label": "Hard suction",
+          "x": 63,
+          "y": 66
+        },
+        {
+          "label": "Engine 181",
+          "x": 55,
+          "y": 48
+        }
       ],
       "formulaBreakdown": [
         "Usable water = tender capacity × 0.90.",
@@ -120,10 +152,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Tender dumping", "x": 20, "y": 55 },
-        { "label": "Dump tank", "x": 46, "y": 75 },
-        { "label": "Tender enroute", "x": 13, "y": 28 },
-        { "label": "Engine 181", "x": 55, "y": 48 }
+        {
+          "label": "Tender dumping",
+          "x": 20,
+          "y": 55
+        },
+        {
+          "label": "Dump tank",
+          "x": 46,
+          "y": 75
+        },
+        {
+          "label": "Tender enroute",
+          "x": 13,
+          "y": 28
+        },
+        {
+          "label": "Engine 181",
+          "x": 55,
+          "y": 48
+        }
       ],
       "formulaBreakdown": [
         "Tender shuttle GPM = usable gallons / cycle time.",
@@ -154,10 +202,26 @@
         "tolerance": 0
       },
       "overlays": [
-        { "label": "Tender dumping", "x": 20, "y": 55 },
-        { "label": "Tender enroute", "x": 13, "y": 28 },
-        { "label": "Dump tank", "x": 46, "y": 75 },
-        { "label": "Engine 181", "x": 55, "y": 48 }
+        {
+          "label": "Tender dumping",
+          "x": 20,
+          "y": 55
+        },
+        {
+          "label": "Tender enroute",
+          "x": 13,
+          "y": 28
+        },
+        {
+          "label": "Dump tank",
+          "x": 46,
+          "y": 75
+        },
+        {
+          "label": "Engine 181",
+          "x": 55,
+          "y": 48
+        }
       ],
       "formulaBreakdown": [
         "Tenders needed = required sustained flow / flow per tender.",
@@ -188,10 +252,26 @@
         "tolerance": 0.5
       },
       "overlays": [
-        { "label": "Dump tank", "x": 46, "y": 75 },
-        { "label": "Hard suction", "x": 63, "y": 66 },
-        { "label": "Engine 181", "x": 55, "y": 48 },
-        { "label": "Attack line", "x": 74, "y": 42 }
+        {
+          "label": "Dump tank",
+          "x": 46,
+          "y": 75
+        },
+        {
+          "label": "Hard suction",
+          "x": 63,
+          "y": 66
+        },
+        {
+          "label": "Engine 181",
+          "x": 55,
+          "y": 48
+        },
+        {
+          "label": "Attack line",
+          "x": 74,
+          "y": 42
+        }
       ],
       "formulaBreakdown": [
         "Water duration = available gallons / flow.",

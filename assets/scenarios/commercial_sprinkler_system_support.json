@@ -23,46 +23,66 @@
   "problems": [
     {
       "id": "commercial_sprinkler_system_support_p1",
-      "title": "Sprinkler System Support Pressure",
-      "question": "If the FDC is being used only to support the building sprinkler system, what pump discharge pressure should be set?",
+      "title": "Sprinkler FDC Pump Pressure With Supply Hose",
+      "question": "Engine 181 is supplying a sprinkler-only FDC support operation. Use a 150 PSI base sprinkler support setting. The FDC is supplied through 200 ft of 2.5-inch hose carrying 250 GPM. Use C = 2, no elevation, and no appliance loss. What pump discharge pressure should be set?",
       "answerLabel": "Pump Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
       "inputPlaceholder": "PSI",
-      "answerValue": 150,
-      "correctPP": 150,
+      "answerValue": 175,
+      "correctPP": 175,
       "tolerance": 5,
       "answers": {
-        "frictionLoss": 0,
-        "nozzlePressure": 0,
+        "frictionLoss": 25,
+        "nozzlePressure": 150,
         "elevation": 0,
         "applianceLoss": 0,
-        "totalGpm": 0,
-        "pumpPressure": 150,
-        "tolerance": 5
+        "totalGpm": 250,
+        "pumpPressure": 175,
+        "tolerance": 5,
+        "answerValue": 175,
+        "correctAnswer": 175,
+        "value": 175,
+        "pp": 175
       },
       "overlays": [
-        { "label": "Hydrant", "x": 10, "y": 78 },
-        { "label": "Engine 181", "x": 33, "y": 58 },
-        { "label": "FDC", "x": 83, "y": 52 },
-        { "label": "Sprinkler system", "x": 73, "y": 35 }
+        {
+          "label": "Hydrant",
+          "x": 10,
+          "y": 78
+        },
+        {
+          "label": "Engine 181",
+          "x": 33,
+          "y": 58
+        },
+        {
+          "label": "FDC",
+          "x": 83,
+          "y": 52
+        },
+        {
+          "label": "Sprinkler system",
+          "x": 73,
+          "y": 35
+        }
       ],
       "formulaBreakdown": [
-        "For FirePumpSim sprinkler-only FDC support, use the standard sprinkler support pressure unless a building placard or department SOP gives a different value.",
-        "Standard sprinkler-only FDC pump pressure = 150 PSI."
+        "FL = 2 × (250 / 100)^2 × 2 = 25 PSI.",
+        "Pump pressure = base sprinkler setting 150 + supply hose FL 25 = 175 PSI."
       ],
-      "instructorExplanation": "When Engine 181 is supplying only the building sprinkler system through the FDC, the FirePumpSim standard pump setting is 150 PSI unless a placard or local SOP states otherwise.",
-      "explainMistake": "Do not calculate this as an interior handline or standpipe attack operation. Sprinkler-system support uses the sprinkler support pressure."
+      "instructorExplanation": "When a sprinkler FDC support line has a meaningful supply stretch, add that hose friction loss to the base sprinkler support pressure.",
+      "explainMistake": "Do not ignore the supply hose between the engine and FDC when the problem gives a length and flow."
     },
     {
       "id": "commercial_sprinkler_system_support_p2",
-      "title": "FDC Inlet Supply",
-      "question": "How many FDC inlets are being supplied during this sprinkler support operation?",
+      "title": "Flow Per Sprinkler FDC Inlet",
+      "question": "The sprinkler FDC support operation is supplied by two equal FDC inlets. If the target support flow is 500 GPM total, how much flow is carried by each FDC inlet?",
       "answerLabel": "FDC Inlets Supplied",
-      "answerUnit": "inlets",
+      "answerUnit": "GPM",
       "inputLabel": "Enter number of inlets",
-      "inputPlaceholder": "whole number",
-      "answerValue": 2,
+      "inputPlaceholder": "GPM",
+      "answerValue": 250,
       "correctPP": 0,
       "tolerance": 0,
       "answers": {
@@ -70,29 +90,51 @@
         "nozzlePressure": 0,
         "elevation": 0,
         "applianceLoss": 0,
-        "totalGpm": 0,
+        "totalGpm": 500,
         "pumpPressure": 0,
-        "tolerance": 0
+        "tolerance": 5,
+        "answerValue": 250,
+        "correctAnswer": 250,
+        "value": 250,
+        "pp": 250,
+        "answerUnit": "GPM",
+        "unit": "GPM",
+        "answerLabel": "Flow Per Inlet"
       },
       "overlays": [
-        { "label": "Engine 181", "x": 33, "y": 58 },
-        { "label": "Line A", "x": 57, "y": 59 },
-        { "label": "Line B", "x": 61, "y": 63 },
-        { "label": "FDC", "x": 83, "y": 52 }
+        {
+          "label": "Engine 181",
+          "x": 33,
+          "y": 58
+        },
+        {
+          "label": "Line A",
+          "x": 57,
+          "y": 59
+        },
+        {
+          "label": "Line B",
+          "x": 61,
+          "y": 63
+        },
+        {
+          "label": "FDC",
+          "x": 83,
+          "y": 52
+        }
       ],
       "formulaBreakdown": [
-        "The operation shows two separate engine discharges supplying the FDC.",
-        "FDC inlet A is supplied by one hose.",
-        "FDC inlet B is supplied by one hose.",
-        "Total FDC inlets supplied = 2."
+        "Flow per inlet = total sprinkler support flow ÷ number of equal FDC inlets.",
+        "Flow per inlet = 500 ÷ 2.",
+        "Flow per inlet = 250 GPM."
       ],
-      "instructorExplanation": "Both FDC inlets are supplied to support the sprinkler system and reduce restriction through a single inlet.",
-      "explainMistake": "Do not count the hydrant supply line as an FDC inlet. The question asks how many FDC inlets are supplied from Engine 181."
+      "instructorExplanation": "When two equal FDC inlets are supplied, the total target flow is split evenly between them.",
+      "explainMistake": "Do not count the two FDC hoses as two separate 500 GPM flows. The total flow is split between the equal inlets."
     },
     {
       "id": "commercial_sprinkler_system_support_p3",
       "title": "Third-Floor Sprinkler Support Pressure",
-      "question": "If the sprinkler system being supplied is known to serve the third floor, what pump discharge pressure should be set?",
+      "question": "The sprinkler-only FDC support base setting is 150 PSI. If the supplied sprinkler area is on the 3rd floor, use 1st floor = 0 ft and 3rd floor = 20 ft, adding 0.5 PSI per foot. What pump discharge pressure should be set?",
       "answerLabel": "Pump Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
@@ -110,10 +152,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Hydrant", "x": 10, "y": 78 },
-        { "label": "Engine 181", "x": 33, "y": 58 },
-        { "label": "FDC", "x": 83, "y": 52 },
-        { "label": "3rd floor", "x": 72, "y": 25 }
+        {
+          "label": "Hydrant",
+          "x": 10,
+          "y": 78
+        },
+        {
+          "label": "Engine 181",
+          "x": 33,
+          "y": 58
+        },
+        {
+          "label": "FDC",
+          "x": 83,
+          "y": 52
+        },
+        {
+          "label": "Fire floor",
+          "x": 72,
+          "y": 25
+        }
       ],
       "formulaBreakdown": [
         "Base sprinkler support pressure = 150 PSI.",

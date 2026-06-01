@@ -52,10 +52,26 @@
         "tolerance": 0
       },
       "overlays": [
-        { "label": "Engine 181", "x": 25, "y": 69 },
-        { "label": "Standpipe FDC", "x": 74, "y": 66 },
-        { "label": "Sprinkler FDC", "x": 88, "y": 66 },
-        { "label": "FDC supply hoses", "x": 68, "y": 77 }
+        {
+          "label": "Engine 181",
+          "x": 25,
+          "y": 69
+        },
+        {
+          "label": "Standpipe FDC",
+          "x": 74,
+          "y": 66
+        },
+        {
+          "label": "Sprinkler FDC",
+          "x": 88,
+          "y": 66
+        },
+        {
+          "label": "FDC supply hoses",
+          "x": 68,
+          "y": 77
+        }
       ],
       "formulaBreakdown": [
         "Total FDC supply hoses = standpipe FDC hoses + sprinkler FDC hoses.",
@@ -88,9 +104,21 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Standpipe FDC", "x": 74, "y": 66 },
-        { "label": "Main entrance", "x": 58, "y": 65 },
-        { "label": "Fire floor", "x": 57, "y": 22 }
+        {
+          "label": "Standpipe FDC",
+          "x": 74,
+          "y": 66
+        },
+        {
+          "label": "Main entrance",
+          "x": 58,
+          "y": 65
+        },
+        {
+          "label": "Fire floor",
+          "x": 57,
+          "y": 22
+        }
       ],
       "formulaBreakdown": [
         "Total standpipe flow = attack line A flow + attack line B flow.",
@@ -123,10 +151,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 25, "y": 69 },
-        { "label": "Standpipe line A", "x": 67, "y": 74 },
-        { "label": "Standpipe line B", "x": 71, "y": 76 },
-        { "label": "Standpipe FDC", "x": 74, "y": 66 }
+        {
+          "label": "Engine 181",
+          "x": 25,
+          "y": 69
+        },
+        {
+          "label": "Standpipe line A",
+          "x": 67,
+          "y": 74
+        },
+        {
+          "label": "Standpipe line B",
+          "x": 71,
+          "y": 76
+        },
+        {
+          "label": "Standpipe FDC",
+          "x": 74,
+          "y": 66
+        }
       ],
       "formulaBreakdown": [
         "Flow per Standpipe FDC line = total standpipe flow / number of Standpipe FDC supply lines.",
@@ -159,10 +203,26 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 25, "y": 69 },
-        { "label": "Standpipe line A", "x": 67, "y": 74 },
-        { "label": "Standpipe line B", "x": 71, "y": 76 },
-        { "label": "Standpipe FDC", "x": 74, "y": 66 }
+        {
+          "label": "Engine 181",
+          "x": 25,
+          "y": 69
+        },
+        {
+          "label": "Standpipe line A",
+          "x": 67,
+          "y": 74
+        },
+        {
+          "label": "Standpipe line B",
+          "x": 71,
+          "y": 76
+        },
+        {
+          "label": "Standpipe FDC",
+          "x": 74,
+          "y": 66
+        }
       ],
       "formulaBreakdown": [
         "FL = C x (GPM / 100)^2 x hose length in hundreds.",
@@ -198,9 +258,21 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 25, "y": 69 },
-        { "label": "Standpipe FDC", "x": 74, "y": 66 },
-        { "label": "Fire floor", "x": 57, "y": 22 }
+        {
+          "label": "Engine 181",
+          "x": 25,
+          "y": 69
+        },
+        {
+          "label": "Standpipe FDC",
+          "x": 74,
+          "y": 66
+        },
+        {
+          "label": "Fire floor",
+          "x": 57,
+          "y": 22
+        }
       ],
       "formulaBreakdown": [
         "Elevation pressure = floors above 1st floor x 5 PSI.",
@@ -214,7 +286,7 @@
     {
       "id": "combination_sprinkler_standpipe_fdc_operation_p6",
       "title": "Standpipe Pump Pressure",
-      "question": "Engine 181 is supplying the Standpipe FDC with two 100 ft 2.5-inch lines. The fire is on the 7th floor. Each interior attack line is 150 ft of 2.5-inch hose flowing 265 GPM through a 1 1/8-inch smooth bore nozzle. Use 15 PSI FDC supply line friction loss, 20 PSI interior attack line friction loss, 50 PSI nozzle pressure, 30 PSI elevation, and 25 PSI standpipe/FDC loss. What pump discharge pressure should Engine 181 set for the standpipe operation?",
+      "question": "Engine 181 is supplying the Standpipe FDC with two equal 100 ft 2.5-inch supply lines. Total standpipe attack flow is 530 GPM, so each Standpipe FDC supply line carries 265 GPM. Each interior attack line is 150 ft of 2.5-inch hose flowing 265 GPM through a 1⅛-inch smooth bore nozzle at 50 PSI. The fire is on the 7th floor, adding 30 PSI elevation. Add 25 PSI standpipe/FDC system loss. Do not add the separate Sprinkler FDC hose to the standpipe pump-pressure path. What pump discharge pressure should Engine 181 set for the standpipe operation?",
       "answerLabel": "Pump Pressure",
       "answerUnit": "PSI",
       "inputLabel": "Enter pump discharge pressure",
@@ -232,11 +304,31 @@
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Hydrant", "x": 12, "y": 87 },
-        { "label": "Engine 181", "x": 25, "y": 69 },
-        { "label": "Pump panel", "x": 23, "y": 68 },
-        { "label": "Standpipe FDC", "x": 74, "y": 66 },
-        { "label": "Fire floor", "x": 57, "y": 22 }
+        {
+          "label": "Hydrant",
+          "x": 12,
+          "y": 87
+        },
+        {
+          "label": "Engine 181",
+          "x": 25,
+          "y": 69
+        },
+        {
+          "label": "Pump panel",
+          "x": 23,
+          "y": 68
+        },
+        {
+          "label": "Standpipe FDC",
+          "x": 74,
+          "y": 66
+        },
+        {
+          "label": "Fire floor",
+          "x": 57,
+          "y": 22
+        }
       ],
       "formulaBreakdown": [
         "PP = FL + NP + elevation + appliance loss.",
@@ -254,7 +346,7 @@
     {
       "id": "combination_sprinkler_standpipe_fdc_operation_p7",
       "title": "Sprinkler FDC Supply Hose Count",
-      "question": "How many blue supply hoses from Engine 181 are connected to the Sprinkler FDC?",
+      "question": "The combination FDC scene has two blue hoses supplying the Standpipe FDC and one separate blue hose supplying the Sprinkler FDC. When isolating the sprinkler support line from the standpipe attack calculation, how many blue supply hoses feed only the Sprinkler FDC?",
       "answerLabel": "Sprinkler FDC Hoses",
       "answerUnit": "hose",
       "inputLabel": "Enter number of sprinkler FDC hoses",
@@ -272,9 +364,21 @@
         "tolerance": 0
       },
       "overlays": [
-        { "label": "Engine 181", "x": 25, "y": 69 },
-        { "label": "Sprinkler supply", "x": 82, "y": 77 },
-        { "label": "Sprinkler FDC", "x": 88, "y": 66 }
+        {
+          "label": "Engine 181",
+          "x": 25,
+          "y": 69
+        },
+        {
+          "label": "Sprinkler supply",
+          "x": 82,
+          "y": 77
+        },
+        {
+          "label": "Sprinkler FDC",
+          "x": 88,
+          "y": 66
+        }
       ],
       "formulaBreakdown": [
         "The scene shows one blue hose from Engine 181 to the Sprinkler FDC.",
