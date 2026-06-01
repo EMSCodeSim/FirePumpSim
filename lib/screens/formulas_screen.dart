@@ -117,6 +117,7 @@ class _FormulasReferenceViewState extends State<FormulasReferenceView> {
   final TextEditingController _searchController = TextEditingController();
   String _selectedCategory = 'All';
   String _query = '';
+  final Set<String> _expanded = <String>{};
 
   @override
   void dispose() {
@@ -170,7 +171,19 @@ class _FormulasReferenceViewState extends State<FormulasReferenceView> {
           _EmptyFormulaState(query: _query)
         else
           for (int i = 0; i < items.length; i++) ...[
-            _FormulaQuickCard(item: items[i]),
+            _FormulaExpandableCard(
+              item: items[i],
+              expanded: _expanded.contains(items[i].title),
+              onExpandedChanged: (v) {
+                setState(() {
+                  if (v) {
+                    _expanded.add(items[i].title);
+                  } else {
+                    _expanded.remove(items[i].title);
+                  }
+                });
+              },
+            ),
             if (i != items.length - 1) const SizedBox(height: AppSpacing.sm),
           ],
         const SizedBox(height: AppSpacing.md),
@@ -313,80 +326,139 @@ class _CategoryChips extends StatelessWidget {
   }
 }
 
-class _FormulaQuickCard extends StatelessWidget {
-  const _FormulaQuickCard({required this.item});
+class _FormulaExpandableCard extends StatelessWidget {
+  const _FormulaExpandableCard({required this.item, required this.expanded, required this.onExpandedChanged});
 
   final FormulaQuickItem item;
+  final bool expanded;
+  final ValueChanged<bool> onExpandedChanged;
+
+  CalculatorHelperKind? _helperKindFor(FormulaQuickItem item) {
+    switch (item.title) {
+      case 'Pump Pressure / PDP':
+        return CalculatorHelperKind.pumpPressure;
+      case 'Friction Loss':
+        return CalculatorHelperKind.frictionLoss;
+      case 'Elevation':
+        return CalculatorHelperKind.elevation;
+      case 'Smooth Bore Flow':
+        return CalculatorHelperKind.smoothBoreFlow;
+      case 'Fog Nozzle Reaction':
+      case 'Smooth Bore Nozzle Reaction':
+        return CalculatorHelperKind.nozzleReaction;
+      case 'Relay Pumping':
+        return CalculatorHelperKind.relaySpacing;
+      case 'Tender Shuttle Flow':
+        return CalculatorHelperKind.tenderShuttle;
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final helperKind = _helperKindFor(item);
+
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: FirePumpSimColors.charcoal2,
         borderRadius: BorderRadius.circular(AppRadius.xl),
         border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.85)),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: FirePumpSimColors.charcoal3,
-                  borderRadius: BorderRadius.circular(AppRadius.lg),
-                  border: Border.all(color: FirePumpSimColors.red.withValues(alpha: 0.35)),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        child: Theme(
+          data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+          child: ExpansionTile(
+            key: PageStorageKey<String>('formula_${item.title}'),
+            initiallyExpanded: expanded,
+            onExpansionChanged: onExpandedChanged,
+            collapsedIconColor: FirePumpSimColors.textMed,
+            iconColor: FirePumpSimColors.textHigh,
+            tilePadding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.sm),
+            childrenPadding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.md),
+            title: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: FirePumpSimColors.charcoal3,
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                    border: Border.all(color: FirePumpSimColors.red.withValues(alpha: 0.35)),
+                  ),
+                  child: Icon(item.icon, color: FirePumpSimColors.redSoft, size: 20),
                 ),
-                child: Icon(item.icon, color: FirePumpSimColors.redSoft, size: 20),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(item.title, style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900)),
+                      const SizedBox(height: 4),
+                      Text(item.use, style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed, height: 1.3)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            children: [
+              const SizedBox(height: 2),
+              _BigEquation(item.formula),
+              if (item.steps.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                for (final step in item.steps)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 6),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('• ', style: TextStyle(color: FirePumpSimColors.redSoft, fontWeight: FontWeight.w900)),
+                        Expanded(child: Text(step, style: textTheme.bodyMedium?.copyWith(color: FirePumpSimColors.textMed, height: 1.35))),
+                      ],
+                    ),
+                  ),
+              ],
+              if (item.example.isNotEmpty) ...[
+                const SizedBox(height: 10),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: FirePumpSimColors.charcoal3,
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                    border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.8)),
+                  ),
+                  child: Text(
+                    'Example: ${item.example}',
+                    style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textHigh, height: 1.35),
+                  ),
+                ),
+              ],
+              if (helperKind != null) ...[
+                const SizedBox(height: AppSpacing.md),
+                Row(
                   children: [
-                    Text(item.title, style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900)),
-                    const SizedBox(height: 4),
-                    Text(item.use, style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed, height: 1.3)),
+                    Expanded(
+                      child: Text('Calculator helper', style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
+                    ),
+                    TextButton.icon(
+                      onPressed: () => showCalculatorOverlay(context),
+                      style: TextButton.styleFrom(
+                        foregroundColor: FirePumpSimColors.textHigh,
+                      ).copyWith(overlayColor: const WidgetStatePropertyAll(Colors.transparent)),
+                      icon: const Icon(Icons.calculate_outlined, size: 18, color: FirePumpSimColors.textHigh),
+                      label: Text('Open', style: textTheme.labelLarge?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
+                    ),
                   ],
                 ),
-              ),
+                const SizedBox(height: 8),
+                CalculatorHelperCard(kind: helperKind),
+              ],
             ],
           ),
-          const SizedBox(height: 12),
-          _BigEquation(item.formula),
-          if (item.steps.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            for (final step in item.steps)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 6),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('• ', style: TextStyle(color: FirePumpSimColors.redSoft, fontWeight: FontWeight.w900)),
-                    Expanded(child: Text(step, style: textTheme.bodyMedium?.copyWith(color: FirePumpSimColors.textMed, height: 1.35))),
-                  ],
-                ),
-              ),
-          ],
-          if (item.example.isNotEmpty) ...[
-            const SizedBox(height: 10),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: FirePumpSimColors.charcoal3,
-                borderRadius: BorderRadius.circular(AppRadius.lg),
-                border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.8)),
-              ),
-              child: Text('Example: ${item.example}', style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textHigh, height: 1.35)),
-            ),
-          ],
-        ],
+        ),
       ),
     );
   }

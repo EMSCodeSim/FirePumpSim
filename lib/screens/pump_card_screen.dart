@@ -114,6 +114,9 @@ class PumpCardReferenceView extends StatefulWidget {
 
 class _PumpCardReferenceViewState extends State<PumpCardReferenceView> {
   String _selectedCategory = 'All';
+  final Set<String> _expandedSectionKeys = <String>{};
+
+  String _sectionKey(PumpCardSection section) => '${section.category}::${section.title}';
 
   List<PumpCardSection> get _visibleSections {
     if (_selectedCategory == 'All') return PumpCardData.sections;
@@ -169,7 +172,22 @@ class _PumpCardReferenceViewState extends State<PumpCardReferenceView> {
             separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
             itemBuilder: (context, index) {
               if (index == _visibleSections.length) return const _PumpCardDisclaimer();
-              return _PumpCardSectionCard(section: _visibleSections[index]);
+              final section = _visibleSections[index];
+              final key = _sectionKey(section);
+              final expanded = _expandedSectionKeys.contains(key);
+              return _PumpCardSectionExpandableCard(
+                section: section,
+                expanded: expanded,
+                onToggle: () {
+                  setState(() {
+                    if (expanded) {
+                      _expandedSectionKeys.remove(key);
+                    } else {
+                      _expandedSectionKeys.add(key);
+                    }
+                  });
+                },
+              );
             },
           ),
         ),
@@ -248,9 +266,13 @@ class _CategoryChip extends StatelessWidget {
   }
 }
 
-class _PumpCardSectionCard extends StatelessWidget {
-  const _PumpCardSectionCard({required this.section});
+class _PumpCardSectionExpandableCard extends StatelessWidget {
+  const _PumpCardSectionExpandableCard({required this.section, required this.expanded, required this.onToggle});
   final PumpCardSection section;
+  final bool expanded;
+  final VoidCallback onToggle;
+
+  bool get _isFrictionLossPer100 => section.category == 'Friction' && section.title.trim().toLowerCase() == 'friction loss per 100′';
 
   @override
   Widget build(BuildContext context) {
@@ -261,50 +283,83 @@ class _PumpCardSectionCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.xl),
         border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.75)),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        child: Material(
+          color: Colors.transparent,
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  height: 38,
-                  width: 38,
-                  decoration: BoxDecoration(
-                    color: FirePumpSimColors.red.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(AppRadius.md),
-                    border: Border.all(color: FirePumpSimColors.red.withValues(alpha: 0.25)),
-                  ),
-                  child: Icon(section.icon, color: FirePumpSimColors.redSoft, size: 21),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
+                InkWell(
+                  onTap: onToggle,
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(section.title, style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900)),
-                      if (section.subtitle != null) ...[
-                        const SizedBox(height: 4),
-                        Text(section.subtitle!, style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed, height: 1.3)),
-                      ],
+                      Container(
+                        height: 38,
+                        width: 38,
+                        decoration: BoxDecoration(
+                          color: FirePumpSimColors.red.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                          border: Border.all(color: FirePumpSimColors.red.withValues(alpha: 0.25)),
+                        ),
+                        child: Icon(section.icon, color: FirePumpSimColors.redSoft, size: 21),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(section.title, style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900)),
+                            if (section.subtitle != null) ...[
+                              const SizedBox(height: 4),
+                              Text(section.subtitle!, style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed, height: 1.3)),
+                            ],
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      AnimatedRotation(
+                        duration: const Duration(milliseconds: 180),
+                        curve: Curves.easeOut,
+                        turns: expanded ? 0.5 : 0,
+                        child: const Icon(Icons.expand_more, color: FirePumpSimColors.textMed),
+                      ),
                     ],
                   ),
                 ),
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 220),
+                  curve: Curves.easeOutCubic,
+                  alignment: Alignment.topCenter,
+                  child: expanded
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (section.formula != null) ...[
+                                _FormulaStrip(text: section.formula!),
+                                const SizedBox(height: 12),
+                              ],
+                              if (_isFrictionLossPer100)
+                                const _FrictionLossPer100InteractiveChart(key: PageStorageKey('flPer100Interactive'))
+                              else
+                                _ChartTable(chart: section.chart),
+                              if (section.notes.isNotEmpty) ...[
+                                const SizedBox(height: 12),
+                                for (final n in section.notes) _SimpleNote(text: n),
+                              ],
+                            ],
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+                ),
               ],
             ),
-            if (section.formula != null) ...[
-              const SizedBox(height: 12),
-              _FormulaStrip(text: section.formula!),
-            ],
-            const SizedBox(height: 12),
-            _ChartTable(chart: section.chart),
-            if (section.notes.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              for (final n in section.notes) _SimpleNote(text: n),
-            ],
-          ],
+          ),
         ),
       ),
     );
@@ -365,6 +420,155 @@ class _ChartTable extends StatelessWidget {
       ),
     );
   }
+}
+
+class _FrictionLossPer100InteractiveChart extends StatefulWidget {
+  const _FrictionLossPer100InteractiveChart({super.key});
+
+  @override
+  State<_FrictionLossPer100InteractiveChart> createState() => _FrictionLossPer100InteractiveChartState();
+}
+
+class _FrictionLossPer100InteractiveChartState extends State<_FrictionLossPer100InteractiveChart> {
+  final TextEditingController _gpmController = TextEditingController();
+
+  static const List<_HoseCoeff> _hoses = [
+    _HoseCoeff(label: '1¾″', c: 15.5),
+    _HoseCoeff(label: '2″', c: 8),
+    _HoseCoeff(label: '2½″', c: 2),
+    _HoseCoeff(label: '3″', c: 0.8),
+    _HoseCoeff(label: '4″ LDH', c: 0.2),
+    _HoseCoeff(label: '5″ LDH', c: 0.08),
+  ];
+
+  int? get _enteredGpm {
+    final raw = _gpmController.text.trim();
+    if (raw.isEmpty) return null;
+    final v = int.tryParse(raw);
+    if (v == null) return null;
+    if (v <= 0) return null;
+    return v;
+  }
+
+  @override
+  void dispose() {
+    _gpmController.dispose();
+    super.dispose();
+  }
+
+  double _flPer100({required double c, required int gpm}) {
+    final q = gpm / 100.0;
+    return c * q * q;
+  }
+
+  PumpChart _buildChart({required int? gpm}) {
+    final columns = <String>['GPM', ..._hoses.map((h) => h.label)];
+
+    List<int> gpmRows;
+    if (gpm != null) {
+      gpmRows = [gpm];
+    } else {
+      // Generic chart: common range that fits most handline + supply scenarios.
+      gpmRows = [50, 100, 150, 185, 200, 250, 300, 400, 500, 750, 1000];
+    }
+
+    final rows = <List<String>>[];
+    for (final rowGpm in gpmRows) {
+      final cells = <String>['$rowGpm'];
+      for (final hose in _hoses) {
+        final fl = _flPer100(c: hose.c, gpm: rowGpm);
+        cells.add('${fl.round()}');
+      }
+      rows.add(cells);
+    }
+
+    return PumpChart(columns: columns, rows: rows);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final enteredGpm = _enteredGpm;
+    final chart = _buildChart(gpm: enteredGpm);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: FirePumpSimColors.charcoal3,
+            borderRadius: BorderRadius.circular(AppRadius.lg),
+            border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.8)),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _gpmController,
+                  keyboardType: TextInputType.number,
+                  textInputAction: TextInputAction.done,
+                  style: textTheme.bodyMedium?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w800),
+                  onChanged: (_) => setState(() {}),
+                  decoration: InputDecoration(
+                    isDense: true,
+                    labelText: 'Flow (GPM) (optional)',
+                    hintText: 'Leave blank for range chart',
+                    labelStyle: textTheme.labelMedium?.copyWith(color: FirePumpSimColors.textMed, fontWeight: FontWeight.w800),
+                    hintStyle: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed),
+                    filled: true,
+                    fillColor: FirePumpSimColors.charcoal2,
+                    prefixIcon: const Icon(Icons.tune, color: FirePumpSimColors.textMed),
+                    suffixIcon: _gpmController.text.trim().isEmpty
+                        ? null
+                        : IconButton(
+                            tooltip: 'Clear',
+                            onPressed: () {
+                              _gpmController.clear();
+                              setState(() {});
+                            },
+                            icon: const Icon(Icons.close, color: FirePumpSimColors.textHigh),
+                            style: IconButton.styleFrom(backgroundColor: FirePumpSimColors.charcoal2),
+                          ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      borderSide: BorderSide(color: FirePumpSimColors.steel.withValues(alpha: 0.85)),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      borderSide: BorderSide(color: FirePumpSimColors.steel.withValues(alpha: 0.85)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      borderSide: BorderSide(color: FirePumpSimColors.red.withValues(alpha: 0.65), width: 1.2),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          enteredGpm == null ? 'FL per 100′ (psi) — common GPM range' : 'FL per 100′ (psi) — at $enteredGpm GPM',
+          style: textTheme.labelLarge?.copyWith(color: FirePumpSimColors.textMed, fontWeight: FontWeight.w900),
+        ),
+        const SizedBox(height: 8),
+        _ChartTable(chart: chart),
+        const SizedBox(height: 6),
+        Text(
+          'Values are rounded to the nearest PSI. Use your department-tested C values when available.',
+          style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed, height: 1.35),
+        ),
+      ],
+    );
+  }
+}
+
+class _HoseCoeff {
+  const _HoseCoeff({required this.label, required this.c});
+  final String label;
+  final double c;
 }
 
 class _SimpleNote extends StatelessWidget {
@@ -460,18 +664,16 @@ class PumpCardData {
       icon: Icons.table_chart_outlined,
       formula: 'FL/100′ = C × (GPM ÷ 100)²',
       chart: PumpChart(
-        columns: ['Hose', 'Flow', 'FL/100′', 'C'],
+        // The UI for this section is now interactive (GPM input + dynamic chart).
+        // Keeping a minimal placeholder chart here so the data model stays consistent.
+        columns: ['Hose', 'C'],
         rows: [
-          ['1¾″', '150 GPM', '35 psi', '15.5'],
-          ['1¾″', '185 GPM', '53 psi', '15.5'],
-          ['1¾″', '200 GPM', '62 psi', '15.5'],
-          ['2″', '185 GPM', '27 psi', '8'],
-          ['2″', '265 GPM', '56 psi', '8'],
-          ['2½″', '250 GPM', '13 psi', '2'],
-          ['2½″', '300 GPM', '18 psi', '2'],
-          ['3″', '500 GPM', '20 psi', '0.8'],
-          ['4″ LDH', '1000 GPM', '20 psi', '0.2'],
-          ['5″ LDH', '1000 GPM', '8 psi', '0.08'],
+          ['1¾″', '15.5'],
+          ['2″', '8'],
+          ['2½″', '2'],
+          ['3″', '0.8'],
+          ['4″ LDH', '0.2'],
+          ['5″ LDH', '0.08'],
         ],
       ),
       notes: ['Multiply FL/100′ by hose length in hundreds of feet.', 'Use department-tested values when available.'],

@@ -42,19 +42,6 @@
         "assets/scenarios/hotel_standpipe_fire_operation.json",
         "assets/scenarios/combination_sprinkler_standpipe_fdc_operation.json"
       ]
-    },
-    {
-      "packId": "advanced_specialty_pack",
-      "title": "Advanced Specialty Pack",
-      "description": "Specialty and advanced scenarios.",
-      "difficulty": "advanced",
-      "scenarioCount": 2,
-      "isFree": false,
-      "isPurchased": false,
-      "scenarioFiles": [
-        "assets/scenarios/advanced_portable_monitor_dual_supply.json",
-        "assets/scenarios/wildland-structure-engine181-001.json"
-      ]
     }
   ]
 }

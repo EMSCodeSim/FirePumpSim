@@ -628,15 +628,16 @@ class ScenarioRepository {
 /// in the JSON (e.g. "car_fire.png"). Our UI widgets expect a valid
 /// `assets/...` path for `Image.asset()`.
 class _ScenarioAssetResolver {
-  _ScenarioAssetResolver._(this._assetsByBasenameLower);
+  _ScenarioAssetResolver._(this._assetsByBasenameLower, this._assetsByNormalizedBasename);
 
   final Map<String, String> _assetsByBasenameLower;
+  final Map<String, String> _assetsByNormalizedBasename;
 
   static Future<_ScenarioAssetResolver> create() async {
     try {
       final manifestStr = await rootBundle.loadString('AssetManifest.json');
       final decoded = jsonDecode(manifestStr);
-      if (decoded is! Map) return _ScenarioAssetResolver._(const {});
+      if (decoded is! Map) return _ScenarioAssetResolver._(const {}, const {});
 
       final keys = decoded.keys.map((e) => e.toString()).toList(growable: false);
 
@@ -650,16 +651,22 @@ class _ScenarioAssetResolver {
       }
 
       final byBase = <String, String>{};
+      final byNormBase = <String, String>{};
       for (final k in keys) {
         final base = _basename(k).toLowerCase();
         if (base.isEmpty) continue;
         final existing = byBase[base];
         if (existing == null || score(k) < score(existing)) byBase[base] = k;
+
+        final norm = _normalizeBasename(base);
+        if (norm.isEmpty) continue;
+        final existingNorm = byNormBase[norm];
+        if (existingNorm == null || score(k) < score(existingNorm)) byNormBase[norm] = k;
       }
-      return _ScenarioAssetResolver._(byBase);
+      return _ScenarioAssetResolver._(byBase, byNormBase);
     } catch (e) {
       debugPrint('Failed to build AssetManifest resolver: $e');
-      return _ScenarioAssetResolver._(const {});
+      return _ScenarioAssetResolver._(const {}, const {});
     }
   }
 
@@ -675,18 +682,41 @@ class _ScenarioAssetResolver {
     return lower.endsWith('.png') || lower.endsWith('.jpg') || lower.endsWith('.jpeg') || lower.endsWith('.webp') || lower.endsWith('.gif');
   }
 
+  /// Normalizes basenames so we can match files like:
+  /// - `Wildland Structure Engine181 001.png`
+  /// - `wildland-structure-engine181-001.png`
+  /// - `wildland_structure_engine181_001.png`
+  ///
+  /// into the same lookup key.
+  static String _normalizeBasename(String baseLower) => baseLower.replaceAll(RegExp(r'[^a-z0-9]'), '');
+
   String _resolve(String raw) {
     final trimmed = ScenarioRepository._sanitizeAssetKey(raw).trim();
     if (trimmed.isEmpty) return '';
     if (trimmed.toLowerCase().startsWith('assets/')) return trimmed;
-    if (!_hasImageExt(trimmed)) return trimmed;
 
     final baseLower = _basename(trimmed).toLowerCase();
-    final fromManifest = _assetsByBasenameLower[baseLower];
-    if (fromManifest != null) return fromManifest;
+    final norm = _normalizeBasename(baseLower);
 
-    // Fallback for packs that assume assets/images.
-    return 'assets/images/$trimmed';
+    // If a file extension is provided, try to resolve by exact basename first,
+    // then by normalized basename (handles underscores/hyphens/spaces/case).
+    if (_hasImageExt(trimmed)) {
+      final fromManifest = _assetsByBasenameLower[baseLower] ?? (norm.isEmpty ? null : _assetsByNormalizedBasename[norm]);
+      if (fromManifest != null) return fromManifest;
+
+      // Fallback for packs that assume assets/images.
+      return 'assets/images/$trimmed';
+    }
+
+    // If no extension is provided, attempt to match any image in the manifest
+    // that shares the normalized basename.
+    if (norm.isNotEmpty) {
+      final fromManifest = _assetsByNormalizedBasename[norm];
+      if (fromManifest != null) return fromManifest;
+    }
+
+    // Last resort: return as-is (caller will show a graceful placeholder).
+    return trimmed;
   }
 
   void rewriteScenarioImageFields(Map<String, dynamic> json, {required String scenarioJsonAssetPath}) {

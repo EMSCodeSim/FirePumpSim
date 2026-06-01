@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:async';
 
 import 'package:firepumpsim/models/daily_challenge_models.dart';
 import 'package:firepumpsim/models/scenario_models.dart';
@@ -25,11 +24,7 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
   final _answerCtrl = TextEditingController();
   final _scrollCtrl = ScrollController();
 
-  static const Duration _challengeDuration = Duration(minutes: 2);
-  Timer? _countdownTimer;
-  DateTime? _challengeEndsAt;
-  Duration _timeRemaining = _challengeDuration;
-  bool _timeExpired = false;
+  List<PlayableScenarioProblem> _pool = const [];
 
   bool _loading = true;
   String? _loadError;
@@ -59,7 +54,6 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
 
   @override
   void dispose() {
-    _countdownTimer?.cancel();
     _answerCtrl.dispose();
     _scrollCtrl.dispose();
     super.dispose();
@@ -101,7 +95,24 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
         }
       }
 
-      final todayProblem = _pickDailyProblem(playable: playable, dateKey: todayKey, yesterdayProblemId: yesterdayResult?.problemId);
+      String? yesterdayImage;
+      if (yesterdayResult != null) {
+        try {
+          final byId = playable.where((p) => p.problemId == yesterdayResult!.problemId);
+          final match = byId.isNotEmpty ? byId.first : playable.firstWhere((p) => p.scenarioId == yesterdayResult!.scenarioId);
+          final img = _pickImage(match);
+          if (img.trim().isNotEmpty) yesterdayImage = img;
+        } catch (_) {
+          // If we can't resolve yesterday's image, we still pick today's deterministically.
+        }
+      }
+
+      final todayProblem = _pickDailyProblem(
+        playable: playable,
+        dateKey: todayKey,
+        yesterdayProblemId: yesterdayResult?.problemId,
+        yesterdayImage: yesterdayImage,
+      );
       DailyChallengeResult? todayResult;
       for (final r in history) {
         if (r.date == todayKey) {
@@ -110,15 +121,7 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
         }
       }
 
-      // Timer behavior: one persisted 2-minute countdown per date.
-      // Leaving the screen and coming back should not restart the clock.
       final isNewDay = _todayDate.isNotEmpty && _todayDate != todayKey;
-      var endsAt = await _storage.loadChallengeEndsAt(todayKey);
-      if (endsAt == null || isNewDay) {
-        endsAt = DateTime.now().add(_challengeDuration);
-        await _storage.saveChallengeEndsAt(yyyyMmDd: todayKey, endsAt: endsAt);
-      }
-      _challengeEndsAt = endsAt;
 
       if (!mounted) return;
 
@@ -139,10 +142,9 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
         _todayDate = todayKey;
         _today = todayProblem;
         _todayResult = todayResult;
+        _pool = playable;
         _practiceRetryEnabled = false;
       });
-
-      _startOrStopTimerIfNeeded();
     } catch (e) {
       debugPrint('DailyChallenge bootstrap failed: $e');
       setState(() {
@@ -183,37 +185,6 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
     }
   }
 
-  void _startOrStopTimerIfNeeded() {
-    _countdownTimer?.cancel();
-
-    // If completed correctly, no need to run countdown.
-    if (_todayResult?.isCorrect == true) {
-      setState(() {
-        _timeRemaining = Duration.zero;
-        _timeExpired = false;
-      });
-      return;
-    }
-
-    final endsAt = _challengeEndsAt;
-    if (endsAt == null) return;
-
-    void tick() {
-      final remaining = endsAt.difference(DateTime.now());
-      final next = remaining.isNegative ? Duration.zero : remaining;
-      final expired = next == Duration.zero;
-      if (!mounted) return;
-      setState(() {
-        _timeRemaining = next;
-        _timeExpired = expired;
-      });
-      if (expired) _countdownTimer?.cancel();
-    }
-
-    tick();
-    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (_) => tick());
-  }
-
   static String _yyyyMmDd(DateTime dt) {
     final y = dt.year.toString().padLeft(4, '0');
     final m = dt.month.toString().padLeft(2, '0');
@@ -237,13 +208,41 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
     required List<PlayableScenarioProblem> playable,
     required String dateKey,
     required String? yesterdayProblemId,
+    required String? yesterdayImage,
   }) {
-    final idx = _fnv1a32(dateKey).abs() % playable.length;
-    var picked = playable[idx];
-    if (yesterdayProblemId != null && playable.length >= 2 && picked.problemId == yesterdayProblemId) {
-      picked = playable[(idx + 1) % playable.length];
+    // Ensure each day's challenge has a (likely) different picture:
+    // - Prefer entries with a valid image asset.
+    // - Avoid repeating yesterday's *image* when possible.
+    // - Keep the selection deterministic per date.
+    final startIdx = _fnv1a32(dateKey).abs() % playable.length;
+    final yesterdayImgNorm = ScenarioRepository.normalize(yesterdayImage ?? '');
+
+    bool hasValidImage(PlayableScenarioProblem p) => _pickImage(p).trim().isNotEmpty;
+
+    for (var offset = 0; offset < playable.length; offset++) {
+      final p = playable[(startIdx + offset) % playable.length];
+      if (!hasValidImage(p)) continue;
+
+      if (yesterdayProblemId != null && playable.length >= 2 && p.problemId == yesterdayProblemId) continue;
+      if (yesterdayImgNorm.isNotEmpty && ScenarioRepository.normalize(_pickImage(p)) == yesterdayImgNorm) continue;
+      return p;
     }
-    return picked;
+
+    // Fallback: if we couldn't avoid yesterday's image/problem, at least return
+    // something deterministic (and still prefer an image).
+    for (var offset = 0; offset < playable.length; offset++) {
+      final p = playable[(startIdx + offset) % playable.length];
+      if (hasValidImage(p)) return p;
+    }
+
+    return playable[startIdx];
+  }
+
+  static String _pickImage(PlayableScenarioProblem p) {
+    bool ok(String s) => s.trim().toLowerCase().startsWith('assets/') && s.contains('.');
+    if (ok(p.scene)) return p.scene;
+    if (ok(p.image)) return p.image;
+    return '';
   }
 
   bool get _isOfficialLocked {
@@ -352,13 +351,122 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
     );
   }
 
+  Future<PlayableScenarioProblem?> _findProblemForResult(DailyChallengeResult result) async {
+    final pool = _pool;
+    if (pool.isNotEmpty) {
+      for (final p in pool) {
+        if (p.problemId == result.problemId) return p;
+      }
+      for (final p in pool) {
+        if (p.scenarioId == result.scenarioId) return p;
+      }
+    }
+
+    // Fallback: reload pool (e.g., if screen has been alive through asset changes).
+    final indexFiles = await _loadDailyChallengeIndexFiles();
+    final playable = await _repo.loadPlayableProblemsFromScenarioFiles(indexFiles);
+    if (!mounted) return null;
+    setState(() => _pool = playable);
+    for (final p in playable) {
+      if (p.problemId == result.problemId) return p;
+    }
+    for (final p in playable) {
+      if (p.scenarioId == result.scenarioId) return p;
+    }
+    return null;
+  }
+
+  Future<void> _openPastChallenge(DailyChallengeResult result) async {
+    try {
+      final problem = await _findProblemForResult(result);
+      if (!mounted) return;
+      if (problem == null) {
+        _showSnackBar('Could not load this past challenge from assets.');
+        return;
+      }
+      await _openPastChallengeDetail(problem: problem, result: result);
+    } catch (e) {
+      debugPrint('Failed to open past daily challenge: $e');
+      _showSnackBar('Unable to open past challenge.');
+    }
+  }
+
+  Future<void> _openPastChallengeDetail({required PlayableScenarioProblem problem, required DailyChallengeResult result}) async {
+    final textTheme = Theme.of(context).textTheme;
+    final image = _TodayChallengeCard._pickImage(problem);
+    final explanation = _buildExplanation(problem);
+
+    await showModalBottomSheet<void>(
+      context: context,
+      useSafeArea: true,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.md),
+          child: Container(
+            decoration: BoxDecoration(
+              color: FirePumpSimColors.charcoal2,
+              borderRadius: BorderRadius.circular(AppRadius.xl),
+              border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.8)),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(AppRadius.xl),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.md),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                result.date,
+                                style: textTheme.labelLarge?.copyWith(color: FirePumpSimColors.textMed, fontWeight: FontWeight.w900, letterSpacing: 0.4),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                problem.problemTitle,
+                                style: textTheme.titleLarge?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900),
+                              ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () => context.pop(),
+                          icon: const Icon(Icons.close, color: FirePumpSimColors.textMed),
+                          style: IconButton.styleFrom(backgroundColor: FirePumpSimColors.charcoal3.withValues(alpha: 0.8)),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    _DailyChallengeSceneViewer(assetPath: image, overlays: problem.overlays),
+                    const SizedBox(height: AppSpacing.md),
+                    _ResultCard(
+                      isCorrect: result.isCorrect,
+                      userAnswer: result.userAnswer,
+                      correctAnswer: result.correctAnswer,
+                      unit: result.unit,
+                      tolerance: _CorrectAnswerInfo.fromProblem(problem).tolerance,
+                      explanation: explanation,
+                      formulaBreakdown: problem.formulaBreakdown,
+                      onReviewFormula: _reviewFormula,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _submitAnswer() async {
     if (_isOfficialLocked || _submitting) return;
-
-    if (_timeExpired) {
-      _showSnackBar('Time is up for today\'s Daily Challenge. Come back tomorrow.');
-      return;
-    }
 
     FocusScope.of(context).unfocus();
 
@@ -485,8 +593,6 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
         _practiceRetryEnabled = false;
       });
 
-      _startOrStopTimerIfNeeded();
-
       await Future<void>.delayed(const Duration(milliseconds: 40));
       if (!mounted) return;
       if (_scrollCtrl.hasClients) {
@@ -570,8 +676,6 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
                             date: _todayDate,
                             problem: _today!,
                             locked: _isOfficialLocked,
-                            timeRemaining: _timeRemaining,
-                            timeExpired: _timeExpired,
                             answerCtrl: _answerCtrl,
                             unit: _CorrectAnswerInfo.fromProblem(_today!).unit,
                             answerLabel: _CorrectAnswerInfo.fromProblem(_today!).label,
@@ -599,7 +703,7 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
                           ],
                           _WeakAreasCard(history: _history),
                           const SizedBox(height: AppSpacing.md),
-                          _RecentChallengesCard(history: _history),
+                           _RecentChallengesCard(history: _history, onOpen: _openPastChallenge),
                           const SizedBox(height: AppSpacing.md),
                           Text(
                             'Come back tomorrow for a new challenge.',
@@ -701,8 +805,6 @@ class _TodayChallengeCard extends StatelessWidget {
     required this.date,
     required this.problem,
     required this.locked,
-    required this.timeRemaining,
-    required this.timeExpired,
     required this.answerCtrl,
     required this.unit,
     required this.answerLabel,
@@ -714,21 +816,12 @@ class _TodayChallengeCard extends StatelessWidget {
   final String date;
   final PlayableScenarioProblem problem;
   final bool locked;
-  final Duration timeRemaining;
-  final bool timeExpired;
   final TextEditingController answerCtrl;
   final String unit;
   final String answerLabel;
   final bool submitting;
   final Future<void> Function() onSubmit;
   final VoidCallback onPreview;
-
-  static String _formatMmSs(Duration d) {
-    final total = d.inSeconds.clamp(0, 24 * 3600);
-    final mm = (total ~/ 60).toString().padLeft(2, '0');
-    final ss = (total % 60).toString().padLeft(2, '0');
-    return '$mm:$ss';
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -740,13 +833,7 @@ class _TodayChallengeCard extends StatelessWidget {
     final qType = _CorrectAnswerInfo.fromProblem(problem).questionType;
     final image = _pickImage(problem);
 
-    final showTimer = !locked;
-    final timerText = _formatMmSs(timeRemaining);
-    final lowTime = timeRemaining.inSeconds <= 30;
-    final timerColor = timeExpired
-        ? FirePumpSimColors.redSoft
-        : (lowTime ? Colors.orange : FirePumpSimColors.challengeBlue);
-    final submitEnabled = !locked && !submitting && !timeExpired;
+    final submitEnabled = !locked && !submitting;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
@@ -766,23 +853,6 @@ class _TodayChallengeCard extends StatelessWidget {
                   style: textTheme.labelLarge?.copyWith(color: FirePumpSimColors.textMed, fontWeight: FontWeight.w800),
                 ),
               ),
-              if (showTimer)
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: timerColor.withValues(alpha: 0.14),
-                    borderRadius: BorderRadius.circular(999),
-                    border: Border.all(color: timerColor.withValues(alpha: 0.7)),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(timeExpired ? Icons.timer_off : Icons.timer, size: 16, color: timerColor),
-                      const SizedBox(width: 6),
-                      Text(timerText, style: textTheme.labelSmall?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
-                    ],
-                  ),
-                ),
               if (locked)
                 _Badge(
                   label: 'COMPLETED',
@@ -812,7 +882,7 @@ class _TodayChallengeCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(problem.studentQuestion, style: textTheme.bodyMedium?.copyWith(color: FirePumpSimColors.textHigh, height: 1.4)),
           const SizedBox(height: 12),
-          _AnswerRow(answerCtrl: answerCtrl, unit: unit, label: answerLabel, enabled: !locked && !submitting && !timeExpired),
+          _AnswerRow(answerCtrl: answerCtrl, unit: unit, label: answerLabel, enabled: !locked && !submitting),
           const SizedBox(height: 12),
           SizedBox(
             height: 52,
@@ -823,14 +893,12 @@ class _TodayChallengeCard extends StatelessWidget {
                 disabledBackgroundColor: FirePumpSimColors.red.withValues(alpha: 0.25),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
-              icon: Icon(Icons.check_circle_outline, color: (locked || timeExpired) ? FirePumpSimColors.textMed : Colors.white),
+              icon: Icon(Icons.check_circle_outline, color: locked ? FirePumpSimColors.textMed : Colors.white),
               label: Text(
                 locked
                     ? 'Challenge Completed'
-                    : (timeExpired
-                        ? 'Time\'s Up — Come Back Tomorrow'
-                        : (submitting ? 'Checking Answer...' : 'Submit Answer')),
-                style: textTheme.titleMedium?.copyWith(color: (locked || timeExpired) ? FirePumpSimColors.textMed : Colors.white, fontWeight: FontWeight.w900),
+                    : (submitting ? 'Checking Answer...' : 'Submit Answer'),
+                style: textTheme.titleMedium?.copyWith(color: locked ? FirePumpSimColors.textMed : Colors.white, fontWeight: FontWeight.w900),
               ),
             ),
           ),
@@ -1313,7 +1381,7 @@ class _ResultCard extends StatelessWidget {
     required this.explanation,
     required this.formulaBreakdown,
     required this.onReviewFormula,
-    required this.onRetryPractice,
+    this.onRetryPractice,
   });
 
   final bool isCorrect;
@@ -1324,7 +1392,7 @@ class _ResultCard extends StatelessWidget {
   final String explanation;
   final List<dynamic> formulaBreakdown;
   final VoidCallback onReviewFormula;
-  final VoidCallback onRetryPractice;
+  final VoidCallback? onRetryPractice;
 
   @override
   Widget build(BuildContext context) {
@@ -1370,7 +1438,8 @@ class _ResultCard extends StatelessWidget {
             runSpacing: 10,
             children: [
               _ActionButton(label: 'Review Formula', icon: Icons.functions_outlined, color: FirePumpSimColors.red, onTap: onReviewFormula),
-              _ActionButton(label: 'Retry for Practice', icon: Icons.refresh, color: FirePumpSimColors.steel, onTap: onRetryPractice),
+              if (onRetryPractice != null)
+                _ActionButton(label: 'Retry for Practice', icon: Icons.refresh, color: FirePumpSimColors.steel, onTap: onRetryPractice),
             ],
           ),
         ],
@@ -1654,9 +1723,10 @@ class _WeakAreaTile extends StatelessWidget {
 }
 
 class _RecentChallengesCard extends StatelessWidget {
-  const _RecentChallengesCard({required this.history});
+  const _RecentChallengesCard({required this.history, required this.onOpen});
 
   final List<DailyChallengeResult> history;
+  final void Function(DailyChallengeResult result) onOpen;
 
   @override
   Widget build(BuildContext context) {
@@ -1677,7 +1747,7 @@ class _RecentChallengesCard extends StatelessWidget {
           if (items.isEmpty)
             Text('No completed challenges yet.', style: textTheme.bodyMedium?.copyWith(color: FirePumpSimColors.textMed))
           else
-            ...items.map((r) => _RecentRow(result: r)),
+            ...items.map((r) => _RecentRow(result: r, onTap: () => onOpen(r))),
         ],
       ),
     );
@@ -1685,44 +1755,57 @@ class _RecentChallengesCard extends StatelessWidget {
 }
 
 class _RecentRow extends StatelessWidget {
-  const _RecentRow({required this.result});
+  const _RecentRow({required this.result, required this.onTap});
 
   final DailyChallengeResult result;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final color = result.isCorrect ? FirePumpSimColors.printGreen : Colors.orange;
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: Material(
         color: FirePumpSimColors.charcoal3.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.6)),
-      ),
-      child: Row(
-        children: [
-          _Badge(label: result.isCorrect ? 'CORRECT' : 'INCORRECT', color: color),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        child: InkWell(
+          onTap: onTap,
+          splashFactory: NoSplash.splashFactory,
+          highlightColor: Colors.white.withValues(alpha: 0.04),
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.6)),
+            ),
+            child: Row(
               children: [
-                Text(result.date, style: textTheme.labelSmall?.copyWith(color: FirePumpSimColors.textMed, fontWeight: FontWeight.w900, letterSpacing: 0.4)),
-                const SizedBox(height: 2),
-                Text(result.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: textTheme.bodyMedium?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
-                const SizedBox(height: 2),
-                Text(
-                  'You: ${result.userAnswer} ${result.unit}  •  Correct: ${result.correctAnswer} ${result.unit}',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed),
+                _Badge(label: result.isCorrect ? 'CORRECT' : 'INCORRECT', color: color),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(result.date, style: textTheme.labelSmall?.copyWith(color: FirePumpSimColors.textMed, fontWeight: FontWeight.w900, letterSpacing: 0.4)),
+                      const SizedBox(height: 2),
+                      Text(result.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: textTheme.bodyMedium?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
+                      const SizedBox(height: 2),
+                      Text(
+                        'You: ${result.userAnswer} ${result.unit}  •  Correct: ${result.correctAnswer} ${result.unit}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed),
+                      ),
+                    ],
+                  ),
                 ),
+                const SizedBox(width: 6),
+                const Icon(Icons.chevron_right, color: FirePumpSimColors.textMed),
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

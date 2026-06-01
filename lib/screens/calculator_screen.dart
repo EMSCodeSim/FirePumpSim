@@ -811,13 +811,54 @@ class _HelperTools extends StatelessWidget {
   }
 }
 
+/// Helper types exposed for embedding calculator helpers in other screens.
+enum CalculatorHelperKind {
+  pumpPressure,
+  frictionLoss,
+  elevation,
+  smoothBoreFlow,
+  nozzleReaction,
+  relaySpacing,
+  tenderShuttle,
+}
+
+/// A reusable calculator helper card that can be embedded in other screens.
+///
+/// If [onUseResult] is provided, the helper exposes a "Use" action.
+class CalculatorHelperCard extends StatelessWidget {
+  const CalculatorHelperCard({super.key, required this.kind, this.onUseResult});
+
+  final CalculatorHelperKind kind;
+  final ValueChanged<String>? onUseResult;
+
+  @override
+  Widget build(BuildContext context) {
+    switch (kind) {
+      case CalculatorHelperKind.pumpPressure:
+        return _HelperCardPumpPressure(onUseResult: onUseResult);
+      case CalculatorHelperKind.frictionLoss:
+        return _HelperCardFrictionLoss(onUseResult: onUseResult);
+      case CalculatorHelperKind.elevation:
+        return _HelperCardElevation(onUseResult: onUseResult);
+      case CalculatorHelperKind.smoothBoreFlow:
+        return _HelperCardSmoothBoreFlow(onUseResult: onUseResult);
+      case CalculatorHelperKind.nozzleReaction:
+        return _HelperCardNozzleReaction(onUseResult: onUseResult);
+      case CalculatorHelperKind.relaySpacing:
+        return _HelperCardRelaySpacing(onUseResult: onUseResult);
+      case CalculatorHelperKind.tenderShuttle:
+        return _HelperCardTenderShuttle(onUseResult: onUseResult);
+    }
+  }
+}
+
 // =============================================================================
 // Helper cards
 // =============================================================================
 
 class _HelperCardPumpPressure extends StatefulWidget {
-  const _HelperCardPumpPressure({required this.onUseResult});
-  final ValueChanged<String> onUseResult;
+  const _HelperCardPumpPressure({this.onUseResult});
+  final ValueChanged<String>? onUseResult;
 
   @override
   State<_HelperCardPumpPressure> createState() => _HelperCardPumpPressureState();
@@ -864,7 +905,7 @@ class _HelperCardPumpPressureState extends State<_HelperCardPumpPressure> {
         _ComputeRow(
           output: _out.isEmpty ? '—' : '${_out} psi',
           onCompute: _calc,
-          onUse: _out.isEmpty ? null : () => widget.onUseResult(_out),
+          onUse: (_out.isEmpty || widget.onUseResult == null) ? null : () => widget.onUseResult!.call(_out),
         ),
       ],
     );
@@ -872,8 +913,8 @@ class _HelperCardPumpPressureState extends State<_HelperCardPumpPressure> {
 }
 
 class _HelperCardFrictionLoss extends StatefulWidget {
-  const _HelperCardFrictionLoss({required this.onUseResult});
-  final ValueChanged<String> onUseResult;
+  const _HelperCardFrictionLoss({this.onUseResult});
+  final ValueChanged<String>? onUseResult;
 
   @override
   State<_HelperCardFrictionLoss> createState() => _HelperCardFrictionLossState();
@@ -920,7 +961,7 @@ class _HelperCardFrictionLossState extends State<_HelperCardFrictionLoss> {
         _ComputeRow(
           output: _out.isEmpty ? '—' : '${_out} psi',
           onCompute: _calc,
-          onUse: _out.isEmpty ? null : () => widget.onUseResult(_out),
+          onUse: (_out.isEmpty || widget.onUseResult == null) ? null : () => widget.onUseResult!.call(_out),
         ),
       ],
     );
@@ -928,8 +969,8 @@ class _HelperCardFrictionLossState extends State<_HelperCardFrictionLoss> {
 }
 
 class _HelperCardElevation extends StatefulWidget {
-  const _HelperCardElevation({required this.onUseResult});
-  final ValueChanged<String> onUseResult;
+  const _HelperCardElevation({this.onUseResult});
+  final ValueChanged<String>? onUseResult;
 
   @override
   State<_HelperCardElevation> createState() => _HelperCardElevationState();
@@ -967,7 +1008,7 @@ class _HelperCardElevationState extends State<_HelperCardElevation> {
         _ComputeRow(
           output: _out.isEmpty ? '—' : '${_out} psi',
           onCompute: _calc,
-          onUse: _out.isEmpty ? null : () => widget.onUseResult(_out),
+          onUse: (_out.isEmpty || widget.onUseResult == null) ? null : () => widget.onUseResult!.call(_out),
         ),
       ],
     );
@@ -975,8 +1016,8 @@ class _HelperCardElevationState extends State<_HelperCardElevation> {
 }
 
 class _HelperCardSmoothBoreFlow extends StatefulWidget {
-  const _HelperCardSmoothBoreFlow({required this.onUseResult});
-  final ValueChanged<String> onUseResult;
+  const _HelperCardSmoothBoreFlow({this.onUseResult});
+  final ValueChanged<String>? onUseResult;
 
   @override
   State<_HelperCardSmoothBoreFlow> createState() => _HelperCardSmoothBoreFlowState();
@@ -1017,7 +1058,7 @@ class _HelperCardSmoothBoreFlowState extends State<_HelperCardSmoothBoreFlow> {
         _ComputeRow(
           output: _out.isEmpty ? '—' : '${_out} GPM',
           onCompute: _calc,
-          onUse: _out.isEmpty ? null : () => widget.onUseResult(_out),
+          onUse: (_out.isEmpty || widget.onUseResult == null) ? null : () => widget.onUseResult!.call(_out),
         ),
       ],
     );
@@ -1025,8 +1066,8 @@ class _HelperCardSmoothBoreFlowState extends State<_HelperCardSmoothBoreFlow> {
 }
 
 class _HelperCardNozzleReaction extends StatefulWidget {
-  const _HelperCardNozzleReaction({required this.onUseResult});
-  final ValueChanged<String> onUseResult;
+  const _HelperCardNozzleReaction({this.onUseResult});
+  final ValueChanged<String>? onUseResult;
 
   @override
   State<_HelperCardNozzleReaction> createState() => _HelperCardNozzleReactionState();
@@ -1090,7 +1131,7 @@ class _HelperCardNozzleReactionState extends State<_HelperCardNozzleReaction> {
         _ComputeRow(
           output: _out.isEmpty ? '—' : '${_out} lb',
           onCompute: _calc,
-          onUse: _out.isEmpty ? null : () => widget.onUseResult(_out),
+          onUse: (_out.isEmpty || widget.onUseResult == null) ? null : () => widget.onUseResult!.call(_out),
         ),
       ],
     );
@@ -1098,8 +1139,8 @@ class _HelperCardNozzleReactionState extends State<_HelperCardNozzleReaction> {
 }
 
 class _HelperCardRelaySpacing extends StatefulWidget {
-  const _HelperCardRelaySpacing({required this.onUseResult});
-  final ValueChanged<String> onUseResult;
+  const _HelperCardRelaySpacing({this.onUseResult});
+  final ValueChanged<String>? onUseResult;
 
   @override
   State<_HelperCardRelaySpacing> createState() => _HelperCardRelaySpacingState();
@@ -1144,7 +1185,7 @@ class _HelperCardRelaySpacingState extends State<_HelperCardRelaySpacing> {
         _ComputeRow(
           output: _out.isEmpty ? '—' : '${_out} ft/engine',
           onCompute: _calc,
-          onUse: _out.isEmpty ? null : () => widget.onUseResult(_out),
+          onUse: (_out.isEmpty || widget.onUseResult == null) ? null : () => widget.onUseResult!.call(_out),
         ),
       ],
     );
@@ -1152,8 +1193,8 @@ class _HelperCardRelaySpacingState extends State<_HelperCardRelaySpacing> {
 }
 
 class _HelperCardTenderShuttle extends StatefulWidget {
-  const _HelperCardTenderShuttle({required this.onUseResult});
-  final ValueChanged<String> onUseResult;
+  const _HelperCardTenderShuttle({this.onUseResult});
+  final ValueChanged<String>? onUseResult;
 
   @override
   State<_HelperCardTenderShuttle> createState() => _HelperCardTenderShuttleState();
@@ -1198,7 +1239,7 @@ class _HelperCardTenderShuttleState extends State<_HelperCardTenderShuttle> {
         _ComputeRow(
           output: _out.isEmpty ? '—' : '${_out} GPM',
           onCompute: _calc,
-          onUse: _out.isEmpty ? null : () => widget.onUseResult(_out),
+          onUse: (_out.isEmpty || widget.onUseResult == null) ? null : () => widget.onUseResult!.call(_out),
         ),
       ],
     );

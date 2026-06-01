@@ -38,6 +38,10 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
   String _selectedMode = 'All Modes';
   String _selectedSort = 'Recommended';
 
+  /// Keeps the results list visually tidy by allowing each pack section
+  /// to be collapsed.
+  final Set<String> _collapsedPackIds = <String>{};
+
   @override
   void initState() {
     super.initState();
@@ -75,6 +79,9 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
         _unlockedPacks = unlocked;
         _scenariosByPackId = byPack;
         _allScenarios = all;
+
+        // Preserve collapse state when possible; otherwise start expanded.
+        _collapsedPackIds.removeWhere((id) => !_unlockedPacks.any((p) => p.packId == id));
       });
     } catch (e) {
       debugPrint('Failed to load scenarios: $e');
@@ -267,7 +274,7 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
                               ),
                             ),
                             IconButton(
-                              onPressed: () => Navigator.of(sheetContext).pop(),
+                               onPressed: () => sheetContext.pop(),
                               icon: const Icon(Icons.close, color: FirePumpSimColors.textMed),
                               style: IconButton.styleFrom(backgroundColor: FirePumpSimColors.charcoal3),
                             ),
@@ -329,7 +336,7 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
                               child: FilledButton.icon(
                                 onPressed: () {
                                   applyPending();
-                                  Navigator.of(sheetContext).pop();
+                                   sheetContext.pop();
                                 },
                                 style: FilledButton.styleFrom(
                                   backgroundColor: FirePumpSimColors.red,
@@ -347,7 +354,7 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
                         FilledButton.icon(
                           onPressed: () {
                             applyPending();
-                            Navigator.of(sheetContext).pop();
+                            sheetContext.pop();
                             Future<void>.microtask(_startRandomFromCurrentFilters);
                           },
                           style: FilledButton.styleFrom(
@@ -403,29 +410,49 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
       if (!firstSection) out.add(const SizedBox(height: AppSpacing.md));
       firstSection = false;
 
-      out.add(_PackHeader(pack: pack, scenarioCount: items.length));
-      out.add(const SizedBox(height: AppSpacing.sm));
-
-      for (var i = 0; i < items.length; i++) {
-        final s = items[i];
-        final difficulty = (s.difficulty ?? 'Intermediate').trim().isEmpty ? 'Intermediate' : (s.difficulty ?? 'Intermediate').trim();
-        final timed = s.timedModeAvailable ?? false;
-        out.add(
-          _ScenarioListCard(
-            title: s.title,
-            type: s.type,
-            chip: s.chip,
-            difficulty: difficulty,
-            timedModeAvailable: timed,
-            variations: s.variations.length,
-            questionPreview: s.studentQuestion,
-            imageAssetPath: s.image,
-            onPreview: () => _openPreview(s),
-            onStart: () => _startBaseScenario(s),
+      final collapsed = _collapsedPackIds.contains(pack.packId);
+      out.add(
+        _PackSectionExpandableCard(
+          pack: pack,
+          scenarioCount: items.length,
+          expanded: !collapsed,
+          onToggle: () {
+            setState(() {
+              if (_collapsedPackIds.contains(pack.packId)) {
+                _collapsedPackIds.remove(pack.packId);
+              } else {
+                _collapsedPackIds.add(pack.packId);
+              }
+            });
+          },
+          child: Column(
+            children: [
+              for (var i = 0; i < items.length; i++) ...[
+                Builder(
+                  builder: (context) {
+                    final s = items[i];
+                    final difficulty = (s.difficulty ?? 'Intermediate').trim().isEmpty ? 'Intermediate' : (s.difficulty ?? 'Intermediate').trim();
+                    final timed = s.timedModeAvailable ?? false;
+                    return _ScenarioListCard(
+                      title: s.title,
+                      type: s.type,
+                      chip: s.chip,
+                      difficulty: difficulty,
+                      timedModeAvailable: timed,
+                      variations: s.variations.length,
+                      questionPreview: s.studentQuestion,
+                      imageAssetPath: s.image,
+                      onPreview: () => _openPreview(s),
+                      onStart: () => _startBaseScenario(s),
+                    );
+                  },
+                ),
+                if (i != items.length - 1) const SizedBox(height: AppSpacing.sm),
+              ],
+            ],
           ),
-        );
-        if (i != items.length - 1) out.add(const SizedBox(height: AppSpacing.sm));
-      }
+        ),
+      );
     }
     return out;
   }
@@ -1233,13 +1260,6 @@ class _ScenarioListCard extends StatelessWidget {
         color: FirePumpSimColors.charcoal2,
         borderRadius: BorderRadius.circular(AppRadius.xl),
         border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.80)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.18),
-            blurRadius: 14,
-            offset: const Offset(0, 8),
-          ),
-        ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(AppRadius.xl),
@@ -1266,21 +1286,7 @@ class _ScenarioListCard extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: AppSpacing.md),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          if (chip.trim().isNotEmpty) _Badge(label: chip, icon: Icons.local_fire_department, accent: FirePumpSimColors.red),
-                          if (type.trim().isNotEmpty) _Badge(label: type, icon: Icons.category, accent: FirePumpSimColors.textMed),
-                          _Badge(label: difficulty, icon: Icons.trending_up, accent: FirePumpSimColors.textMed),
-                          _Badge(
-                            label: timedModeAvailable ? 'Timed mode' : 'Untimed',
-                            icon: timedModeAvailable ? Icons.timer : Icons.timer_off,
-                            accent: FirePumpSimColors.textMed,
-                          ),
-                          _Badge(label: _problemCountLabel, icon: Icons.layers, accent: FirePumpSimColors.textMed),
-                        ],
-                      ),
+                      _ScenarioMetaRow(card: this),
                       const SizedBox(height: AppSpacing.md),
                       _ScenarioCardActions(onStart: onStart, onPreview: onPreview),
                     ],
@@ -1290,6 +1296,45 @@ class _ScenarioListCard extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _ScenarioMetaRow extends StatelessWidget {
+  const _ScenarioMetaRow({required this.card});
+
+  final _ScenarioListCard card;
+
+  @override
+  Widget build(BuildContext context) {
+    final badges = <Widget>[];
+    if (card.chip.trim().isNotEmpty) {
+      badges.add(_Badge(label: card.chip, icon: Icons.local_fire_department, accent: FirePumpSimColors.red));
+    }
+    if (card.type.trim().isNotEmpty) {
+      badges.add(_Badge(label: card.type, icon: Icons.category, accent: FirePumpSimColors.textMed));
+    }
+    badges.add(_Badge(label: card.difficulty, icon: Icons.trending_up, accent: FirePumpSimColors.textMed));
+    badges.add(
+      _Badge(
+        label: card.timedModeAvailable ? 'Timed mode' : 'Untimed',
+        icon: card.timedModeAvailable ? Icons.timer : Icons.timer_off,
+        accent: FirePumpSimColors.textMed,
+      ),
+    );
+    badges.add(_Badge(label: card._problemCountLabel, icon: Icons.layers, accent: FirePumpSimColors.textMed));
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      clipBehavior: Clip.none,
+      child: Row(
+        children: [
+          for (var i = 0; i < badges.length; i++) ...[
+            badges[i],
+            if (i != badges.length - 1) const SizedBox(width: 8),
+          ],
+        ],
       ),
     );
   }
@@ -1704,6 +1749,112 @@ class _PackHeader extends StatelessWidget {
             child: Text('$scenarioCount', style: textTheme.labelLarge?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _PackSectionExpandableCard extends StatelessWidget {
+  const _PackSectionExpandableCard({
+    required this.pack,
+    required this.scenarioCount,
+    required this.expanded,
+    required this.onToggle,
+    required this.child,
+  });
+
+  final ScenarioPack pack;
+  final int scenarioCount;
+  final bool expanded;
+  final VoidCallback onToggle;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final subtitle = pack.description.trim().isNotEmpty ? pack.description : '${pack.difficulty} • $scenarioCount scenarios';
+
+    return Container(
+      decoration: BoxDecoration(
+        color: FirePumpSimColors.charcoal2,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.85)),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        child: Material(
+          color: Colors.transparent,
+          child: Column(
+            children: [
+              InkWell(
+                onTap: onToggle,
+                splashFactory: NoSplash.splashFactory,
+                highlightColor: Colors.white.withValues(alpha: 0.035),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.md),
+                  child: Row(
+                    children: [
+                      Container(
+                        height: 42,
+                        width: 42,
+                        decoration: BoxDecoration(
+                          color: FirePumpSimColors.red.withValues(alpha: 0.10),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: FirePumpSimColors.red.withValues(alpha: 0.35)),
+                        ),
+                        child: const Center(child: Icon(Icons.auto_stories, color: FirePumpSimColors.red, size: 20)),
+                      ),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(pack.title, style: textTheme.titleMedium?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
+                            const SizedBox(height: 4),
+                            Text(
+                              subtitle,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed, height: 1.35, fontWeight: FontWeight.w600),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                        decoration: BoxDecoration(
+                          color: FirePumpSimColors.charcoal3,
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.65)),
+                        ),
+                        child: Text('$scenarioCount', style: textTheme.labelLarge?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
+                      ),
+                      const SizedBox(width: 10),
+                      AnimatedRotation(
+                        turns: expanded ? 0.5 : 0.0,
+                        duration: const Duration(milliseconds: 180),
+                        curve: Curves.easeOut,
+                        child: const Icon(Icons.keyboard_arrow_down_rounded, color: FirePumpSimColors.textMed),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              AnimatedSize(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOutCubic,
+                alignment: Alignment.topCenter,
+                child: expanded
+                    ? Padding(
+                        padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.md),
+                        child: child,
+                      )
+                    : const SizedBox(width: double.infinity, height: 0),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
