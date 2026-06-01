@@ -4,7 +4,7 @@
   "difficulty": "intermediate",
   "category": "standpipe",
   "type": "pump",
-  "image": "commercial_sprinkler_system_support.png",
+  "image": "assets/images/commercial_sprinkler_system_support.png",
   "imageRatio": "4:7",
   "recommendedImageSize": "1080x1890",
   "sceneElements": {

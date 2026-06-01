@@ -4,7 +4,7 @@
   "category": "single_line",
   "difficulty": "intermediate",
   "type": "pump",
-  "image": "single_line_heavy_003.png",
+  "image": "assets/images/single_line_heavy_003.png",
   "scene": {
     "engine": "Engine 181",
     "description": "Engine 181 is supplying a 250' 2½\" attack line to the corner of a commercial strip. The nozzle is a 1⅛\" smooth bore flowing about 265 GPM at 50 PSI. No elevation and no appliance loss. What pump pressure should you set?",

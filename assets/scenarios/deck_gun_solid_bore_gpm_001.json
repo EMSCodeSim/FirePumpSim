@@ -4,7 +4,7 @@
   "difficulty": "intermediate",
   "category": "master_stream",
   "type": "nozzle_reaction",
-  "image": "deck_gun_solid_bore_gpm_001.png",
+  "image": "assets/images/deck_gun_solid_bore_gpm_001.png",
   "sceneElements": {
     "engine": "Engine 181",
     "hoses": [],

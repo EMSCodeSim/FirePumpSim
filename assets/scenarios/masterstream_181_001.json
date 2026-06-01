@@ -4,7 +4,7 @@
   "category": "master_stream",
   "difficulty": "advanced",
   "type": "pump",
-  "image": "masterstream_181_base.png",
+  "image": "assets/images/masterstream_181_base.png",
   "scene": {
     "engine": "Engine 181",
     "description": "Engine 181 is supplied by a hydrant and is feeding a portable monitor with two equal 2½″ lines at a commercial building. The picture has no built-in training labels. All scenario labels are generated from this JSON using overlay coordinates.",

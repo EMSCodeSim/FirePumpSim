@@ -4,7 +4,7 @@
   "difficulty": "advanced",
   "category": "vehicle_fire",
   "type": "pump",
-  "image": "vehicle_fire_foam_operation.png",
+  "image": "assets/images/vehicle_fire_foam_operation.png",
   "imageRatio": "4:7",
   "recommendedImageSize": "1080x1890",
   "sceneElements": {

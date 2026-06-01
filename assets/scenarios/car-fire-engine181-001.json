@@ -3,7 +3,7 @@
   "title": "Engine 181 Car Fire Attack Line",
   "type": "attack-line",
   "chip": "CAR FIRE",
-  "image": "car_fire_engine181_001.png",
+  "image": "assets/images/Car_Fire_Engine181_001.png",
   "scene": "Engine 181 is positioned on the street for a working car fire. A single 1¾″ attack line is stretched from the engine to the vehicle. The picture has no built-in labels. All scenario labels are generated from this JSON using overlay coordinates.",
   "studentQuestion": "Calculate the pump pressure for the car fire attack line setup.",
   "details": [

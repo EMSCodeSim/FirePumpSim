@@ -5,7 +5,7 @@
   "difficulty": "advanced",
   "category": "standpipe",
   "type": "pump",
-  "image": "combination_sprinkler_standpipe_fdc_operation.png",
+  "image": "assets/images/combination_sprinkler_standpipe_fdc_operation.png",
   "imageRatio": "4:7",
   "recommendedImageSize": "1080x1890",
   "sceneElements": {

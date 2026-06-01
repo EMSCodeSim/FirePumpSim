@@ -4,7 +4,7 @@
   "category": "wye",
   "difficulty": "intermediate",
   "type": "pump",
-  "image": "wye_residential_split_001.png",
+  "image": "assets/images/wye_residential_split_001.png",
   "scene": {
     "engine": "Engine 181",
     "description": "Engine 181 is supplying a wye with 200' of 2½\" hose. Branch A is 150' of 1¾\" flowing 150 GPM with a fog nozzle at 50 PSI. Branch B is 200' of 1¾\" flowing 185 GPM with a fog nozzle at 50 PSI. What pump pressure should the operator set?",

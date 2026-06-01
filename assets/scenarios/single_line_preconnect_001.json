@@ -4,7 +4,7 @@
   "category": "single_line",
   "difficulty": "beginner",
   "type": "pump",
-  "image": "single_line_preconnect_001.png",
+  "image": "assets/images/single_line_preconnect_001.png",
   "scene": {
     "engine": "Engine 181",
     "description": "Engine 181 is stretching a 200' 1¾\" preconnect to the front door of a single-family dwelling. The fog nozzle is flowing 150 GPM at 50 PSI. No elevation and no appliance loss. What pump pressure should you set?",

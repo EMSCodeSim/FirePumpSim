@@ -4,7 +4,7 @@
   "category": "single_line",
   "difficulty": "intermediate",
   "type": "pump",
-  "image": "single_line_extended_002.png",
+  "image": "assets/images/single_line_extended_002.png",
   "scene": {
     "engine": "Engine 181",
     "description": "Engine 181 has a 250' 1¾\" line stretched to a second-floor apartment fire. The fog nozzle is flowing 185 GPM at 50 PSI. Add 5 PSI for the floor above the pump. No appliance loss. What pump pressure should you set?",

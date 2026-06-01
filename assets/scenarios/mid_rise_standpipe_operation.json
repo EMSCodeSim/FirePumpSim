@@ -4,7 +4,7 @@
   "difficulty": "advanced",
   "category": "standpipe",
   "type": "pump",
-  "image": "mid_rise_standpipe_operation.png",
+  "image": "assets/images/mid_rise_standpipe_operation.png",
   "imageRatio": "4:7",
   "recommendedImageSize": "1080x1890",
   "sceneElements": {

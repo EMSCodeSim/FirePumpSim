@@ -5,7 +5,7 @@
   "difficulty": "advanced",
   "category": "standpipe",
   "type": "pump",
-  "image": "hotel_standpipe_fire_operation.png",
+  "image": "assets/images/hotel_standpipe_fire_operation.png",
   "imageRatio": "4:7",
   "recommendedImageSize": "1080x1890",
   "sceneElements": {

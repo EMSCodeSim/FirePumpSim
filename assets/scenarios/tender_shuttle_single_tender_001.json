@@ -4,7 +4,7 @@
   "category": "water_supply",
   "difficulty": "intermediate",
   "type": "tender_shuttle",
-  "image": "tender_shuttle_single_tender_001.png",
+  "image": "assets/images/tender_shuttle_single_tender_001.png",
   "scene": {
     "engine": "Engine 181",
     "description": "Engine 181 is operating at a rural structure fire with no hydrants available. Engine 181 is drafting from a portable tank. Tender 184 has a 2,500-gallon tank. Use 90% usable tank capacity. Fill time is 4 minutes, travel to the scene is 6 minutes, dump time is 3 minutes, and return travel is 6 minutes. What sustained water supply in GPM can this single-tender shuttle provide?",

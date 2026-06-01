@@ -4,7 +4,7 @@
   "category": "relay",
   "difficulty": "intermediate",
   "type": "pump",
-  "image": "relay_ldh_supply_001.png",
+  "image": "assets/images/relay_ldh_supply_001.png",
   "scene": {
     "engine": "Engine 181",
     "description": "Engine 181 is at the hydrant supplying Engine 183 through 800 feet of 4\" LDH. Engine 183 needs 500 GPM delivered. The relay lay has a 30-foot elevation gain from Engine 181 to Engine 183. Engine 183 needs 20 PSI residual intake pressure. What discharge pressure should Engine 181 pump?",

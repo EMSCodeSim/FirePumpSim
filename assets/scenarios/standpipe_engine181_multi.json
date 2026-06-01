@@ -4,7 +4,7 @@
   "category": "standpipe",
   "difficulty": "intermediate",
   "type": "pump",
-  "image": "standpipe-engine181.png",
+  "image": "assets/images/standpipe-engine181.png",
   "scene": {
     "engine": "Engine 181",
     "description": "Engine 181 is supplying a standpipe/FDC operation at a multi-story apartment building. A 100′ section of 2½″ hose runs from Engine 181 to the FDC. The standpipe carries water vertically to the fire floor. Use the corrected floor-height rule: 1st floor = 0′, each floor above adds 10′, and elevation pressure is 0.5 PSI per foot. On the fire floor, a separate 2½″ attack hose is connected to the standpipe outlet and advanced to the nozzle.",

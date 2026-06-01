@@ -4,7 +4,7 @@
   "difficulty": "advanced",
   "category": "relay",
   "type": "pump",
-  "image": "scenario_13_four_engine_relay_pumping.png",
+  "image": "assets/images/scenario_13_four_engine_relay_pumping.png",
   "imageRatio": "4:7",
   "recommendedImageSize": "1080x1890",
   "sceneElements": {

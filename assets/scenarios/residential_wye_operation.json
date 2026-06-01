@@ -4,7 +4,7 @@
   "difficulty": "intermediate",
   "category": "wye",
   "type": "pump",
-  "image": "residential_wye_operation.png",
+  "image": "assets/images/residential_wye_operation.png",
   "imageRatio": "4:7",
   "recommendedImageSize": "1080x1890",
   "sceneElements": {

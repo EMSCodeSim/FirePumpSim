@@ -4,7 +4,7 @@
   "difficulty": "advanced",
   "category": "water_supply",
   "type": "pump",
-  "image": "static_water_drafting_operation.png",
+  "image": "assets/images/static_water_drafting_operation.png",
   "imageRatio": "4:7",
   "recommendedImageSize": "1080x1890",
   "sceneElements": {

@@ -4,7 +4,7 @@
   "difficulty": "intermediate",
   "category": "nozzle_reaction",
   "type": "nozzle_reaction",
-  "image": "nozzle_reaction_engine181_001.png",
+  "image": "assets/images/nozzle_reaction_engine181_001.png",
   "sceneElements": {
     "engine": "Engine 181",
     "hoses": [

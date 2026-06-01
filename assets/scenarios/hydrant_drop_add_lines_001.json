@@ -4,7 +4,7 @@
   "category": "hydrant_drop",
   "difficulty": "intermediate",
   "type": "hydrant_pressure_drop",
-  "image": "hydrant_drop_add_lines_001.png",
+  "image": "assets/images/hydrant_drop_add_lines_001.png",
   "scene": {
     "engine": "Engine 181",
     "description": "Engine 181 is connected to a hydrant. Static hydrant pressure is 80 PSI. One 1.75\" attack line is opened, flowing 185 GPM. After the line is opened, residual hydrant pressure drops to 70 PSI. Using 20 PSI as the minimum residual pressure, how many additional 185 GPM attack lines can be added?",

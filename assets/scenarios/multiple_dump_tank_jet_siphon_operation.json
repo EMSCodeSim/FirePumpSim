@@ -4,7 +4,7 @@
   "difficulty": "advanced",
   "category": "tender_shuttle",
   "type": "tender_shuttle",
-  "image": "multiple_dump_tank_jet_siphon_operation.png",
+  "image": "assets/images/multiple_dump_tank_jet_siphon_operation.png",
   "imageRatio": "4:7",
   "recommendedImageSize": "1080x1890",
   "sceneElements": {

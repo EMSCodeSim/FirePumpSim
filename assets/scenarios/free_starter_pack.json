@@ -13,7 +13,7 @@
       "difficulty": "beginner",
       "category": "single_line",
       "type": "pump",
-      "image": "starter_attack_line_001.png",
+      "image": "assets/images/starter_attack_line_001.png",
       "sceneElements": {
         "engine": "Engine 181",
         "hoses": [
@@ -90,7 +90,7 @@
       "difficulty": "intermediate",
       "category": "single_line",
       "type": "pump",
-      "image": "starter_long_attack_line_002.png",
+      "image": "assets/images/starter_long_attack_line_002.png",
       "sceneElements": {
         "engine": "Engine 181",
         "hoses": [
@@ -167,7 +167,7 @@
       "difficulty": "intermediate",
       "category": "single_line",
       "type": "pump",
-      "image": "starter_two_inch_line_003.png",
+      "image": "assets/images/starter_two_inch_line_003.png",
       "sceneElements": {
         "engine": "Engine 181",
         "hoses": [
@@ -244,7 +244,7 @@
       "difficulty": "beginner",
       "category": "single_line",
       "type": "pump",
-      "image": "starter_smooth_bore_handline_004.png",
+      "image": "assets/images/starter_smooth_bore_handline_004.png",
       "sceneElements": {
         "engine": "Engine 181",
         "hoses": [
@@ -326,7 +326,7 @@
       "difficulty": "intermediate",
       "category": "single_line",
       "type": "pump",
-      "image": "starter_elevation_line_005.png",
+      "image": "assets/images/starter_elevation_line_005.png",
       "sceneElements": {
         "engine": "Engine 181",
         "hoses": [
@@ -415,7 +415,7 @@
       "difficulty": "intermediate",
       "category": "wye",
       "type": "pump",
-      "image": "starter_wye_operation_006.png",
+      "image": "assets/images/starter_wye_operation_006.png",
       "sceneElements": {
         "engine": "Engine 181",
         "hoses": [
@@ -514,7 +514,7 @@
       "difficulty": "intermediate",
       "category": "master_stream",
       "type": "pump",
-      "image": "starter_siamese_supply_007.png",
+      "image": "assets/images/starter_siamese_supply_007.png",
       "sceneElements": {
         "engine": "Engine 181",
         "hoses": [
@@ -604,7 +604,7 @@
       "difficulty": "intermediate",
       "category": "master_stream",
       "type": "pump",
-      "image": "starter_portable_master_stream_008.png",
+      "image": "assets/images/starter_portable_master_stream_008.png",
       "sceneElements": {
         "engine": "Engine 181",
         "hoses": [
@@ -694,7 +694,7 @@
       "difficulty": "intermediate",
       "category": "standpipe",
       "type": "pump",
-      "image": "starter_standpipe_floor_009.png",
+      "image": "assets/images/starter_standpipe_floor_009.png",
       "sceneElements": {
         "engine": "Engine 181",
         "hoses": [
@@ -789,7 +789,7 @@
       "difficulty": "intermediate",
       "category": "standpipe",
       "type": "pump",
-      "image": "starter_fdc_standpipe_010.png",
+      "image": "assets/images/starter_fdc_standpipe_010.png",
       "sceneElements": {
         "engine": "Engine 181",
         "hoses": [
@@ -885,7 +885,7 @@
       "difficulty": "intermediate",
       "category": "water_supply",
       "type": "pump",
-      "image": "starter_sprinkler_support_011.png",
+      "image": "assets/images/starter_sprinkler_support_011.png",
       "sceneElements": {
         "engine": "Engine 181",
         "hoses": [
@@ -973,7 +973,7 @@
       "difficulty": "intermediate",
       "category": "relay",
       "type": "pump",
-      "image": "starter_relay_pumping_012.png",
+      "image": "assets/images/starter_relay_pumping_012.png",
       "sceneElements": {
         "engine": "Engine 181",
         "hoses": [
@@ -1062,7 +1062,7 @@
       "difficulty": "beginner",
       "category": "hydrant_drop",
       "type": "hydrant_pressure_drop",
-      "image": "starter_hydrant_flow_013.png",
+      "image": "assets/images/starter_hydrant_flow_013.png",
       "sceneElements": {
         "engine": "Engine 181",
         "hoses": [
@@ -1146,7 +1146,7 @@
       "difficulty": "intermediate",
       "category": "nozzle_reaction",
       "type": "nozzle_reaction",
-      "image": "starter_nozzle_reaction_014.png",
+      "image": "assets/images/starter_nozzle_reaction_014.png",
       "sceneElements": {
         "engine": "Engine 181",
         "hoses": [
@@ -1232,7 +1232,7 @@
       "difficulty": "intermediate",
       "category": "deck_gun",
       "type": "flow",
-      "image": "starter_deck_gun_flow_015.png",
+      "image": "assets/images/starter_deck_gun_flow_015.png",
       "sceneElements": {
         "engine": "Engine 181",
         "hoses": [],

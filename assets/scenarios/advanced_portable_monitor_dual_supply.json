@@ -4,7 +4,7 @@
   "category": "master_stream",
   "difficulty": "advanced",
   "type": "pump",
-  "image": "advanced_portable_monitor_dual_supply.png",
+  "image": "assets/images/advanced_portable_monitor_dual_supply.png",
   "scene": {
     "engine": "Engine 181",
     "description": "Engine 181 is supplying a portable monitor at a commercial strip fire. The monitor is fed by two 200’ 2½” supply lines. The monitor is flowing 500 GPM at 80 PSI. Use a 10 PSI appliance loss for the portable monitor. No elevation change. What pump pressure should the driver/operator set?",

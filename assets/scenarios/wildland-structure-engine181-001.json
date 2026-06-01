@@ -3,7 +3,7 @@
   "title": "Engine 181 Wildland Structure Protection",
   "type": "attack-line",
   "chip": "WILDLAND",
-  "image": "wildland-structure-engine181-001.png",
+  "image": "assets/images/wildland-structure-engine181-001.png",
   "scene": "Engine 181 is positioned on a rural road for wildland structure protection. A single hose line is stretched from the engine toward a firefighter protecting the exposure side of a house from advancing brush fire. The picture has no built-in labels. All labels are generated from this JSON using overlay coordinates.",
   "studentQuestion": "Calculate the pump pressure for the wildland structure protection hose line.",
   "details": [

@@ -4,7 +4,7 @@
   "difficulty": "advanced",
   "category": "relay",
   "type": "pump",
-  "image": "relay_pumping_operation.png",
+  "image": "assets/images/relay_pumping_operation.png",
   "imageRatio": "4:7",
   "recommendedImageSize": "1080x1890",
   "sceneElements": {
