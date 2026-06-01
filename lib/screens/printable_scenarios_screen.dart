@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'dart:typed_data';
+import 'dart:convert';
 
 import 'package:firepumpsim/models/printable_pack.dart';
 import 'package:firepumpsim/models/printable_pump_scenario.dart';
@@ -23,21 +24,68 @@ class PrintableScenarioAssetPack {
   static const sedan = 'assets/printable/sedan.png';
   static const hydrant = 'assets/printable/hydrant.png';
   static const bush = 'assets/printable/bush.png';
-  static const starterScenario001 = 'assets/printable/FirePumpSim_printable_scenario_001.png';
-  static const starterScenario002 = 'assets/printable/FirePumpSim_printable_scenario_002.png';
 
-  static const brandedStarterPages = <_BrandedPrintablePage>[
-    _BrandedPrintablePage(
-      title: 'Page 1 — FirePumpSim printable scenario 001',
-      assetPath: starterScenario001,
-      fileName: 'FirePumpSim_printable_scenario_001.pdf',
-    ),
-    _BrandedPrintablePage(
-      title: 'Page 2 — Master Stream Operations',
-      assetPath: starterScenario002,
-      fileName: 'FirePumpSim_printable_scenario_002.pdf',
-    ),
-  ];
+  // Legacy starter sheet assets kept for reference, but excluded from the UI.
+  static const legacyStarterScenario001 = 'assets/printable/FirePumpSim_printable_scenario_001.png';
+  static const legacyStarterScenario002 = 'assets/printable/FirePumpSim_printable_scenario_002.png';
+
+  static const _nonScenarioAssets = <String>{
+    truck,
+    building,
+    sedan,
+    hydrant,
+    bush,
+    legacyStarterScenario001,
+    legacyStarterScenario002,
+  };
+
+  static String _titleizeFilename(String filename) {
+    final noExt = filename.replaceAll(RegExp(r'\.(png|jpg|jpeg|pdf)$', caseSensitive: false), '');
+    final cleaned = noExt.replaceAll(RegExp(r'[_\-]+'), ' ').trim();
+    if (cleaned.isEmpty) return 'Printable page';
+    final words = cleaned.split(RegExp(r'\s+'));
+    final titled = words
+        .map((w) => w.isEmpty ? w : '${w[0].toUpperCase()}${w.length > 1 ? w.substring(1) : ''}')
+        .join(' ');
+    return titled;
+  }
+
+  /// Loads branded printable scenario pages from `AssetManifest.json`.
+  ///
+  /// This avoids hard-coding filenames, so adding/removing printable sheets is
+  /// just an assets operation.
+  static Future<List<_BrandedPrintablePage>> loadBrandedScenarioPages() async {
+    try {
+      final manifestJson = await rootBundle.loadString('AssetManifest.json');
+      final manifest = jsonDecode(manifestJson);
+      if (manifest is! Map) return const [];
+
+      final assetKeys = manifest.keys.whereType<String>();
+      final scenarioAssetPaths = assetKeys
+          .where((p) => p.startsWith('assets/printable/'))
+          .where((p) => RegExp(r'\.(png|jpg|jpeg|pdf)$', caseSensitive: false).hasMatch(p))
+          .where((p) => !_nonScenarioAssets.contains(p))
+          .toList()
+        ..sort();
+
+      final pages = <_BrandedPrintablePage>[];
+      for (var i = 0; i < scenarioAssetPaths.length; i++) {
+        final path = scenarioAssetPaths[i];
+        final file = path.split('/').last;
+        final title = 'Page ${i + 1} — ${_titleizeFilename(file)}';
+        final ext = file.split('.').length > 1 ? file.split('.').last.toLowerCase() : '';
+        final kind = ext == 'pdf' ? _BrandedPrintableKind.pdf : _BrandedPrintableKind.image;
+        final outputName = kind == _BrandedPrintableKind.pdf
+            ? file
+            : '${file.replaceAll(RegExp(r'\.(png|jpg|jpeg)$', caseSensitive: false), '')}.pdf';
+        pages.add(_BrandedPrintablePage(title: title, assetPath: path, fileName: outputName, kind: kind));
+      }
+      return pages;
+    } catch (e, st) {
+      debugPrint('Failed to load branded printable pages from asset manifest: $e\n$st');
+      return const [];
+    }
+  }
 
   static List<String> targetAssetsFor(PrintableTargetArtwork artwork) {
     return switch (artwork) {
@@ -51,16 +99,20 @@ class PrintableScenarioAssetPack {
   }
 }
 
+enum _BrandedPrintableKind { image, pdf }
+
 class _BrandedPrintablePage {
   const _BrandedPrintablePage({
     required this.title,
     required this.assetPath,
     required this.fileName,
+    required this.kind,
   });
 
   final String title;
   final String assetPath;
   final String fileName;
+  final _BrandedPrintableKind kind;
 }
 
 class PrintableScenariosScreen extends StatefulWidget {
@@ -85,6 +137,8 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
   late List<PrintablePumpScenario> _scenarios;
   bool _includeAnswerKey = true;
   bool _printing = false;
+
+  List<_BrandedPrintablePage> _brandedScenarioPages = const [];
 
   static const String _brandBannerAsset = 'assets/images/firepumpsim_brand_banner.jpg';
 
@@ -154,6 +208,7 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
     );
     _scenarios = _selectedPack.buildPages();
     _loadPurchases();
+    _loadBrandedPages();
   }
 
   @override
@@ -171,6 +226,16 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
       debugPrint('Printable pack purchase load failed: $e');
     } finally {
       if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _loadBrandedPages() async {
+    try {
+      final pages = await PrintableScenarioAssetPack.loadBrandedScenarioPages();
+      if (!mounted) return;
+      setState(() => _brandedScenarioPages = pages);
+    } catch (e, st) {
+      debugPrint('Failed to load branded printable pages: $e\n$st');
     }
   }
 
@@ -212,7 +277,7 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
             SliverToBoxAdapter(
               child: _PrintableHeader(
                 title: 'Printable Scenarios',
-                subtitle: 'Only the 2 free printable starter sheets are shown in this build.',
+                subtitle: 'Free branded printable sheets included in this build.',
                 onBack: () => context.go(AppRoutes.home),
               ),
             ),
@@ -221,7 +286,7 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
               sliver: SliverToBoxAdapter(
                 child: _StarterPrintablePageCard(
                   printing: _printing,
-                  pages: PrintableScenarioAssetPack.brandedStarterPages,
+                  pages: _brandedScenarioPages,
                   onPrintPage: _printing ? null : _handlePrintBrandedPage,
                   onPrintPack: _printing ? null : _handlePrintBrandedStarterPack,
                 ),
@@ -233,9 +298,9 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
                 child: _CardShell(
                   titleIcon: Icons.info_outline,
                   title: 'Included in this build',
-                  subtitle: 'The printable screen now only shows the top 2 free starter sheets.',
+                  subtitle: 'This screen shows the free branded printable sheets found in assets/printable/.',
                   child: Text(
-                    'Use the two starter page buttons above to preview, print, or save the free sheets. The larger printable pack list and bottom worksheet previews have been removed from this Android build.',
+                    'Use the page buttons above to preview, print, or save the free sheets. The larger printable pack list and bottom worksheet previews have been removed from this Android build.',
                     style: (textTheme.bodyMedium ?? const TextStyle(fontSize: 14)).copyWith(
                       color: FirePumpSimColors.textMed,
                       height: 1.4,
@@ -289,17 +354,26 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
     PdfDownloadSession? webSession;
     try {
       if (kIsWeb) webSession = startPdfDownload(filename: page.fileName);
-      final bytes = await _buildBrandedPrintablePdf([page]);
-      debugPrint('Branded printable page PDF built: ${bytes.lengthInBytes} bytes. Launching output…');
-      if (kIsWeb && webSession != null) {
-        await webSession.complete(bytes);
-        _toast('PDF opened in a new tab. Use the browser print button.');
+
+      if (page.kind == _BrandedPrintableKind.pdf) {
+        final data = await rootBundle.load(page.assetPath);
+        final bytes = data.buffer.asUint8List();
+        debugPrint('Branded printable PDF asset loaded: ${bytes.lengthInBytes} bytes (${page.assetPath}). Launching output…');
+        if (kIsWeb && webSession != null) {
+          await webSession.complete(bytes);
+          _toast('PDF opened in a new tab. Use the browser print button.');
+        } else {
+          await _outputPdf(bytes: bytes, filename: page.fileName, title: page.title);
+        }
       } else {
-        await _outputPdf(
-          bytes: bytes,
-          filename: page.fileName,
-          title: page.title,
-        );
+        final bytes = await _buildBrandedPrintablePdf([page]);
+        debugPrint('Branded printable page PDF built: ${bytes.lengthInBytes} bytes. Launching output…');
+        if (kIsWeb && webSession != null) {
+          await webSession.complete(bytes);
+          _toast('PDF opened in a new tab. Use the browser print button.');
+        } else {
+          await _outputPdf(bytes: bytes, filename: page.fileName, title: page.title);
+        }
       }
     } catch (e, st) {
       debugPrint('Branded printable page failed (${page.assetPath}): $e\n$st');
@@ -316,9 +390,8 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
     setState(() => _printing = true);
     PdfDownloadSession? webSession;
     try {
-      if (kIsWeb) webSession = startPdfDownload(filename: 'FirePumpSim_Printable_Starter_Pack.pdf');
       final pages = <_BrandedPrintablePage>[];
-      for (final page in PrintableScenarioAssetPack.brandedStarterPages) {
+      for (final page in _brandedScenarioPages) {
         try {
           await rootBundle.load(page.assetPath);
           pages.add(page);
@@ -331,17 +404,45 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
         return;
       }
 
-      final bytes = await _buildBrandedPrintablePdf(pages);
-      debugPrint('Branded printable pack PDF built: ${bytes.lengthInBytes} bytes. Launching output…');
+      final pdfPages = pages.where((p) => p.kind == _BrandedPrintableKind.pdf).toList(growable: false);
+      final imagePages = pages.where((p) => p.kind == _BrandedPrintableKind.image).toList(growable: false);
+
+      // If the user has provided PDFs, we should not try to "rebuild" them.
+      // Instead, we download/share each included PDF.
+      if (pdfPages.isNotEmpty && imagePages.isEmpty) {
+        // Web: trigger multiple direct downloads (more reliable than opening
+        // many tabs, which can be blocked once async work begins).
+        if (kIsWeb) {
+          for (final p in pdfPages) {
+            final data = await rootBundle.load(p.assetPath);
+            await downloadPdfBytes(bytes: data.buffer.asUint8List(), filename: p.fileName);
+          }
+          _toast('Downloaded ${pdfPages.length} PDF file(s). Open any to print.');
+          return;
+        }
+
+        // Mobile: share each PDF; user can choose Print or Save from the share sheet.
+        for (final p in pdfPages) {
+          final data = await rootBundle.load(p.assetPath);
+          await _outputPdf(bytes: data.buffer.asUint8List(), filename: p.fileName, title: p.title);
+        }
+        return;
+      }
+
+      // Mixed assets: build one combined PDF from the images, and also provide
+      // the PDF assets individually.
+      if (kIsWeb) webSession = startPdfDownload(filename: 'FirePumpSim_Printable_Starter_Pack.pdf');
+      final bytes = await _buildBrandedPrintablePdf(imagePages);
+      debugPrint('Branded printable image pack PDF built: ${bytes.lengthInBytes} bytes. Launching output…');
       if (kIsWeb && webSession != null) {
         await webSession.complete(bytes);
         _toast('PDF opened in a new tab. Use the browser print button.');
       } else {
-        await _outputPdf(
-          bytes: bytes,
-          filename: 'FirePumpSim_Printable_Starter_Pack.pdf',
-          title: 'FirePumpSim Printable Starter Pack',
-        );
+        await _outputPdf(bytes: bytes, filename: 'FirePumpSim_Printable_Starter_Pack.pdf', title: 'FirePumpSim Printable Starter Pack');
+      }
+
+      if (pdfPages.isNotEmpty) {
+        _toast('Note: ${pdfPages.length} PDF sheet(s) are available individually (not merged).');
       }
     } catch (e, st) {
       debugPrint('Branded starter pack print failed: $e\n$st');
@@ -358,6 +459,10 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
     final doc = pw.Document();
 
     for (final page in pages) {
+      if (page.kind != _BrandedPrintableKind.image) {
+        debugPrint('Skipping non-image branded printable when building PDF: ${page.assetPath}');
+        continue;
+      }
       final imageData = await rootBundle.load(page.assetPath);
       final image = pw.MemoryImage(imageData.buffer.asUint8List());
       doc.addPage(
@@ -1496,30 +1601,42 @@ class _StarterPrintablePageCard extends StatelessWidget {
     final t = Theme.of(context).textTheme;
     return _CardShell(
       titleIcon: Icons.article_outlined,
-      title: 'Free Printable Starter Pack',
-      subtitle: 'Branded PNG worksheet pages that print exactly as designed.',
+      title: 'Free Printable Sheets',
+      subtitle: 'Branded sheets found in assets/printable/ (PNG/JPG or PDF).',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          for (var i = 0; i < pages.length; i++) ...[
-            if (i != 0) const SizedBox(height: 14),
-            _PrintableImagePreview(page: pages[i]),
-            const SizedBox(height: 10),
-            _SecondaryActionButton(
-              label: printing ? 'Preparing printable…' : 'View / Print ${pages[i].title.split('—').first.trim()}',
-              icon: Icons.print_outlined,
-              onTap: printing || onPrintPage == null ? null : () => onPrintPage!(pages[i]),
-            ),
-          ],
+          if (pages.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Text(
+                'No printable scenario pages were found. Add your PDF or PNG/JPG sheets to assets/printable/.',
+                style: (t.bodyMedium ?? const TextStyle(fontSize: 14)).copyWith(
+                  color: FirePumpSimColors.textMed,
+                  height: 1.4,
+                ),
+              ),
+            )
+          else
+            for (var i = 0; i < pages.length; i++) ...[
+              if (i != 0) const SizedBox(height: 14),
+              _PrintableImagePreview(page: pages[i]),
+              const SizedBox(height: 10),
+              _SecondaryActionButton(
+                label: printing ? 'Preparing printable…' : 'View / Print ${pages[i].title.split('—').first.trim()}',
+                icon: Icons.print_outlined,
+                onTap: printing || onPrintPage == null ? null : () => onPrintPage!(pages[i]),
+              ),
+            ],
           const SizedBox(height: 12),
           _PrimaryActionButton(
-            label: printing ? 'Preparing starter pack…' : 'Print Free Starter Pack Pages',
+            label: printing ? 'Preparing pack…' : 'Print All Free Pages',
             icon: Icons.picture_as_pdf_outlined,
-            onTap: onPrintPack,
+            onTap: pages.isEmpty ? null : onPrintPack,
           ),
           const SizedBox(height: 8),
           Text(
-            'Each branded PNG is converted to a full-page letter-size PDF before opening the print/share dialog.',
+            'Images are converted to PDF before printing. PDF assets are opened directly.',
             style: (t.bodySmall ?? const TextStyle(fontSize: 12)).copyWith(
               color: FirePumpSimColors.textMed,
               height: 1.35,
@@ -1539,6 +1656,7 @@ class _PrintableImagePreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
+    final isPdf = page.kind == _BrandedPrintableKind.pdf;
     return ClipRRect(
       borderRadius: BorderRadius.circular(18),
       child: DecoratedBox(
@@ -1561,25 +1679,49 @@ class _PrintableImagePreview extends StatelessWidget {
             ),
             AspectRatio(
               aspectRatio: 8.5 / 11,
-              child: Image.asset(
-                page.assetPath,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(18),
-                      child: Text(
-                        'Missing image asset:\n${page.assetPath}',
-                        textAlign: TextAlign.center,
-                        style: (t.bodySmall ?? const TextStyle(fontSize: 12)).copyWith(
-                          color: FirePumpSimColors.textMed,
-                          height: 1.35,
+              child: isPdf
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(18),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.picture_as_pdf_outlined, size: 56, color: Colors.black87),
+                            const SizedBox(height: 10),
+                            Text(
+                              page.fileName,
+                              textAlign: TextAlign.center,
+                              style: (t.bodyMedium ?? const TextStyle(fontSize: 14)).copyWith(color: Colors.black87, fontWeight: FontWeight.w800, height: 1.3),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'PDF preview is not rendered in-app. Tap View / Print to open it.',
+                              textAlign: TextAlign.center,
+                              style: (t.bodySmall ?? const TextStyle(fontSize: 12)).copyWith(color: Colors.black54, height: 1.35),
+                            ),
+                          ],
                         ),
                       ),
+                    )
+                  : Image.asset(
+                      page.assetPath,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(18),
+                            child: Text(
+                              'Missing image asset:\n${page.assetPath}',
+                              textAlign: TextAlign.center,
+                              style: (t.bodySmall ?? const TextStyle(fontSize: 12)).copyWith(
+                                color: FirePumpSimColors.textMed,
+                                height: 1.35,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
           ],
         ),
