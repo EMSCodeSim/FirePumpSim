@@ -4,7 +4,7 @@
   "difficulty": "advanced",
   "category": "master_stream",
   "type": "pump",
-  "image": "assets/images/elevated_portable_monitor_operation.png",
+  "image": "elevated_portable_monitor_operation.png",
   "imageRatio": "4:7",
   "recommendedImageSize": "1080x1890",
   "sceneElements": {
@@ -167,12 +167,12 @@
         }
       ],
       "formulaBreakdown": [
-        "FL = C × (GPM / 100)^2 × hose length in hundreds.",
+        "FL = C \u00d7 (GPM / 100)^2 \u00d7 hose length in hundreds.",
         "C for 2.5-inch hose = 2.",
         "Flow per line = 250 GPM.",
         "Hose length = 300 ft = 3 hundreds.",
-        "FL = 2 × (250 / 100)^2 × 3.",
-        "FL = 2 × 6.25 × 3.",
+        "FL = 2 \u00d7 (250 / 100)^2 \u00d7 3.",
+        "FL = 2 \u00d7 6.25 \u00d7 3.",
         "FL = 37.5 PSI.",
         "Round to nearest 5 PSI: 40 PSI."
       ],
@@ -222,9 +222,9 @@
         }
       ],
       "formulaBreakdown": [
-        "Elevation pressure = elevation height × 0.5 PSI per foot.",
+        "Elevation pressure = elevation height \u00d7 0.5 PSI per foot.",
         "Elevation height = 60 ft.",
-        "Elevation pressure = 60 × 0.5.",
+        "Elevation pressure = 60 \u00d7 0.5.",
         "Elevation pressure = 30 PSI."
       ],
       "instructorExplanation": "Because the monitor is uphill from Engine 181, elevation pressure must be added. A 60 ft elevation gain requires 30 PSI.",

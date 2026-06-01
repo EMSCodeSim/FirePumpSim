@@ -1,10 +1,11 @@
 {
+  "filename": "dual_master_stream_operation.json",
   "id": "dual_master_stream_operation",
   "title": "Dual Master Stream Operation",
   "difficulty": "advanced",
   "category": "master_stream",
   "type": "pump",
-  "image": "assets/images/dual_master_stream_operation.png",
+  "image": "dual_master_stream_operation.png",
   "imageRatio": "4:7",
   "recommendedImageSize": "1080x1890",
   "sceneElements": {
@@ -226,12 +227,12 @@
         }
       ],
       "formulaBreakdown": [
-        "FL = C × (GPM / 100)^2 × hose length in hundreds.",
+        "FL = C \u00d7 (GPM / 100)^2 \u00d7 hose length in hundreds.",
         "C for 2.5-inch hose = 2.",
         "Flow per line = 250 GPM.",
         "Hose length = 200 ft = 2 hundreds.",
-        "FL = 2 × (250 / 100)^2 × 2.",
-        "FL = 2 × 6.25 × 2.",
+        "FL = 2 \u00d7 (250 / 100)^2 \u00d7 2.",
+        "FL = 2 \u00d7 6.25 \u00d7 2.",
         "FL = 25 PSI."
       ],
       "instructorExplanation": "Each monitor supply line carries 250 GPM. At 250 GPM through 200 ft of 2.5-inch hose, the friction loss is 25 PSI.",

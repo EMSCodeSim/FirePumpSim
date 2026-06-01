@@ -15,13 +15,32 @@
     {
       "packId": "pump_ops_pack_01",
       "title": "Pump Operations Pack 1",
-      "description": "FREE FOR A LIMITED TIME - Help test the first premium FirePumpSim Driver/Operator scenario pack.",
+      "description": "FREE FOR A LIMITED TIME - Help test the first premium FirePumpSim Driver/Operator scenario pack. Includes attack lines, FDC operations, relay pumping, drafting, water shuttle, master streams, ladder pipe, foam, and multi-discharge scenarios.",
       "difficulty": "advanced",
       "scenarioCount": 20,
       "isFree": true,
       "isPurchased": true,
       "scenarioFiles": [
-        "assets/scenarios/packs/pump_ops_pack_01.json"
+        "assets/scenarios/single_attack_line_premium.json",
+        "assets/scenarios/residential_wye_operation.json",
+        "assets/scenarios/mid_rise_standpipe_operation.json",
+        "assets/scenarios/portable_monitor_operation.json",
+        "assets/scenarios/deck_gun_operation.json",
+        "assets/scenarios/relay_pumping_operation.json",
+        "assets/scenarios/commercial_fdc_standpipe_supply.json",
+        "assets/scenarios/dual_attack_line_residential.json",
+        "assets/scenarios/apartment_building_dual_attack.json",
+        "assets/scenarios/commercial_sprinkler_system_support.json",
+        "assets/scenarios/vehicle_fire_foam_operation.json",
+        "assets/scenarios/rural_water_shuttle_operation.json",
+        "assets/scenarios/scenario_13_four_engine_relay_pumping.json",
+        "assets/scenarios/multiple_dump_tank_jet_siphon_operation.json",
+        "assets/scenarios/static_water_drafting_operation.json",
+        "assets/scenarios/elevated_portable_monitor_operation.json",
+        "assets/scenarios/dual_master_stream_operation.json",
+        "assets/scenarios/ladder_pipe_operation.json",
+        "assets/scenarios/hotel_standpipe_fire_operation.json",
+        "assets/scenarios/combination_sprinkler_standpipe_fdc_operation.json"
       ]
     },
     {

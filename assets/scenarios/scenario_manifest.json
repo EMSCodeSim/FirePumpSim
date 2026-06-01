@@ -16,6 +16,26 @@
     "assets/scenarios/standpipe_engine181_multi.json",
     "assets/scenarios/tender_shuttle_single_tender_001.json",
     "assets/scenarios/wildland-structure-engine181-001.json",
-    "assets/scenarios/wye_residential_split_001.json"
+    "assets/scenarios/wye_residential_split_001.json",
+    "assets/scenarios/single_attack_line_premium.json",
+    "assets/scenarios/residential_wye_operation.json",
+    "assets/scenarios/mid_rise_standpipe_operation.json",
+    "assets/scenarios/portable_monitor_operation.json",
+    "assets/scenarios/deck_gun_operation.json",
+    "assets/scenarios/relay_pumping_operation.json",
+    "assets/scenarios/commercial_fdc_standpipe_supply.json",
+    "assets/scenarios/dual_attack_line_residential.json",
+    "assets/scenarios/apartment_building_dual_attack.json",
+    "assets/scenarios/commercial_sprinkler_system_support.json",
+    "assets/scenarios/vehicle_fire_foam_operation.json",
+    "assets/scenarios/rural_water_shuttle_operation.json",
+    "assets/scenarios/scenario_13_four_engine_relay_pumping.json",
+    "assets/scenarios/multiple_dump_tank_jet_siphon_operation.json",
+    "assets/scenarios/static_water_drafting_operation.json",
+    "assets/scenarios/elevated_portable_monitor_operation.json",
+    "assets/scenarios/dual_master_stream_operation.json",
+    "assets/scenarios/ladder_pipe_operation.json",
+    "assets/scenarios/hotel_standpipe_fire_operation.json",
+    "assets/scenarios/combination_sprinkler_standpipe_fdc_operation.json"
   ]
 }
