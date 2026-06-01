@@ -704,8 +704,9 @@ class _ScenarioAssetResolver {
       final fromManifest = _assetsByBasenameLower[baseLower] ?? (norm.isEmpty ? null : _assetsByNormalizedBasename[norm]);
       if (fromManifest != null) return fromManifest;
 
-      // Fallback for packs that assume assets/images.
-      return 'assets/images/$trimmed';
+      // If it isn't in AssetManifest, don't guess a path. On Flutter Web that
+      // turns into repeated HTTP 404s and looks like images are "missing".
+      return '';
     }
 
     // If no extension is provided, attempt to match any image in the manifest

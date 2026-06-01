@@ -4,7 +4,7 @@
   "difficulty": "advanced",
   "category": "master_stream",
   "type": "pump",
-  "image": "assets/images/elevated_portable_monitor_operation.png",
+  "image": "assets/images/portable_monitor_operation.png",
   "imageRatio": "4:7",
   "recommendedImageSize": "1080x1890",
   "sceneElements": {

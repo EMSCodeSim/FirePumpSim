@@ -954,7 +954,7 @@
       "difficulty": "advanced",
       "category": "standpipe",
       "type": "standpipe",
-      "image": "assets/images/mid_rise_standpipe_operation.png",
+      "image": "assets/images/standpipe-engine181.png",
       "imageRatio": "4:7",
       "recommendedImageSize": "1080x1890",
       "sceneElements": {
@@ -1153,7 +1153,7 @@
       "packId": "firepumpsim_premium_pack_01",
       "isPremium": true,
       "originalImage": "original_images/mid_rise_standpipe_operation.png",
-      "scene": "assets/images/mid_rise_standpipe_operation.png",
+      "scene": "assets/images/standpipe-engine181.png",
       "details": [
         {
           "label": "Apparatus",
