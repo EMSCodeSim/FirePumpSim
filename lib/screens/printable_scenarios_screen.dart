@@ -68,6 +68,14 @@ class PrintableScenarioAssetPack {
           .toList()
         ..sort();
 
+      debugPrint(
+        'Printable assets: AssetManifest has ${manifest.length} entries; '
+        'printable candidates=${scenarioAssetPaths.length}.',
+      );
+      if (scenarioAssetPaths.isNotEmpty) {
+        debugPrint('Printable assets (first 10):\n- ${scenarioAssetPaths.take(10).join('\n- ')}');
+      }
+
       final pages = <_BrandedPrintablePage>[];
       for (var i = 0; i < scenarioAssetPaths.length; i++) {
         final path = scenarioAssetPaths[i];
@@ -1610,7 +1618,10 @@ class _StarterPrintablePageCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Text(
-                'No printable scenario pages were found. Add your PDF or PNG/JPG sheets to assets/printable/.',
+                'No printable scenario pages were found.\n\n'
+                'Troubleshooting:\n'
+                '• Confirm your PDFs are uploaded under assets/printable/ (Assets panel).\n'
+                '• After adding new assets, use Hot Restart (or Full Restart) so AssetManifest.json refreshes.',
                 style: (t.bodyMedium ?? const TextStyle(fontSize: 14)).copyWith(
                   color: FirePumpSimColors.textMed,
                   height: 1.4,
