@@ -1,13 +1,10 @@
-dual_master_stream_operation.json
-
 {
-  "filename": "dual_master_stream_operation.json",
   "id": "dual_master_stream_operation",
   "title": "Dual Master Stream Operation",
   "difficulty": "advanced",
   "category": "master_stream",
   "type": "pump",
-  "image": "dual_master_stream_operation.png",
+  "image": "assets/images/dual_master_stream_operation.png",
   "imageRatio": "4:7",
   "recommendedImageSize": "1080x1890",
   "sceneElements": {
@@ -49,11 +46,31 @@ dual_master_stream_operation.json
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Hydrant", "x": 19, "y": 81 },
-        { "label": "Engine 181", "x": 23, "y": 55 },
-        { "label": "Deck gun", "x": 24, "y": 37 },
-        { "label": "Portable monitor", "x": 76, "y": 47 },
-        { "label": "Warehouse fire", "x": 63, "y": 25 }
+        {
+          "label": "Hydrant",
+          "x": 19,
+          "y": 81
+        },
+        {
+          "label": "Engine 181",
+          "x": 23,
+          "y": 55
+        },
+        {
+          "label": "Deck gun",
+          "x": 24,
+          "y": 37
+        },
+        {
+          "label": "Portable monitor",
+          "x": 76,
+          "y": 47
+        },
+        {
+          "label": "Warehouse fire",
+          "x": 63,
+          "y": 25
+        }
       ],
       "formulaBreakdown": [
         "Total flow = deck gun flow + portable monitor flow.",
@@ -86,9 +103,21 @@ dual_master_stream_operation.json
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 23, "y": 55 },
-        { "label": "Deck gun", "x": 24, "y": 37 },
-        { "label": "Fire area 1", "x": 47, "y": 29 }
+        {
+          "label": "Engine 181",
+          "x": 23,
+          "y": 55
+        },
+        {
+          "label": "Deck gun",
+          "x": 24,
+          "y": 37
+        },
+        {
+          "label": "Fire area 1",
+          "x": 47,
+          "y": 29
+        }
       ],
       "formulaBreakdown": [
         "PP = FL + NP + elevation + appliance loss.",
@@ -123,10 +152,26 @@ dual_master_stream_operation.json
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 23, "y": 55 },
-        { "label": "Line A", "x": 55, "y": 57 },
-        { "label": "Line B", "x": 57, "y": 61 },
-        { "label": "Portable monitor", "x": 76, "y": 47 }
+        {
+          "label": "Engine 181",
+          "x": 23,
+          "y": 55
+        },
+        {
+          "label": "Line A",
+          "x": 55,
+          "y": 57
+        },
+        {
+          "label": "Line B",
+          "x": 57,
+          "y": 61
+        },
+        {
+          "label": "Portable monitor",
+          "x": 76,
+          "y": 47
+        }
       ],
       "formulaBreakdown": [
         "Flow per line = total monitor flow / number of supply lines.",
@@ -159,10 +204,26 @@ dual_master_stream_operation.json
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 23, "y": 55 },
-        { "label": "Line A", "x": 55, "y": 57 },
-        { "label": "Line B", "x": 57, "y": 61 },
-        { "label": "Portable monitor", "x": 76, "y": 47 }
+        {
+          "label": "Engine 181",
+          "x": 23,
+          "y": 55
+        },
+        {
+          "label": "Line A",
+          "x": 55,
+          "y": 57
+        },
+        {
+          "label": "Line B",
+          "x": 57,
+          "y": 61
+        },
+        {
+          "label": "Portable monitor",
+          "x": 76,
+          "y": 47
+        }
       ],
       "formulaBreakdown": [
         "FL = C × (GPM / 100)^2 × hose length in hundreds.",
@@ -197,10 +258,26 @@ dual_master_stream_operation.json
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Engine 181", "x": 23, "y": 55 },
-        { "label": "Two supply lines", "x": 57, "y": 59 },
-        { "label": "Portable monitor", "x": 76, "y": 47 },
-        { "label": "Fire area 2", "x": 87, "y": 28 }
+        {
+          "label": "Engine 181",
+          "x": 23,
+          "y": 55
+        },
+        {
+          "label": "Two supply lines",
+          "x": 57,
+          "y": 59
+        },
+        {
+          "label": "Portable monitor",
+          "x": 76,
+          "y": 47
+        },
+        {
+          "label": "Fire area 2",
+          "x": 87,
+          "y": 28
+        }
       ],
       "formulaBreakdown": [
         "PP = FL + NP + elevation + appliance loss.",
@@ -235,10 +312,26 @@ dual_master_stream_operation.json
         "tolerance": 5
       },
       "overlays": [
-        { "label": "Deck gun", "x": 24, "y": 37 },
-        { "label": "Portable monitor", "x": 76, "y": 47 },
-        { "label": "Engine 181", "x": 23, "y": 55 },
-        { "label": "Warehouse fire", "x": 63, "y": 25 }
+        {
+          "label": "Deck gun",
+          "x": 24,
+          "y": 37
+        },
+        {
+          "label": "Portable monitor",
+          "x": 76,
+          "y": 47
+        },
+        {
+          "label": "Engine 181",
+          "x": 23,
+          "y": 55
+        },
+        {
+          "label": "Warehouse fire",
+          "x": 63,
+          "y": 25
+        }
       ],
       "formulaBreakdown": [
         "Deck gun required pressure = 80 PSI.",

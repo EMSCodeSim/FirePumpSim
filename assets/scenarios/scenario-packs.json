@@ -13,6 +13,18 @@
       ]
     },
     {
+      "packId": "pump_ops_pack_01",
+      "title": "Pump Operations Pack 1",
+      "description": "FREE FOR A LIMITED TIME - Help test the first premium FirePumpSim Driver/Operator scenario pack.",
+      "difficulty": "advanced",
+      "scenarioCount": 20,
+      "isFree": true,
+      "isPurchased": true,
+      "scenarioFiles": [
+        "assets/scenarios/packs/pump_ops_pack_01.json"
+      ]
+    },
+    {
       "packId": "advanced_specialty_pack",
       "title": "Advanced Specialty Pack",
       "description": "Specialty and advanced scenarios.",
