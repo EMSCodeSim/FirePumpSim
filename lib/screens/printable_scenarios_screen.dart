@@ -287,6 +287,13 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
                 title: 'Printable Scenarios',
                 subtitle: 'Free branded printable sheets included in this build.',
                 onBack: () => context.go(AppRoutes.home),
+                onRefresh: _printing
+                    ? null
+                    : () async {
+                        await _loadBrandedPages();
+                        if (!mounted) return;
+                        _toast('Refreshed printable assets (${_brandedScenarioPages.length}).');
+                      },
               ),
             ),
             SliverPadding(
@@ -1522,10 +1529,11 @@ class _PrintableHosePainter extends CustomPainter {
 }
 
 class _PrintableHeader extends StatelessWidget {
-  const _PrintableHeader({required this.title, required this.subtitle, required this.onBack});
+  const _PrintableHeader({required this.title, required this.subtitle, required this.onBack, this.onRefresh});
   final String title;
   final String subtitle;
   final VoidCallback onBack;
+  final VoidCallback? onRefresh;
 
   @override
   Widget build(BuildContext context) {
@@ -1547,7 +1555,49 @@ class _PrintableHeader extends StatelessWidget {
               ],
             ),
           ),
+          if (onRefresh != null) ...[
+            const SizedBox(width: 10),
+            _IconActionButton(icon: Icons.refresh, onTap: onRefresh!),
+          ],
         ],
+      ),
+    );
+  }
+}
+
+class _IconActionButton extends StatefulWidget {
+  const _IconActionButton({required this.icon, required this.onTap});
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  State<_IconActionButton> createState() => _IconActionButtonState();
+}
+
+class _IconActionButtonState extends State<_IconActionButton> {
+  bool _pressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: widget.onTap,
+      onTapDown: (_) => setState(() => _pressed = true),
+      onTapCancel: () => setState(() => _pressed = false),
+      onTapUp: (_) => setState(() => _pressed = false),
+      child: AnimatedScale(
+        duration: const Duration(milliseconds: 120),
+        curve: Curves.easeOutCubic,
+        scale: _pressed ? 0.98 : 1,
+        child: Container(
+          height: 44,
+          width: 44,
+          decoration: BoxDecoration(
+            color: FirePumpSimColors.charcoal2,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.8)),
+          ),
+          child: Icon(widget.icon, color: FirePumpSimColors.textHigh, size: 20),
+        ),
       ),
     );
   }
