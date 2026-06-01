@@ -52,8 +52,8 @@
       "isFree": false,
       "isPurchased": false,
       "scenarioFiles": [
-        "advanced_portable_monitor_dual_supply.json",
-        "wildland-structure-engine181-001.json"
+        "assets/scenarios/advanced_portable_monitor_dual_supply.json",
+        "assets/scenarios/wildland-structure-engine181-001.json"
       ]
     }
   ]

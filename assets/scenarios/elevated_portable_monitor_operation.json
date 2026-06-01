@@ -1,3 +1,5 @@
+elevated_portable_monitor_operation.json
+
 {
   "id": "elevated_portable_monitor_operation",
   "title": "Elevated Portable Monitor Operation",
@@ -44,26 +46,10 @@
         "tolerance": 5
       },
       "overlays": [
-        {
-          "label": "Hydrant",
-          "x": 86,
-          "y": 86
-        },
-        {
-          "label": "Engine 181",
-          "x": 39,
-          "y": 70
-        },
-        {
-          "label": "Portable monitor",
-          "x": 73,
-          "y": 40
-        },
-        {
-          "label": "Building fire",
-          "x": 61,
-          "y": 16
-        }
+        { "label": "Hydrant", "x": 86, "y": 86 },
+        { "label": "Engine 181", "x": 39, "y": 70 },
+        { "label": "Portable monitor", "x": 73, "y": 40 },
+        { "label": "Building fire", "x": 61, "y": 16 }
       ],
       "formulaBreakdown": [
         "The monitor operation is flowing 500 GPM.",
@@ -93,26 +79,10 @@
         "tolerance": 5
       },
       "overlays": [
-        {
-          "label": "Engine 181",
-          "x": 39,
-          "y": 70
-        },
-        {
-          "label": "Supply Line A",
-          "x": 67,
-          "y": 58
-        },
-        {
-          "label": "Supply Line B",
-          "x": 73,
-          "y": 58
-        },
-        {
-          "label": "Portable monitor",
-          "x": 73,
-          "y": 40
-        }
+        { "label": "Engine 181", "x": 39, "y": 70 },
+        { "label": "Supply Line A", "x": 67, "y": 58 },
+        { "label": "Supply Line B", "x": 73, "y": 58 },
+        { "label": "Portable monitor", "x": 73, "y": 40 }
       ],
       "formulaBreakdown": [
         "Flow per line = total monitor flow / number of supply lines.",
@@ -145,26 +115,10 @@
         "tolerance": 5
       },
       "overlays": [
-        {
-          "label": "Engine 181",
-          "x": 39,
-          "y": 70
-        },
-        {
-          "label": "Supply Line A",
-          "x": 67,
-          "y": 58
-        },
-        {
-          "label": "Supply Line B",
-          "x": 73,
-          "y": 58
-        },
-        {
-          "label": "Portable monitor",
-          "x": 73,
-          "y": 40
-        }
+        { "label": "Engine 181", "x": 39, "y": 70 },
+        { "label": "Supply Line A", "x": 67, "y": 58 },
+        { "label": "Supply Line B", "x": 73, "y": 58 },
+        { "label": "Portable monitor", "x": 73, "y": 40 }
       ],
       "formulaBreakdown": [
         "FL = C \u00d7 (GPM / 100)^2 \u00d7 hose length in hundreds.",
@@ -200,26 +154,10 @@
         "tolerance": 5
       },
       "overlays": [
-        {
-          "label": "Engine 181",
-          "x": 39,
-          "y": 70
-        },
-        {
-          "label": "Uphill stretch",
-          "x": 69,
-          "y": 56
-        },
-        {
-          "label": "Portable monitor",
-          "x": 73,
-          "y": 40
-        },
-        {
-          "label": "Building fire",
-          "x": 61,
-          "y": 16
-        }
+        { "label": "Engine 181", "x": 39, "y": 70 },
+        { "label": "Uphill stretch", "x": 69, "y": 56 },
+        { "label": "Portable monitor", "x": 73, "y": 40 },
+        { "label": "Building fire", "x": 61, "y": 16 }
       ],
       "formulaBreakdown": [
         "Elevation pressure = elevation height \u00d7 0.5 PSI per foot.",
@@ -251,31 +189,11 @@
         "tolerance": 5
       },
       "overlays": [
-        {
-          "label": "Hydrant",
-          "x": 86,
-          "y": 86
-        },
-        {
-          "label": "Engine 181",
-          "x": 39,
-          "y": 70
-        },
-        {
-          "label": "Two supply lines",
-          "x": 69,
-          "y": 58
-        },
-        {
-          "label": "Portable monitor",
-          "x": 73,
-          "y": 40
-        },
-        {
-          "label": "Building fire",
-          "x": 61,
-          "y": 16
-        }
+        { "label": "Hydrant", "x": 86, "y": 86 },
+        { "label": "Engine 181", "x": 39, "y": 70 },
+        { "label": "Two supply lines", "x": 69, "y": 58 },
+        { "label": "Portable monitor", "x": 73, "y": 40 },
+        { "label": "Building fire", "x": 61, "y": 16 }
       ],
       "formulaBreakdown": [
         "PP = FL + NP + elevation + appliance loss.",
@@ -310,21 +228,9 @@
         "tolerance": 0
       },
       "overlays": [
-        {
-          "label": "Hydrant",
-          "x": 86,
-          "y": 86
-        },
-        {
-          "label": "Supply hose",
-          "x": 69,
-          "y": 82
-        },
-        {
-          "label": "Engine 181",
-          "x": 39,
-          "y": 70
-        }
+        { "label": "Hydrant", "x": 86, "y": 86 },
+        { "label": "Supply hose", "x": 69, "y": 82 },
+        { "label": "Engine 181", "x": 39, "y": 70 }
       ],
       "formulaBreakdown": [
         "The scene shows one hydrant supply hose connected to Engine 181.",

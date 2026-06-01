@@ -5,7 +5,7 @@
   "isFree": true,
   "isPurchased": true,
   "storeProductId": "firepumpsim.pump_ops_pack_01",
-  "priceText": "FREE LIMITED TIME",
+  "priceText": "$1.99",
   "imageRatio": "4:7",
   "recommendedImageSize": "1080x1890",
   "scenarioCount": 20,
@@ -948,7 +948,7 @@
       ],
       "timedModeAvailable": true
     },
-    {
+
       "id": "mid_rise_standpipe_operation",
       "title": "Mid-Rise Apartment Building Standpipe Operation",
       "difficulty": "advanced",
