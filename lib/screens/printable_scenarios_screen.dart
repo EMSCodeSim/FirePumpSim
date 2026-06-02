@@ -30,6 +30,16 @@ class PrintableScenarioAssetPack {
   static const legacyStarterScenario001 = 'assets/printable/FirePumpSim_printable_scenario_001.png';
   static const legacyStarterScenario002 = 'assets/printable/FirePumpSim_printable_scenario_002.png';
 
+  static const _pdfPreviewFolder = 'assets/printable/previews/';
+
+  static const _pdfPreviewAspectRatios = <String, double>{
+    'assets/printable/previews/FirePumpSim_Apartment_Fire_Single_Attack_Line_page1.png': 1200 / 928,
+    'assets/printable/previews/FirePumpSim_Car_Fire_Worksheet_page1.png': 927 / 1200,
+    'assets/printable/previews/FirePumpSim_Industrial_Portable_Monitor_Worksheet_page1.png': 1200 / 928,
+    'assets/printable/previews/FirePumpSim_Residential_Wye_Operation_Worksheet_page1.png': 1200 / 927,
+    'assets/printable/previews/FirePumpSim_Rural_Water_Supply_Tanker_Shuttle_Worksheet_page1.png': 1200 / 927,
+  };
+
   static const _nonScenarioAssets = <String>{
     truck,
     building,
@@ -65,6 +75,7 @@ class PrintableScenarioAssetPack {
       final scenarioAssetPaths = assetKeys
           .where((p) => p.startsWith('assets/printable/'))
           .where((p) => RegExp(r'\.(png|jpg|jpeg|pdf)$', caseSensitive: false).hasMatch(p))
+          .where((p) => !p.startsWith(_pdfPreviewFolder))
           .where((p) => !_nonScenarioAssets.contains(p))
           .toList()
         ..sort();
@@ -87,7 +98,19 @@ class PrintableScenarioAssetPack {
         final outputName = kind == _BrandedPrintableKind.pdf
             ? file
             : '${file.replaceAll(RegExp(r'\.(png|jpg|jpeg)$', caseSensitive: false), '')}.pdf';
-        pages.add(_BrandedPrintablePage(title: title, assetPath: path, fileName: outputName, kind: kind));
+        final pdfBaseName = file.replaceAll(RegExp(r'\.pdf$', caseSensitive: false), '');
+        final previewPath = kind == _BrandedPrintableKind.pdf ? '$_pdfPreviewFolder${pdfBaseName}_page1.png' : null;
+        final hasPreview = previewPath != null && manifest.containsKey(previewPath);
+        pages.add(
+          _BrandedPrintablePage(
+            title: title,
+            assetPath: path,
+            fileName: outputName,
+            kind: kind,
+            previewAssetPath: hasPreview ? previewPath : null,
+            previewAspectRatio: hasPreview ? (_pdfPreviewAspectRatios[previewPath] ?? 8.5 / 11) : 8.5 / 11,
+          ),
+        );
       }
       return pages;
     } catch (e, st) {
@@ -116,12 +139,16 @@ class _BrandedPrintablePage {
     required this.assetPath,
     required this.fileName,
     required this.kind,
+    this.previewAssetPath,
+    this.previewAspectRatio = 8.5 / 11,
   });
 
   final String title;
   final String assetPath;
   final String fileName;
   final _BrandedPrintableKind kind;
+  final String? previewAssetPath;
+  final double previewAspectRatio;
 }
 
 class PrintableScenariosScreen extends StatefulWidget {
@@ -407,7 +434,12 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
     if (page.kind != _BrandedPrintableKind.pdf) return;
     context.push(
       AppRoutes.pdfViewer,
-      extra: PdfViewerArgs(title: page.title, assetPath: page.assetPath, filename: page.fileName),
+      extra: PdfViewerArgs(
+        title: page.title,
+        assetPath: page.assetPath,
+        filename: page.fileName,
+        previewAssetPath: page.previewAssetPath,
+      ),
     );
   }
 
@@ -1672,7 +1704,7 @@ class _StarterPrintablePageCard extends StatelessWidget {
     return _CardShell(
       titleIcon: Icons.article_outlined,
       title: 'Free Printable Sheets',
-      subtitle: 'Branded sheets found in assets/printable/ (PNG/JPG or PDF).',
+      subtitle: 'Tap a worksheet thumbnail to open the full PDF, then print or save it.',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -1696,7 +1728,7 @@ class _StarterPrintablePageCard extends StatelessWidget {
               _PrintableImagePreview(page: pages[i]),
               const SizedBox(height: 10),
               _SecondaryActionButton(
-                label: printing ? 'Preparing printable…' : 'View / Print ${pages[i].title.split('—').first.trim()}',
+                label: printing ? 'Preparing printable…' : 'Open / Print ${pages[i].title.split('—').first.trim()}',
                 icon: pages[i].kind == _BrandedPrintableKind.pdf ? Icons.picture_as_pdf_outlined : Icons.print_outlined,
                 onTap: printing || onPrintPage == null
                     ? null
@@ -1718,7 +1750,7 @@ class _StarterPrintablePageCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Images are converted to PDF before printing. PDF assets are opened directly.',
+            'PDF worksheets show a first-page preview here. Open any worksheet for the full PDF and answer key.',
             style: (t.bodySmall ?? const TextStyle(fontSize: 12)).copyWith(
               color: FirePumpSimColors.textMed,
               height: 1.35,
@@ -1760,7 +1792,7 @@ class _PrintableImagePreview extends StatelessWidget {
               ),
             ),
             AspectRatio(
-              aspectRatio: 8.5 / 11,
+              aspectRatio: isPdf ? page.previewAspectRatio : 8.5 / 11,
               child: isPdf
                   ? _PdfCoverPreview(page: page)
                   : Image.asset(
@@ -1792,6 +1824,91 @@ class _PrintableImagePreview extends StatelessWidget {
 
 class _PdfCoverPreview extends StatelessWidget {
   const _PdfCoverPreview({required this.page});
+  final _BrandedPrintablePage page;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final previewAsset = page.previewAssetPath;
+
+    if (previewAsset != null) {
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          const DecoratedBox(decoration: BoxDecoration(color: Colors.white)),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Image.asset(
+              previewAsset,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) => _PdfIconCover(page: page),
+            ),
+          ),
+          Positioned(
+            left: 12,
+            top: 12,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.84),
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.picture_as_pdf_outlined, color: Colors.white, size: 16),
+                  const SizedBox(width: 6),
+                  Text(
+                    'PDF worksheet preview',
+                    style: (t.labelSmall ?? const TextStyle(fontSize: 11)).copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            left: 12,
+            right: 12,
+            bottom: 12,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.92),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.black.withValues(alpha: 0.10)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.open_in_new, size: 18, color: Colors.black87),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Tap Open / Print for the full worksheet and answer key',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: (t.bodySmall ?? const TextStyle(fontSize: 12)).copyWith(
+                        color: Colors.black87,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return _PdfIconCover(page: page);
+  }
+}
+
+class _PdfIconCover extends StatelessWidget {
+  const _PdfIconCover({required this.page});
   final _BrandedPrintablePage page;
 
   @override
@@ -1878,7 +1995,7 @@ class _PdfCoverPreview extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'Tap “View / Print” to open the in-app preview.',
+                  'Tap Open / Print to open the in-app preview.',
                   textAlign: TextAlign.center,
                   style: (t.bodySmall ?? const TextStyle(fontSize: 12)).copyWith(
                     color: Colors.black54,

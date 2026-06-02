@@ -15,10 +15,17 @@ import 'dart:ui_web' as ui;
 import 'package:web/web.dart' as web;
 
 class PdfViewerArgs {
-  const PdfViewerArgs({required this.title, required this.assetPath, required this.filename});
+  const PdfViewerArgs({
+    required this.title,
+    required this.assetPath,
+    required this.filename,
+    this.previewAssetPath,
+  });
+
   final String title;
   final String assetPath;
   final String filename;
+  final String? previewAssetPath;
 }
 
 class PdfViewerScreen extends StatefulWidget {
@@ -115,15 +122,21 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
                                 border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
                               ),
                               child: kIsWeb
-                                  ? _PdfWebIFrameViewer(
-                                      bytes: bytes,
-                                      filename: widget.args.filename,
-                                      onDownload: () => downloadPdfBytes(bytes: bytes, filename: widget.args.filename),
-                                      onObjectUrlChanged: (url) {
-                                        // Track so we can revoke it on dispose.
-                                        _webObjectUrl = url;
-                                      },
-                                    )
+                                  ? (widget.args.previewAssetPath == null
+                                      ? _PdfWebIFrameViewer(
+                                          bytes: bytes,
+                                          filename: widget.args.filename,
+                                          onDownload: () => downloadPdfBytes(bytes: bytes, filename: widget.args.filename),
+                                          onObjectUrlChanged: (url) {
+                                            // Track so we can revoke it on dispose.
+                                            _webObjectUrl = url;
+                                          },
+                                        )
+                                      : _PdfWebAssetPreview(
+                                          previewAssetPath: widget.args.previewAssetPath!,
+                                          filename: widget.args.filename,
+                                          onDownload: () => downloadPdfBytes(bytes: bytes, filename: widget.args.filename),
+                                        ))
                                   : pr.PdfPreview(
                                       allowSharing: true,
                                       allowPrinting: true,
@@ -145,6 +158,102 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _PdfWebAssetPreview extends StatelessWidget {
+  const _PdfWebAssetPreview({
+    required this.previewAssetPath,
+    required this.filename,
+    required this.onDownload,
+  });
+
+  final String previewAssetPath;
+  final String filename;
+  final VoidCallback onDownload;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: DecoratedBox(
+              decoration: const BoxDecoration(color: Colors.white),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Image.asset(
+                      previewAssetPath,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(18),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.picture_as_pdf_outlined, size: 72, color: Colors.black87),
+                                const SizedBox(height: 14),
+                                Text(
+                                  filename,
+                                  textAlign: TextAlign.center,
+                                  style: t.titleMedium?.copyWith(color: Colors.black, fontWeight: FontWeight.w900),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  'Preview image not found. Use Download / Print below to open the PDF.',
+                                  textAlign: TextAlign.center,
+                                  style: t.bodySmall?.copyWith(color: Colors.black54, height: 1.35),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  Positioned(
+                    left: 12,
+                    top: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.84),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.picture_as_pdf_outlined, color: Colors.white, size: 16),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Worksheet preview',
+                            style: t.labelSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w900),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        FilledButton.icon(
+          onPressed: onDownload,
+          style: FilledButton.styleFrom(backgroundColor: FirePumpSimColors.textHigh, foregroundColor: FirePumpSimColors.charcoal),
+          icon: const Icon(Icons.download_outlined),
+          label: const Text('Download / Print Full PDF'),
+        ),
+      ],
     );
   }
 }
