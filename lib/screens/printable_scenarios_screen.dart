@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:firepumpsim/models/printable_pack.dart';
 import 'package:firepumpsim/models/printable_pump_scenario.dart';
 import 'package:firepumpsim/nav.dart';
+import 'package:firepumpsim/screens/pdf_viewer_screen.dart';
 import 'package:firepumpsim/services/printable_pack_storage.dart';
 import 'package:firepumpsim/theme.dart';
 import 'package:firepumpsim/utils/pdf_download.dart';
@@ -303,6 +304,7 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
                   printing: _printing,
                   pages: _brandedScenarioPages,
                   onPrintPage: _printing ? null : _handlePrintBrandedPage,
+                  onOpenPdfPage: _printing ? null : _openPdfInApp,
                   onPrintPack: _printing ? null : _handlePrintBrandedStarterPack,
                 ),
               ),
@@ -399,6 +401,14 @@ class _PrintableScenariosScreenState extends State<PrintableScenariosScreen> {
     } finally {
       if (mounted) setState(() => _printing = false);
     }
+  }
+
+  void _openPdfInApp(_BrandedPrintablePage page) {
+    if (page.kind != _BrandedPrintableKind.pdf) return;
+    context.push(
+      AppRoutes.pdfViewer,
+      extra: PdfViewerArgs(title: page.title, assetPath: page.assetPath, filename: page.fileName),
+    );
   }
 
   Future<void> _handlePrintBrandedStarterPack() async {
@@ -1646,12 +1656,14 @@ class _StarterPrintablePageCard extends StatelessWidget {
     required this.printing,
     required this.pages,
     required this.onPrintPage,
+    required this.onOpenPdfPage,
     required this.onPrintPack,
   });
 
   final bool printing;
   final List<_BrandedPrintablePage> pages;
   final ValueChanged<_BrandedPrintablePage>? onPrintPage;
+  final ValueChanged<_BrandedPrintablePage>? onOpenPdfPage;
   final VoidCallback? onPrintPack;
 
   @override
@@ -1685,8 +1697,17 @@ class _StarterPrintablePageCard extends StatelessWidget {
               const SizedBox(height: 10),
               _SecondaryActionButton(
                 label: printing ? 'Preparing printable…' : 'View / Print ${pages[i].title.split('—').first.trim()}',
-                icon: Icons.print_outlined,
-                onTap: printing || onPrintPage == null ? null : () => onPrintPage!(pages[i]),
+                icon: pages[i].kind == _BrandedPrintableKind.pdf ? Icons.picture_as_pdf_outlined : Icons.print_outlined,
+                onTap: printing || onPrintPage == null
+                    ? null
+                    : () {
+                        final p = pages[i];
+                        if (p.kind == _BrandedPrintableKind.pdf) {
+                          onOpenPdfPage?.call(p);
+                        } else {
+                          onPrintPage!(p);
+                        }
+                      },
               ),
             ],
           const SizedBox(height: 12),
@@ -1741,29 +1762,7 @@ class _PrintableImagePreview extends StatelessWidget {
             AspectRatio(
               aspectRatio: 8.5 / 11,
               child: isPdf
-                  ? Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(18),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.picture_as_pdf_outlined, size: 56, color: Colors.black87),
-                            const SizedBox(height: 10),
-                            Text(
-                              page.fileName,
-                              textAlign: TextAlign.center,
-                              style: (t.bodyMedium ?? const TextStyle(fontSize: 14)).copyWith(color: Colors.black87, fontWeight: FontWeight.w800, height: 1.3),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'PDF preview is not rendered in-app. Tap View / Print to open it.',
-                              textAlign: TextAlign.center,
-                              style: (t.bodySmall ?? const TextStyle(fontSize: 12)).copyWith(color: Colors.black54, height: 1.35),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
+                  ? _PdfCoverPreview(page: page)
                   : Image.asset(
                       page.assetPath,
                       fit: BoxFit.contain,
@@ -1787,6 +1786,140 @@ class _PrintableImagePreview extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _PdfCoverPreview extends StatelessWidget {
+  const _PdfCoverPreview({required this.page});
+  final _BrandedPrintablePage page;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.black.withValues(alpha: 0.04),
+                Colors.black.withValues(alpha: 0.00),
+                Colors.black.withValues(alpha: 0.03),
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          left: 14,
+          right: 14,
+          top: 14,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              children: [
+                Image.asset(
+                  _PrintableScenariosScreenState._brandBannerAsset,
+                  height: 18,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => const SizedBox(width: 0, height: 18),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Printable PDF',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: (t.labelLarge ?? const TextStyle(fontSize: 14)).copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.2,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                const Icon(Icons.picture_as_pdf_outlined, color: Colors.white, size: 18),
+              ],
+            ),
+          ),
+        ),
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(18, 86, 18, 18),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  height: 104,
+                  width: 104,
+                  decoration: BoxDecoration(
+                    color: FirePumpSimColors.red.withValues(alpha: 0.10),
+                    borderRadius: BorderRadius.circular(28),
+                    border: Border.all(color: Colors.black.withValues(alpha: 0.10)),
+                  ),
+                  child: const Icon(Icons.picture_as_pdf_outlined, size: 56, color: Colors.black87),
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  page.fileName,
+                  textAlign: TextAlign.center,
+                  style: (t.bodyLarge ?? const TextStyle(fontSize: 16)).copyWith(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w900,
+                    height: 1.25,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Tap “View / Print” to open the in-app preview.',
+                  textAlign: TextAlign.center,
+                  style: (t.bodySmall ?? const TextStyle(fontSize: 12)).copyWith(
+                    color: Colors.black54,
+                    height: 1.35,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          left: 14,
+          right: 14,
+          bottom: 14,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.06),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.black.withValues(alpha: 0.08)),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.visibility_outlined, size: 18, color: Colors.black87),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Preview + print supported',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: (t.bodySmall ?? const TextStyle(fontSize: 12)).copyWith(
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
