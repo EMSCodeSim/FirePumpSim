@@ -4,14 +4,11 @@ import 'package:firepumpsim/theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:js_interop';
 import 'package:pdf/pdf.dart' as pdf;
 import 'package:printing/printing.dart' as pr;
 
-// Web-only imports (supported by Flutter Web as of 2024+).
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:ui_web' as ui;
-import 'package:web/web.dart' as web;
+import 'package:firepumpsim/screens/pdf_viewer_web_stub.dart'
+    if (dart.library.html) 'package:firepumpsim/screens/pdf_viewer_web.dart' as pdf_web;
 
 class PdfViewerArgs {
   const PdfViewerArgs({
@@ -72,7 +69,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
   void dispose() {
     try {
       if (kIsWeb && _webObjectUrl != null) {
-        web.URL.revokeObjectURL(_webObjectUrl!);
+        pdf_web.revokePdfObjectUrl(_webObjectUrl!);
       }
     } catch (e) {
       debugPrint('Failed to revoke PDF object URL: $e');
@@ -121,14 +118,14 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
                                 border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
                               ),
                               child: kIsWeb
-                                   ? _PdfWebIFrameViewer(
-                                       bytes: bytes,
-                                       filename: widget.args.filename,
-                                       onObjectUrlChanged: (url) {
-                                         // Track so we can revoke it on dispose.
-                                         _webObjectUrl = url;
-                                       },
-                                     )
+                                  ? pdf_web.PdfWebViewer(
+                                      bytes: bytes,
+                                      filename: widget.args.filename,
+                                      onObjectUrlChanged: (url) {
+                                        // Track so we can revoke it on dispose.
+                                        _webObjectUrl = url;
+                                      },
+                                    )
                                   : pr.PdfPreview(
                                       allowSharing: true,
                                       allowPrinting: true,
@@ -150,219 +147,6 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _PdfWebIFrameViewer extends StatefulWidget {
-  const _PdfWebIFrameViewer({
-    required this.bytes,
-    required this.filename,
-    required this.onObjectUrlChanged,
-  });
-
-  final Uint8List bytes;
-  final String filename;
-  final ValueChanged<String> onObjectUrlChanged;
-
-  @override
-  State<_PdfWebIFrameViewer> createState() => _PdfWebIFrameViewerState();
-}
-
-class _PdfWebIFrameViewerState extends State<_PdfWebIFrameViewer> {
-  String? _viewType;
-  String? _objectUrl;
-  Object? _error;
-  final ValueNotifier<bool> _iframeLoaded = ValueNotifier<bool>(false);
-  web.HTMLIFrameElement? _iframe;
-
-  @override
-  void initState() {
-    super.initState();
-    _init();
-  }
-
-  @override
-  void didUpdateWidget(covariant _PdfWebIFrameViewer oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (!identical(oldWidget.bytes, widget.bytes)) _init();
-  }
-
-  void _init() {
-    try {
-      _iframeLoaded.value = false;
-      if (_objectUrl != null) {
-        web.URL.revokeObjectURL(_objectUrl!);
-        _objectUrl = null;
-      }
-      _iframe = null;
-      // package:web expects a JSArray<BlobPart>. Convert the Dart bytes into a
-      // JS-friendly Uint8Array and then to a JS array.
-      final jsBytes = widget.bytes.toJS;
-      final blobParts = <JSAny>[jsBytes].toJS;
-      final blob = web.Blob(blobParts, web.BlobPropertyBag(type: 'application/pdf'));
-      final url = web.URL.createObjectURL(blob);
-      final viewType = 'pdf-iframe-${DateTime.now().microsecondsSinceEpoch}';
-      final loadedNotifier = _iframeLoaded;
-
-      ui.platformViewRegistry.registerViewFactory(viewType, (int viewId) {
-        final iframe = web.HTMLIFrameElement()
-          ..src = url
-          ..style.border = 'none'
-          ..style.width = '100%'
-          ..style.height = '100%'
-          ..setAttribute('title', widget.filename);
-        _iframe = iframe;
-        iframe.onLoad.listen((_) {
-          // Some environments briefly render a blank iframe while the browser
-          // PDF plugin boots. This lets us show a friendly placeholder until
-          // the first successful load event.
-          loadedNotifier.value = true;
-        });
-        return iframe;
-      });
-
-      setState(() {
-        _error = null;
-        _objectUrl = url;
-        _viewType = viewType;
-      });
-      widget.onObjectUrlChanged(url);
-    } catch (e, st) {
-      debugPrint('Failed to create web PDF viewer iframe: $e\n$st');
-      setState(() {
-        _error = e;
-        _viewType = null;
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    try {
-      if (_objectUrl != null) web.URL.revokeObjectURL(_objectUrl!);
-    } catch (e) {
-      debugPrint('Failed to revoke iframe PDF object URL: $e');
-    }
-    _iframeLoaded.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_error != null) {
-      return _PdfLoadErrorCard(
-        error: _error!,
-        onRetry: _init,
-      );
-    }
-    if (_viewType == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: HtmlElementView(viewType: _viewType!),
-              ),
-              ValueListenableBuilder<bool>(
-                valueListenable: _iframeLoaded,
-                builder: (context, loaded, _) {
-                  return IgnorePointer(
-                    child: AnimatedOpacity(
-                      duration: const Duration(milliseconds: 220),
-                      curve: Curves.easeOutCubic,
-                      opacity: loaded ? 0 : 1,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(18),
-                          child: Center(
-                            child: ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: 420),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(Icons.picture_as_pdf_outlined, size: 72, color: Colors.black87),
-                                  const SizedBox(height: 14),
-                                  Text(
-                                    widget.filename,
-                                    textAlign: TextAlign.center,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(color: Colors.black, fontWeight: FontWeight.w900),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                    'Loading preview…',
-                                    textAlign: TextAlign.center,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall
-                                        ?.copyWith(color: Colors.black54, height: 1.35),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              )
-            ],
-          ),
-        ),
-        const SizedBox(height: 10),
-        ValueListenableBuilder<bool>(
-          valueListenable: _iframeLoaded,
-          builder: (context, loaded, _) {
-            return FilledButton.icon(
-              onPressed: loaded
-                  ? () {
-                      try {
-                        final w = _iframe?.contentWindow;
-                        if (w == null) throw StateError('PDF iframe not ready for printing.');
-                        w.print();
-                        debugPrint('Triggered browser print for: ${widget.filename}');
-                      } catch (e, st) {
-                        debugPrint('Web PDF print failed: $e\n$st');
-                        try {
-                          if (_objectUrl != null) {
-                            // Fallback: open the PDF in a new tab so the user can
-                            // use the browser's built-in print button.
-                            web.window.open(_objectUrl!, '_blank');
-                          }
-                        } catch (e2, st2) {
-                          debugPrint('Web PDF print fallback open-tab failed: $e2\n$st2');
-                        }
-
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Could not trigger print directly. Opened the PDF in a new tab to print.')),
-                          );
-                        }
-                      }
-                    }
-                  : null,
-              style: FilledButton.styleFrom(backgroundColor: FirePumpSimColors.textHigh, foregroundColor: FirePumpSimColors.charcoal),
-              icon: const Icon(Icons.print_outlined),
-              label: const Text('Print'),
-            );
-          },
-        ),
-      ],
     );
   }
 }
