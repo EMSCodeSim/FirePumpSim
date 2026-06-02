@@ -2,7 +2,7 @@ name: firepumpsim
 description: "Fire pump operator training scenarios, formulas, calculator tools, and printable pump practice."
 publish_to: "none"
 
-version: 1.0.7
+version: 1.0.8
 
 environment:
   sdk: ^3.6.0
