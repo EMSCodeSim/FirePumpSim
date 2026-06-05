@@ -893,7 +893,7 @@
         ],
         "nozzles": [],
         "appliances": [
-          "FDC +25 PSI"
+          "Sprinkler FDC support"
         ],
         "elevation": "Level grade"
       },
@@ -901,26 +901,26 @@
         {
           "id": "starter_sprinkler_support_011_p1",
           "title": "Set PDP for Sprinkler Support",
-          "question": "Engine 181 is supporting a sprinkler FDC through 100 ft of 3-inch hose. The sprinkler system flowing GPM is unknown, so do not calculate hose friction loss from an assumed flow. Use a target sprinkler support pressure of 150 PSI and add 25 PSI FDC loss. What pump discharge pressure should the driver/operator set?",
+          "question": "Engine 181 is supporting a sprinkler FDC through 100 ft of 3-inch hose. The sprinkler system flowing GPM is unknown, so do not calculate hose friction loss from an assumed flow. Use the general sprinkler support rule: pump the sprinkler FDC at 150 PSI. What pump discharge pressure should the driver/operator set?",
           "answerLabel": "Pump Discharge Pressure",
           "answerUnit": "PSI",
           "inputLabel": "Enter PDP",
           "inputPlaceholder": "PSI",
-          "answerValue": 175,
-          "correctPP": 175,
+          "answerValue": 150,
+          "correctPP": 150,
           "tolerance": 5,
           "answers": {
             "frictionLoss": 0,
             "nozzlePressure": 150,
             "elevation": 0,
-            "applianceLoss": 25,
+            "applianceLoss": 0,
             "totalGpm": 0,
-            "pumpPressure": 175,
+            "pumpPressure": 150,
             "tolerance": 5,
-            "answerValue": 175,
-            "correctAnswer": 175,
-            "value": 175,
-            "pp": 175,
+            "answerValue": 150,
+            "correctAnswer": 150,
+            "value": 150,
+            "pp": 150,
             "answerUnit": "PSI",
             "unit": "PSI",
             "answerLabel": "Pump Discharge Pressure"
@@ -954,12 +954,11 @@
           ],
           "formulaBreakdown": [
             "Sprinkler flowing GPM is unknown, so do not calculate hose friction loss from flow.",
-            "PDP = target sprinkler support pressure + FDC loss.",
-            "PDP = 150 + 25.",
-            "Rounded PDP = 175 PSI."
+            "General sprinkler support rule: pump the sprinkler FDC at 150 PSI.",
+            "Rounded PDP = 150 PSI."
           ],
-          "instructorExplanation": "For this basic sprinkler FDC support problem, the driver/operator is not given a known flowing GPM. Use the stated target sprinkler support pressure and add the FDC loss.",
-          "explainMistake": "Do not add friction loss based on a guessed sprinkler flow. The sprinkler system flow is unknown in this scenario."
+          "instructorExplanation": "For this basic sprinkler FDC support problem, the driver/operator is not given a known flowing GPM. Use the general sprinkler support rule and pump the sprinkler FDC at 150 PSI.",
+          "explainMistake": "Do not add friction loss or FDC loss based on a guessed sprinkler flow. The general sprinkler support rule for this app is 150 PSI."
         }
       ],
       "tags": [
@@ -1084,13 +1083,13 @@
           "id": "starter_hydrant_flow_013_p1",
           "title": "Find Hydrant Pressure Drop",
           "question": "Engine 181 is flowing 1000 GPM from a hydrant. Static pressure was 70 PSI and residual pressure is 50 PSI while flowing. Use pressure drop % = (static - residual) ÷ static × 100. What is the hydrant pressure drop percentage?",
-          "answerLabel": "Pressure Drop",
-          "answerUnit": "PSI",
-          "inputLabel": "Enter pressure drop",
-          "inputPlaceholder": "PSI",
-          "answerValue": 20,
+          "answerLabel": "Pressure Drop Percentage",
+          "answerUnit": "%",
+          "inputLabel": "Enter pressure drop percentage",
+          "inputPlaceholder": "%",
+          "answerValue": 29,
           "correctPP": 0,
-          "tolerance": 5,
+          "tolerance": 2,
           "answers": {
             "frictionLoss": 0,
             "nozzlePressure": 0,
@@ -1098,7 +1097,13 @@
             "applianceLoss": 0,
             "totalGpm": 1000,
             "pumpPressure": 0,
-            "tolerance": 5
+            "tolerance": 2,
+            "answerValue": 29,
+            "correctAnswer": 29,
+            "value": 29,
+            "answerUnit": "%",
+            "unit": "%",
+            "answerLabel": "Pressure Drop Percentage"
           },
           "overlays": [
             {
@@ -1128,12 +1133,13 @@
             }
           ],
           "formulaBreakdown": [
-            "Pressure drop = static pressure - residual pressure",
-            "Pressure drop = 70 - 50",
-            "Pressure drop = 20 PSI"
+            "Pressure drop percentage = (static pressure - residual pressure) ÷ static pressure × 100.",
+            "Pressure drop percentage = (70 - 50) ÷ 70 × 100.",
+            "Pressure drop percentage = 28.6%.",
+            "Rounded answer = 29%."
           ],
-          "instructorExplanation": "Hydrant pressure drop is the difference between static pressure and residual pressure while water is flowing. Subtract the residual pressure from the static pressure: 70 minus 50 equals 20 PSI.",
-          "explainMistake": "If you used the flow number in the subtraction, you overcomplicated the problem. This question only asks for pressure drop: static pressure minus residual pressure."
+          "instructorExplanation": "This question asks for the hydrant pressure drop percentage, not just the PSI difference. Use (70 - 50) ÷ 70 × 100 = 28.6%, rounded to 29%.",
+          "explainMistake": "Do not answer 20 PSI unless the question asks for pressure difference only. This question asks for the percentage drop."
         }
       ],
       "tags": [
