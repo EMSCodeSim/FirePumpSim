@@ -35,7 +35,6 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
   String _todayDate = '';
   DailyChallengeResult? _todayResult;
 
-  bool _practiceRetryEnabled = false;
   bool _submitting = false;
 
   // Result UI
@@ -143,7 +142,6 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
         _today = todayProblem;
         _todayResult = todayResult;
         _pool = playable;
-        _practiceRetryEnabled = false;
       });
     } catch (e) {
       debugPrint('DailyChallenge bootstrap failed: $e');
@@ -248,8 +246,7 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
   bool get _isOfficialLocked {
     // Lock the official UI only after the user has completed today correctly.
     // If they've attempted and were incorrect, allow resubmits.
-    // Retry-for-practice can unlock re-submitting UI, but does not double-count.
-    return (_todayResult?.isCorrect == true) && !_practiceRetryEnabled;
+    return _todayResult?.isCorrect == true;
   }
 
   Future<void> _pickAnotherChallenge() async => _bootstrap();
@@ -590,7 +587,6 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
         _lastDiff = diff;
         _lastTol = tol;
         _lastUnit = info.unit;
-        _practiceRetryEnabled = false;
       });
 
       await Future<void>.delayed(const Duration(milliseconds: 40));
@@ -694,10 +690,6 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
                               explanation: _buildExplanation(_today!),
                               formulaBreakdown: _today!.formulaBreakdown,
                               onReviewFormula: _reviewFormula,
-                              onRetryPractice: () => setState(() {
-                                _practiceRetryEnabled = true;
-                                _todayResult = _todayResult; // keep record
-                              }),
                             ),
                             const SizedBox(height: AppSpacing.md),
                           ],
@@ -734,37 +726,38 @@ class _StatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final accuracy = (stats.accuracy * 100).round();
-    final hasHistory = stats.totalAttempts > 0 || stats.totalCompleted > 0;
+    final attempts = stats.totalAttempts;
+    final accuracy = attempts == 0 ? 0 : ((stats.totalCorrect / attempts) * 100).round();
 
-    if (!hasHistory) {
+    if (stats.totalCompleted == 0 && stats.currentStreak == 0 && stats.totalAttempts == 0) {
       return Container(
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
           color: FirePumpSimColors.charcoal2,
           borderRadius: BorderRadius.circular(AppRadius.xl),
-          border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.7)),
+          border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.75)),
         ),
         child: Text(
-          'Start your first challenge today.',
-          style: textTheme.bodyMedium?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w800),
+          'No daily challenge attempts yet. Complete today’s question to start tracking your progress.',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w800),
         ),
       );
     }
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final gap = constraints.maxWidth < 360 ? 8.0 : 10.0;
-        return Row(
+        final gap = constraints.maxWidth < 380 ? 8.0 : 10.0;
+        final columns = constraints.maxWidth >= 700 ? 4 : 2;
+        final tileWidth = (constraints.maxWidth - gap * (columns - 1)) / columns;
+
+        return Wrap(
+          spacing: gap,
+          runSpacing: gap,
           children: [
-            Expanded(child: _StatTile(label: 'Current', value: '${stats.currentStreak} days')),
-            SizedBox(width: gap),
-            Expanded(child: _StatTile(label: 'Best', value: '${stats.bestStreak} days')),
-            SizedBox(width: gap),
-            Expanded(child: _StatTile(label: 'Accuracy', value: '$accuracy%')),
-            SizedBox(width: gap),
-            Expanded(child: _StatTile(label: 'Completed', value: '${stats.totalCompleted}')),
+            SizedBox(width: tileWidth, child: _StatTile(label: 'Current Streak', value: '${stats.currentStreak} days')),
+            SizedBox(width: tileWidth, child: _StatTile(label: 'Best Streak', value: '${stats.bestStreak} days')),
+            SizedBox(width: tileWidth, child: _StatTile(label: 'Accuracy', value: '$accuracy%')),
+            SizedBox(width: tileWidth, child: _StatTile(label: 'Completed', value: '${stats.totalCompleted}')),
           ],
         );
       },
@@ -782,6 +775,7 @@ class _StatTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Container(
+      constraints: const BoxConstraints(minHeight: 82),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
         color: FirePumpSimColors.charcoal2,
@@ -790,10 +784,26 @@ class _StatTile extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(label.toUpperCase(), style: textTheme.labelSmall?.copyWith(color: FirePumpSimColors.textMed, fontWeight: FontWeight.w900, letterSpacing: 0.8)),
-          const SizedBox(height: 6),
-          Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, style: textTheme.titleMedium?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
+          Text(
+            label.toUpperCase(),
+            maxLines: 2,
+            overflow: TextOverflow.visible,
+            style: textTheme.labelSmall?.copyWith(
+              color: FirePumpSimColors.textMed,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 0.45,
+              height: 1.05,
+            ),
+          ),
+          const SizedBox(height: 7),
+          Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: textTheme.titleMedium?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900),
+          ),
         ],
       ),
     );
@@ -1381,7 +1391,6 @@ class _ResultCard extends StatelessWidget {
     required this.explanation,
     required this.formulaBreakdown,
     required this.onReviewFormula,
-    this.onRetryPractice,
   });
 
   final bool isCorrect;
@@ -1392,7 +1401,6 @@ class _ResultCard extends StatelessWidget {
   final String explanation;
   final List<dynamic> formulaBreakdown;
   final VoidCallback onReviewFormula;
-  final VoidCallback? onRetryPractice;
 
   @override
   Widget build(BuildContext context) {
@@ -1438,8 +1446,6 @@ class _ResultCard extends StatelessWidget {
             runSpacing: 10,
             children: [
               _ActionButton(label: 'Review Formula', icon: Icons.functions_outlined, color: FirePumpSimColors.red, onTap: onReviewFormula),
-              if (onRetryPractice != null)
-                _ActionButton(label: 'Retry for Practice', icon: Icons.refresh, color: FirePumpSimColors.steel, onTap: onRetryPractice),
             ],
           ),
         ],

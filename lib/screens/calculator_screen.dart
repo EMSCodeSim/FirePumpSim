@@ -1472,13 +1472,16 @@ class _ComputeRow extends StatelessWidget {
             children: [
               outputBox(),
               const SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(child: computeButton()),
-                  const SizedBox(width: 10),
-                  Expanded(child: useButton()),
-                ],
-              ),
+              if (onUse == null)
+                computeButton()
+              else
+                Row(
+                  children: [
+                    Expanded(child: computeButton()),
+                    const SizedBox(width: 10),
+                    Expanded(child: useButton()),
+                  ],
+                ),
             ],
           );
         }
@@ -1488,8 +1491,10 @@ class _ComputeRow extends StatelessWidget {
             Expanded(child: outputBox()),
             const SizedBox(width: 10),
             computeButton(),
-            const SizedBox(width: 10),
-            useButton(),
+            if (onUse != null) ...[
+              const SizedBox(width: 10),
+              useButton(),
+            ],
           ],
         );
       },
