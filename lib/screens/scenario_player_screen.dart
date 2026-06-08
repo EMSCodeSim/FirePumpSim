@@ -288,10 +288,9 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
                 builder: (context, constraints) {
                   final unit = _expectedUnit(p);
                   final totalH = constraints.maxHeight;
-                  // Header + prominent question card + segmented control + answer card (collapsed) + bottom breathing room.
-                  // Note: the answer card can expand; in that case the page will scroll.
-                  const reserved = 76.0 + 8.0 + 132.0 + 10.0 + 44.0 + 10.0 + 122.0 + 12.0;
-                  final cardH = (totalH - reserved).clamp(300.0, 620.0);
+                  // Make the photo area feel more immersive by allocating a larger share of the viewport.
+                  // The page is already scrollable, so we can safely bias space toward the main display.
+                  final cardH = (totalH * 0.66).clamp(320.0, 760.0);
 
                   return SingleChildScrollView(
                     padding: EdgeInsets.zero,
@@ -335,8 +334,8 @@ class _ScenarioPlayerScreenState extends State<ScenarioPlayerScreen> {
                           ],
                         ),
                         const SizedBox(height: 8),
-                        _ScenarioQuestionCard(problem: p, unit: unit),
 
+                        // Question should only appear in the Problem tab below the photo.
                         const SizedBox(height: 10),
                         SizedBox(
                           height: cardH,
@@ -771,36 +770,24 @@ class _ScenarioImageWithOverlays extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       height: targetH,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Container(color: FirePumpSimColors.charcoal),
-          if (assetPath.trim().isEmpty)
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                child: Text(
-                  'No image provided for this scenario.',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: FirePumpSimColors.textMed,
-                        height: 1.4,
-                      ),
-                ),
-              ),
-            )
-          else
-            Image.asset(
-              assetPath,
-              fit: BoxFit.contain,
-              filterQuality: FilterQuality.high,
-              errorBuilder: (context, error, stackTrace) {
-                debugPrint('Scenario image failed to load ($assetPath): $error');
-                return Center(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        child: InteractiveViewer(
+          minScale: 1,
+          maxScale: 4,
+          panEnabled: true,
+          scaleEnabled: true,
+          boundaryMargin: const EdgeInsets.all(24),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Container(color: FirePumpSimColors.charcoal),
+              if (assetPath.trim().isEmpty)
+                Center(
                   child: Padding(
                     padding: const EdgeInsets.all(AppSpacing.md),
                     child: Text(
-                      'Image not found:\n$assetPath',
+                      'No image provided for this scenario.',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: FirePumpSimColors.textMed,
@@ -808,34 +795,146 @@ class _ScenarioImageWithOverlays extends StatelessWidget {
                           ),
                     ),
                   ),
-                );
-              },
-            ),
-          if (parsed.isNotEmpty)
-            Positioned.fill(
-              child: LayoutBuilder(
-                builder: (context, c) {
-                  final w = c.maxWidth;
-                  final h = c.maxHeight;
-                  return Stack(
-                    children: parsed
-                        .map(
-                          (o) => _OverlayLabel(
-                            label: o.label,
-                            canonical: o.canonical,
-                            x: o.x,
-                            y: o.y,
-                            maxWidth: w,
-                            maxHeight: h,
-                          ),
-                        )
-                        .toList(growable: false),
-                  );
-                },
+                )
+              else
+                _ResilientScenarioImage(path: assetPath),
+              if (parsed.isNotEmpty)
+                Positioned.fill(
+                  child: LayoutBuilder(
+                    builder: (context, c) {
+                      final w = c.maxWidth;
+                      final h = c.maxHeight;
+                      return Stack(
+                        children: parsed
+                            .map(
+                              (o) => _OverlayLabel(
+                                label: o.label,
+                                canonical: o.canonical,
+                                x: o.x,
+                                y: o.y,
+                                maxWidth: w,
+                                maxHeight: h,
+                              ),
+                            )
+                            .toList(growable: false),
+                      );
+                    },
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Loads scenario photos robustly across platforms.
+///
+/// Some scenario JSONs store image paths without the leading `assets/` prefix
+/// (or with a leading `/`). This widget tries a small set of reasonable
+/// candidates before giving up, and also supports http/https URLs.
+class _ResilientScenarioImage extends StatefulWidget {
+  const _ResilientScenarioImage({required this.path});
+
+  final String path;
+
+  @override
+  State<_ResilientScenarioImage> createState() => _ResilientScenarioImageState();
+}
+
+class _ResilientScenarioImageState extends State<_ResilientScenarioImage> {
+  List<String> _candidates = const <String>[];
+  int _index = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _candidates = _buildCandidates(widget.path);
+  }
+
+  @override
+  void didUpdateWidget(covariant _ResilientScenarioImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.path != widget.path) {
+      _candidates = _buildCandidates(widget.path);
+      _index = 0;
+    }
+  }
+
+  List<String> _buildCandidates(String raw) {
+    final trimmed = raw.trim();
+    if (trimmed.isEmpty) return const <String>[];
+
+    final normalized = trimmed.startsWith('/') ? trimmed.substring(1) : trimmed;
+    final list = <String>[normalized];
+    if (!normalized.startsWith('assets/')) list.add('assets/$normalized');
+    // Some older packs used assets/images/ but stored just the filename.
+    if (!normalized.contains('/') && !normalized.startsWith('assets/')) list.add('assets/images/$normalized');
+
+    // De-dupe while preserving order.
+    final out = <String>[];
+    for (final c in list) {
+      if (!out.contains(c)) out.add(c);
+    }
+    return out;
+  }
+
+  bool get _isNetwork {
+    final uri = Uri.tryParse(widget.path.trim());
+    return uri != null && (uri.scheme == 'http' || uri.scheme == 'https');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isNetwork) {
+      return Image.network(
+        widget.path.trim(),
+        fit: BoxFit.contain,
+        filterQuality: FilterQuality.high,
+        errorBuilder: (context, error, stackTrace) {
+          debugPrint('Scenario image network load failed (${widget.path}): $error');
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: Text(
+                'Image not available',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed, height: 1.4),
               ),
             ),
-        ],
-      ),
+          );
+        },
+      );
+    }
+
+    final candidate = (_candidates.isEmpty) ? widget.path.trim() : _candidates[_index.clamp(0, math.max(0, _candidates.length - 1))];
+    return Image.asset(
+      candidate,
+      fit: BoxFit.contain,
+      filterQuality: FilterQuality.high,
+      errorBuilder: (context, error, stackTrace) {
+        final hasNext = _index + 1 < _candidates.length;
+        if (hasNext) {
+          // Try the next candidate path.
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            setState(() => _index += 1);
+          });
+          return const Center(child: CircularProgressIndicator(color: FirePumpSimColors.red, strokeWidth: 2));
+        }
+        debugPrint('Scenario image failed to load (path=${widget.path}, tried=$candidate): $error');
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Text(
+              'Image not found:\n${widget.path}',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed, height: 1.4),
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -1355,10 +1454,81 @@ class _InfoView extends StatelessWidget {
     if (!exists) rows.add(row);
   }
 
+  String _cleanValue(dynamic raw) {
+    final s = (raw ?? '').toString().trim();
+    if (s.isEmpty || s.toLowerCase() == 'null') return '';
+    return _cleanSetupText(s);
+  }
+
+  List<String> _inferHoseSizes() {
+    final values = <String>[];
+
+    void addIfLooksLikeHose(String raw) {
+      var s = _cleanSetupText(raw);
+      if (s.isEmpty) return;
+      final lower = s.toLowerCase();
+      final hasLen = RegExp(r"\b\d{2,4}\s*(?:'|ft)\b").hasMatch(lower);
+      final hasDia = lower.contains('1¾') ||
+          lower.contains('1 3/4') ||
+          lower.contains('1.75') ||
+          lower.contains('2½') ||
+          lower.contains('2 1/2') ||
+          lower.contains('2.5') ||
+          RegExp(r'\b[345](?:\s*(?:in|"))?\b').hasMatch(lower);
+      if (hasLen && hasDia) values.add(s);
+    }
+
+    for (final d in problem.details) {
+      if (d is Map) {
+        final m = Map<String, dynamic>.from(d);
+        final label = (m['label'] ?? m['title'] ?? m['name'] ?? m['key'] ?? '').toString();
+        final value = (m['value'] ?? m['text'] ?? m['display'] ?? m['description'] ?? '').toString();
+        addIfLooksLikeHose('$label $value');
+      } else {
+        addIfLooksLikeHose(d.toString());
+      }
+    }
+    for (final o in problem.overlays) {
+      if (o is! Map) continue;
+      final m = Map<String, dynamic>.from(o);
+      final value = (m['text'] ?? m['value'] ?? m['display'] ?? '').toString();
+      addIfLooksLikeHose(value);
+    }
+
+    final out = <String>[];
+    for (final v in values) {
+      if (!out.any((e) => e.toLowerCase().trim() == v.toLowerCase().trim())) out.add(v);
+    }
+    return out;
+  }
+
+  void _addAnswerMetadata(List<_InfoRow> rows) {
+    final a = problem.answers;
+
+    // Prefer showing *inputs* (nozzle info, elevation distance, GPM) rather than
+    // computed results (friction loss, pump pressure, etc.).
+    final nozzle = _cleanValue(a['nozzle'] ?? a['nozzleType'] ?? a['tip'] ?? a['stream']);
+    final nozzlePressure = _cleanValue(a['nozzlePressure'] ?? a['np'] ?? a['NP']);
+    final elevation = _cleanValue(a['elevation'] ?? a['elevationChange'] ?? a['elevationFt'] ?? a['floors']);
+    final appliance = _cleanValue(a['appliance'] ?? a['applianceType'] ?? a['applianceName']);
+    final totalGpm = _cleanValue(a['totalGpm'] ?? a['gpm'] ?? a['flow']);
+
+    if (nozzle.isNotEmpty) _addUnique(rows, _InfoRow(label: 'Nozzle', value: nozzle));
+    if (nozzlePressure.isNotEmpty) _addUnique(rows, _InfoRow(label: 'Nozzle Pressure', value: nozzlePressure));
+    if (totalGpm.isNotEmpty) _addUnique(rows, _InfoRow(label: 'Total Flow', value: totalGpm));
+    if (elevation.isNotEmpty) _addUnique(rows, _InfoRow(label: 'Elevation', value: elevation));
+    if (appliance.isNotEmpty) _addUnique(rows, _InfoRow(label: 'Appliance', value: appliance));
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final effective = <_InfoRow>[];
+
+    final inferredHoses = _inferHoseSizes();
+    if (inferredHoses.isNotEmpty) {
+      _addUnique(effective, _InfoRow(label: 'Hose', value: inferredHoses.join('\n')));
+    }
 
     for (final row in _parseDetails(problem.details)) {
       _addUnique(effective, row);
@@ -1373,9 +1543,7 @@ class _InfoView extends StatelessWidget {
       }
     }
 
-    if (effective.isEmpty) {
-      _addUnique(effective, _InfoRow(label: 'Question', value: problem.studentQuestion));
-    }
+    _addAnswerMetadata(effective);
 
     final answerType = (problem.answers['answerLabel'] ?? '').toString().trim();
     if (answerType.isNotEmpty) {
@@ -1383,6 +1551,10 @@ class _InfoView extends StatelessWidget {
     }
     if (unit.trim().isNotEmpty) {
       _addUnique(effective, _InfoRow(label: 'Expected Answer Unit', value: unit));
+    }
+
+    if (effective.isEmpty) {
+      _addUnique(effective, const _InfoRow(label: 'Setup', value: 'No additional scenario info provided.'));
     }
 
     return Container(

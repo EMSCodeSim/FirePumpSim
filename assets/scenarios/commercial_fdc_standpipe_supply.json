@@ -255,11 +255,67 @@
       ],
       "instructorExplanation": "The pump must overcome the FDC supply hose friction loss, the interior attack line friction loss, nozzle pressure, and the FDC / standpipe system loss. The total required pump discharge pressure is 100 PSI.",
       "explainMistake": "Do not calculate only the hose from the engine to the FDC. A complete standpipe supply calculation also includes the interior attack line, nozzle pressure, and standpipe system loss."
+    },
+    {
+      "id": "commercial_fdc_standpipe_supply_p5",
+      "title": "Elevated Sprinkler FDC Support Pressure",
+      "question": "For a sprinkler-only FDC support operation, the sprinkler system flowing GPM is unknown. Use the department sprinkler/FDC guideline: PDP = 150 PSI base + elevation pressure. Elevation pressure = (floor number - 1) × 10 ft × 0.5 PSI/ft. The sprinkler area being supported is on the 4th floor. No flow-based friction loss or other losses are used. What pump discharge pressure should be set?",
+      "answerLabel": "Pump Discharge Pressure",
+      "answerUnit": "PSI",
+      "inputLabel": "Enter pump discharge pressure",
+      "inputPlaceholder": "PSI",
+      "answerValue": 165,
+      "correctPP": 165,
+      "tolerance": 5,
+      "answers": {
+        "frictionLoss": 0,
+        "nozzlePressure": 150,
+        "elevation": 15,
+        "applianceLoss": 0,
+        "totalGpm": 0,
+        "pumpPressure": 165,
+        "tolerance": 5,
+        "answerValue": 165,
+        "correctAnswer": 165,
+        "value": 165,
+        "pp": 165
+      },
+      "overlays": [
+        {
+          "label": "Hydrant",
+          "x": 10,
+          "y": 75
+        },
+        {
+          "label": "Engine 181",
+          "x": 34,
+          "y": 50
+        },
+        {
+          "label": "FDC",
+          "x": 86,
+          "y": 47
+        },
+        {
+          "label": "Sprinkler system",
+          "x": 74,
+          "y": 34
+        }
+      ],
+      "formulaBreakdown": [
+        "Sprinkler flowing GPM is unknown, so no flow-based friction loss is calculated.",
+        "Base sprinkler FDC support setting = 150 PSI.",
+        "4th-floor elevation add-on = 15 PSI.",
+        "Pump discharge pressure = 150 + 15 = 165 PSI."
+      ],
+      "instructorExplanation": "Use the sprinkler-only support base setting, then add the stated elevation correction. Do not invent a sprinkler GPM value.",
+      "explainMistake": "Do not calculate this like an interior handline, and do not invent a sprinkler system flow. It is a sprinkler-support setting with the stated elevation correction."
     }
   ],
   "tags": [
     "fdc",
     "standpipe",
+    "sprinkler_system",
     "commercial_fire",
     "strip_mall",
     "engine_181",

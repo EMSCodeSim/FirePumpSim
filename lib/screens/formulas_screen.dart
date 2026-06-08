@@ -333,31 +333,9 @@ class _FormulaExpandableCard extends StatelessWidget {
   final bool expanded;
   final ValueChanged<bool> onExpandedChanged;
 
-  CalculatorHelperKind? _helperKindFor(FormulaQuickItem item) {
-    switch (item.title) {
-      case 'Pump Pressure / PDP':
-        return CalculatorHelperKind.pumpPressure;
-      case 'Friction Loss':
-        return CalculatorHelperKind.frictionLoss;
-      case 'Elevation':
-        return CalculatorHelperKind.elevation;
-      case 'Smooth Bore Flow':
-        return CalculatorHelperKind.smoothBoreFlow;
-      case 'Fog Nozzle Reaction':
-      case 'Smooth Bore Nozzle Reaction':
-        return CalculatorHelperKind.nozzleReaction;
-      case 'Relay Pumping':
-        return CalculatorHelperKind.relaySpacing;
-      case 'Tender Shuttle Flow':
-        return CalculatorHelperKind.tenderShuttle;
-    }
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final helperKind = _helperKindFor(item);
 
     return Container(
       decoration: BoxDecoration(
@@ -435,26 +413,6 @@ class _FormulaExpandableCard extends StatelessWidget {
                     style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textHigh, height: 1.35),
                   ),
                 ),
-              ],
-              if (helperKind != null) ...[
-                const SizedBox(height: AppSpacing.md),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text('Calculator helper', style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900)),
-                    ),
-                    TextButton.icon(
-                      onPressed: () => showCalculatorOverlay(context),
-                      style: TextButton.styleFrom(
-                        foregroundColor: FirePumpSimColors.textHigh,
-                      ).copyWith(overlayColor: const WidgetStatePropertyAll(Colors.transparent)),
-                      icon: const Icon(Icons.calculate_outlined, size: 18, color: FirePumpSimColors.textHigh),
-                      label: Text('Open', style: textTheme.labelLarge?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900)),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                CalculatorHelperCard(kind: helperKind),
               ],
             ],
           ),
