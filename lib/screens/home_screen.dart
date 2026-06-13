@@ -1,11 +1,11 @@
 import 'package:firepumpsim/nav.dart';
 import 'package:firepumpsim/models/daily_challenge_models.dart';
-import 'package:firepumpsim/services/app_review_service.dart';
 import 'package:firepumpsim/services/daily_challenge_storage.dart';
 import 'package:firepumpsim/theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -23,14 +23,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _loadDaily();
-
-    // Safe place to prompt for ratings: only after the user reaches home.
-    // Schedule after first frame so we never block initial render.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Future<void>.delayed(const Duration(milliseconds: 650), () {
-        AppReviewService.instance.onHomeScreenShown();
-      });
-    });
   }
 
   Future<void> _loadDaily() async {
@@ -45,6 +37,35 @@ class _HomeScreenState extends State<HomeScreen> {
       debugPrint('Home daily stats load failed: $e');
       if (!mounted) return;
       setState(() => _dailyLoaded = true);
+    }
+  }
+
+  Future<void> _openFireOpsCalcStore() async {
+    final Uri uri;
+
+    if (kIsWeb) {
+      uri = Uri.parse('https://fireopscalc.com');
+    } else {
+      switch (defaultTargetPlatform) {
+        case TargetPlatform.iOS:
+          uri = Uri.parse('https://apps.apple.com/us/app/fireops-calc/id6753922160');
+          break;
+        case TargetPlatform.android:
+          uri = Uri.parse('https://play.google.com/store/apps/details?id=com.fireopscalc.app');
+          break;
+        default:
+          uri = Uri.parse('https://fireopscalc.com');
+          break;
+      }
+    }
+
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!launched) {
+      debugPrint('Unable to open FireOps Calc link: $uri');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unable to open FireOps Calc right now.')),
+      );
     }
   }
 
@@ -126,6 +147,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       description: 'Step-by-step calculations',
                       icon: Icons.school,
                       onTap: () => context.go(AppRoutes.howTo),
+                    ),
+                    const SizedBox(height: cardGap),
+                    _MainMenuCard(
+                      height: cardHeight,
+                      title: 'Try FireOps Calc',
+                      description: 'Pump pressure calculator for firefighters',
+                      icon: Icons.calculate_outlined,
+                      onTap: () {
+                        _openFireOpsCalcStore();
+                      },
                     ),
                     const SizedBox(height: AppSpacing.md),
                     const _SafetyPrivacyCard(),
