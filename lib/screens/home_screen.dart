@@ -1,5 +1,6 @@
 import 'package:firepumpsim/nav.dart';
 import 'package:firepumpsim/models/daily_challenge_models.dart';
+import 'package:firepumpsim/services/app_review_service.dart';
 import 'package:firepumpsim/services/daily_challenge_storage.dart';
 import 'package:firepumpsim/theme.dart';
 import 'package:flutter/foundation.dart';
@@ -22,6 +23,14 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _loadDaily();
+
+    // Safe place to prompt for ratings: only after the user reaches home.
+    // Schedule after first frame so we never block initial render.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future<void>.delayed(const Duration(milliseconds: 650), () {
+        AppReviewService.instance.onHomeScreenShown();
+      });
+    });
   }
 
   Future<void> _loadDaily() async {
