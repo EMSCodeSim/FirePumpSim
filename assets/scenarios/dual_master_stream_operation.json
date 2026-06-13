@@ -1,192 +1,185 @@
 {
-  "filename": "dual_master_stream_operation.json",
   "id": "dual_master_stream_operation",
   "title": "Dual Master Stream Operation",
   "difficulty": "advanced",
   "category": "master_stream",
-  "type": "pump",
+  "type": "master_stream",
   "image": "assets/images/dual_master_stream_operation.png",
   "imageRatio": "4:7",
   "recommendedImageSize": "1080x1890",
   "sceneElements": {
     "engine": "Engine 181",
     "hoses": [
-      "Hydrant supply hose from hydrant to Engine 181 intake",
-      "Portable monitor supply line A: 200 ft of 2½-inch hose from Engine 181 discharge to portable monitor",
-      "Portable monitor supply line B: 200 ft of 2½-inch hose from Engine 181 discharge to portable monitor"
+      "Two equal 200 ft 2½-inch portable monitor supply lines"
     ],
     "nozzles": [
-      "Deck gun master stream, 500 GPM @ 80 PSI",
-      "Portable monitor master stream, 500 GPM @ 80 PSI"
+      "Mounted deck gun",
+      "Portable monitor"
     ],
     "appliances": [
-      "Deck gun mounted on Engine 181",
-      "Portable monitor supplied by two hoses from Engine 181"
+      "Portable monitor appliance loss"
     ],
-    "elevation": "Level industrial parking lot, 0 PSI elevation correction"
+    "elevation": "Mounted deck gun has no elevation add-on; portable monitor uses no elevation in this scenario"
   },
   "problems": [
     {
-      "id": "dual_master_stream_operation_p2",
+      "id": "dual_master_stream_operation_p1",
       "title": "Deck Gun Pump Discharge Pressure",
-      "question": "The deck gun is mounted directly on Engine 181 and uses 80 PSI nozzle pressure. The stream is operating 30 ft above the pump; use elevation pressure = height × 0.5 PSI/ft. There is no discharge hose friction loss or appliance loss. What pump discharge pressure is required for the deck gun?",
-      "answerLabel": "Pump Discharge Pressure",
-      "answerUnit": "PSI",
+      "question": "The deck gun is mounted directly on Engine 181 and uses 80 PSI nozzle pressure. Because the deck gun is mounted on the apparatus, do not add elevation for the deck-gun height. There is no discharge hose friction loss or appliance loss. What pump discharge pressure is required for the deck gun?",
+      "answerLabel": "PDP",
+      "answerUnit": "psi",
       "inputLabel": "Enter PDP",
-      "inputPlaceholder": "PSI",
-      "answerValue": 95,
-      "correctPP": 95,
+      "inputPlaceholder": "psi",
+      "answerValue": 80,
+      "correctPP": 80,
       "tolerance": 5,
       "answers": {
         "frictionLoss": 0,
         "nozzlePressure": 80,
-        "elevation": 15,
+        "elevation": 0,
         "applianceLoss": 0,
-        "totalGpm": 500,
-        "pumpPressure": 95,
-        "tolerance": 5,
-        "answerValue": 95,
-        "correctAnswer": 95,
-        "value": 95,
-        "pp": 95
+        "totalGpm": 815,
+        "pumpPressure": 80,
+        "tolerance": 5
       },
       "overlays": [
         {
-          "label": "Engine 181",
-          "x": 23,
-          "y": 55
+          "text": "Engine 181",
+          "x": 18,
+          "y": 72
         },
         {
-          "label": "Deck gun",
-          "x": 24,
-          "y": 37
+          "text": "Mounted deck gun",
+          "x": 42,
+          "y": 42
         },
         {
-          "label": "Fire area",
-          "x": 47,
-          "y": 29
+          "text": "Portable monitor",
+          "x": 65,
+          "y": 58
+        },
+        {
+          "text": "Deck gun PDP",
+          "x": 60,
+          "y": 35
         }
       ],
       "formulaBreakdown": [
-        "PP = 0 + 80 + 15 + 0 = 95 PSI."
+        "Mounted deck gun = part of Engine 181",
+        "Elevation add-on = 0 PSI",
+        "PDP = NP + FL + elevation + appliance loss",
+        "PDP = 80 + 0 + 0 + 0 = 80 PSI"
       ],
-      "instructorExplanation": "The deck gun has no hose stretch, but the stated elevation still must be added to nozzle pressure.",
-      "explainMistake": "Do not enter nozzle pressure alone when the problem gives an elevation add-on."
+      "instructorExplanation": "A mounted deck gun does not receive an elevation add-on for its own height above the pump panel. With no hose friction loss and no appliance loss, PDP equals 80 PSI.",
+      "explainMistake": "If you entered 95 PSI, you added elevation to a mounted deck gun. Do not add elevation for the mounted deck-gun height."
     },
     {
-      "id": "dual_master_stream_operation_p3",
+      "id": "dual_master_stream_operation_p2",
       "title": "Portable Monitor Flow Per Line",
       "question": "The portable monitor flows 500 GPM total and is supplied by two equal hose lines from Engine 181. The two lines split the monitor flow; they do not each flow the full monitor total. What flow should be used for each monitor supply line?",
-      "answerLabel": "Flow Per Line",
-      "answerUnit": "GPM",
-      "inputLabel": "Enter flow per line",
-      "inputPlaceholder": "GPM",
+      "answerLabel": "Flow per line",
+      "answerUnit": "gpm",
+      "inputLabel": "Enter GPM per line",
+      "inputPlaceholder": "gpm",
       "answerValue": 250,
       "correctPP": 0,
       "tolerance": 5,
       "answers": {
         "frictionLoss": 0,
-        "nozzlePressure": 80,
+        "nozzlePressure": 0,
         "elevation": 0,
-        "applianceLoss": 25,
+        "applianceLoss": 0,
         "totalGpm": 500,
         "pumpPressure": 0,
         "tolerance": 5
       },
       "overlays": [
         {
-          "label": "Engine 181",
-          "x": 23,
-          "y": 55
+          "text": "Engine 181",
+          "x": 18,
+          "y": 72
         },
         {
-          "label": "Line A",
-          "x": 55,
-          "y": 57
+          "text": "Mounted deck gun",
+          "x": 42,
+          "y": 42
         },
         {
-          "label": "Line B",
-          "x": 57,
-          "y": 61
+          "text": "Portable monitor",
+          "x": 65,
+          "y": 58
         },
         {
-          "label": "Portable monitor",
-          "x": 76,
-          "y": 47
+          "text": "Split flow",
+          "x": 65,
+          "y": 36
         }
       ],
       "formulaBreakdown": [
-        "Flow per line = total monitor flow / number of supply lines.",
-        "Total monitor flow = 500 GPM.",
-        "Number of monitor supply lines = 2.",
-        "Flow per line = 500 / 2.",
-        "Flow per line = 250 GPM."
+        "Flow per line = total monitor flow ÷ number of lines",
+        "Flow per line = 500 ÷ 2 = 250 GPM"
       ],
-      "instructorExplanation": "The monitor flow is split evenly between the two supply lines. Each line carries 250 GPM.",
-      "explainMistake": "Do not use the full 500 GPM in each line. The two monitor supply lines share the total flow."
+      "instructorExplanation": "For equal supply lines, split the total portable monitor flow between the two lines. Each line carries 250 GPM.",
+      "explainMistake": "Do not calculate each line at the full 500 GPM. The two lines split the flow."
     },
     {
-      "id": "dual_master_stream_operation_p4",
+      "id": "dual_master_stream_operation_p3",
       "title": "Portable Monitor Supply Line Friction Loss",
-      "question": "Each portable monitor supply line is 200 ft of 2½-inch hose. The portable monitor flows 500 GPM total through two equal lines, so calculate each line at one-half of the total flow. Using FL = C × (GPM/100)² × (length/100), with C = 2, what is the friction loss in each supply line?",
-      "answerLabel": "Friction Loss",
-      "answerUnit": "PSI",
-      "inputLabel": "Enter friction loss",
-      "inputPlaceholder": "PSI",
+      "question": "Each portable monitor supply line is 200 ft of 2½-inch hose. The portable monitor flows 500 GPM total through two equal lines, so calculate each line at one-half of the total flow. Using FL = C x (GPM/100)^2 x (length/100), with C = 2, what is the friction loss in each supply line?",
+      "answerLabel": "Friction loss",
+      "answerUnit": "psi",
+      "inputLabel": "Enter FL",
+      "inputPlaceholder": "psi",
       "answerValue": 25,
       "correctPP": 0,
       "tolerance": 5,
       "answers": {
         "frictionLoss": 25,
-        "nozzlePressure": 80,
+        "nozzlePressure": 0,
         "elevation": 0,
-        "applianceLoss": 25,
+        "applianceLoss": 0,
         "totalGpm": 500,
         "pumpPressure": 0,
         "tolerance": 5
       },
       "overlays": [
         {
-          "label": "Engine 181",
-          "x": 23,
-          "y": 55
+          "text": "Engine 181",
+          "x": 18,
+          "y": 72
         },
         {
-          "label": "Line A",
-          "x": 55,
-          "y": 57
+          "text": "Mounted deck gun",
+          "x": 42,
+          "y": 42
         },
         {
-          "label": "Line B",
-          "x": 57,
-          "y": 61
+          "text": "Portable monitor",
+          "x": 65,
+          "y": 58
         },
         {
-          "label": "Portable monitor",
-          "x": 76,
-          "y": 47
+          "text": "Find FL",
+          "x": 65,
+          "y": 36
         }
       ],
       "formulaBreakdown": [
-        "FL = C × (GPM / 100)^2 × hose length in hundreds.",
-        "C for 2½-inch hose = 2.",
-        "Flow per line = 250 GPM.",
-        "Hose length = 200 ft = 2 hundreds.",
-        "FL = 2 × (250 / 100)^2 × 2.",
-        "FL = 2 × 6.25 × 2.",
-        "FL = 25 PSI."
+        "Flow per line = 250 GPM",
+        "FL = 2 × (250/100)² × (200/100)",
+        "FL = 2 × 2.5² × 2 = 25 PSI"
       ],
-      "instructorExplanation": "Each monitor supply line carries 250 GPM. At 250 GPM through 200 ft of 2½-inch hose, the friction loss is 25 PSI.",
-      "explainMistake": "Do not calculate friction loss using 500 GPM in one line. The portable monitor flow is split between two equal supply lines."
+      "instructorExplanation": "Each 2½-inch supply line carries 250 GPM for 200 ft, so each line has about 25 PSI friction loss.",
+      "explainMistake": "The most common mistake is using 500 GPM in each line instead of splitting the total flow."
     },
     {
-      "id": "dual_master_stream_operation_p5",
+      "id": "dual_master_stream_operation_p4",
       "title": "Portable Monitor Pump Discharge Pressure",
       "question": "Engine 181 is supplying a portable monitor through two equal 200 ft 2½-inch supply lines. The monitor flows 500 GPM total; split the flow equally between the two lines for the hose friction-loss calculation. Nozzle pressure is 80 PSI, elevation is 0 PSI, and portable monitor appliance loss is 25 PSI. What pump discharge pressure is required for the portable monitor?",
-      "answerLabel": "Pump Discharge Pressure",
-      "answerUnit": "PSI",
+      "answerLabel": "PDP",
+      "answerUnit": "psi",
       "inputLabel": "Enter PDP",
-      "inputPlaceholder": "PSI",
+      "inputPlaceholder": "psi",
       "answerValue": 130,
       "correctPP": 130,
       "tolerance": 5,
@@ -201,46 +194,41 @@
       },
       "overlays": [
         {
-          "label": "Engine 181",
-          "x": 23,
-          "y": 55
+          "text": "Engine 181",
+          "x": 18,
+          "y": 72
         },
         {
-          "label": "Two supply lines",
-          "x": 57,
-          "y": 59
+          "text": "Mounted deck gun",
+          "x": 42,
+          "y": 42
         },
         {
-          "label": "Portable monitor",
-          "x": 76,
-          "y": 47
+          "text": "Portable monitor",
+          "x": 65,
+          "y": 58
         },
         {
-          "label": "Fire area",
-          "x": 87,
-          "y": 28
+          "text": "Monitor PDP",
+          "x": 65,
+          "y": 36
         }
       ],
       "formulaBreakdown": [
-        "PP = FL + NP + elevation + appliance loss.",
-        "Friction loss per supply line = 25 PSI.",
-        "Nozzle pressure = 80 PSI.",
-        "Elevation = 0 PSI.",
-        "Portable monitor appliance loss = 25 PSI.",
-        "PP = 25 + 80 + 0 + 25.",
-        "PP = 130 PSI."
+        "PDP = NP + FL + elevation + appliance loss",
+        "PDP = 80 + 25 + 0 + 25 = 130 PSI"
       ],
-      "instructorExplanation": "For a portable monitor supplied by two equal lines, calculate one supply path. Add friction loss, nozzle pressure, elevation, and appliance loss for a pump discharge pressure of 130 PSI.",
-      "explainMistake": "Do not add the friction loss of both monitor supply lines together. Equal parallel lines split the flow, and one supply path governs the pressure."
+      "instructorExplanation": "The portable monitor path requires 80 PSI nozzle pressure, 25 PSI supply-line friction loss, and 25 PSI appliance loss. Total PDP is 130 PSI.",
+      "explainMistake": "Make sure to include the portable monitor appliance loss and calculate hose friction loss per line."
     },
     {
-      "id": "dual_master_stream_operation_p6",
+      "id": "dual_master_stream_operation_p5",
       "title": "Governing Pump Discharge Pressure",
-      "question": "Engine 181 is supplying both a deck gun and a portable monitor. The deck gun is mounted directly on the engine, uses 80 PSI nozzle pressure, and is operating 30 ft above the pump. The portable monitor flows 500 GPM total through two equal 200 ft 2½-inch supply lines. Use C = 2, split the monitor flow equally between the two lines, use 80 PSI monitor nozzle pressure, add 25 PSI monitor appliance loss, and use no elevation for the monitor. Which pump discharge pressure should govern the operation?",
-      "answerLabel": "Pump Discharge Pressure",
-      "answerUnit": "PSI",
-      "inputLabel": "Enter governing pump discharge pressure",
-      "inputPlaceholder": "PSI",
+      "question": "Engine 181 is supplying both a mounted deck gun and a portable monitor. The deck gun uses 80 PSI nozzle pressure with no hose friction loss, no appliance loss, and no elevation add-on because it is mounted on the engine. The portable monitor flows 500 GPM total through two equal 200 ft 2½-inch supply lines. Use C = 2, split the monitor flow equally between the two lines, use 80 PSI monitor nozzle pressure, add 25 PSI monitor appliance loss, and use no elevation for the monitor. Which pump discharge pressure should govern the operation?",
+      "answerLabel": "Governing PDP",
+      "answerUnit": "psi",
+      "inputLabel": "Enter governing PDP",
+      "inputPlaceholder": "psi",
       "answerValue": 130,
       "correctPP": 130,
       "tolerance": 5,
@@ -249,57 +237,48 @@
         "nozzlePressure": 80,
         "elevation": 0,
         "applianceLoss": 25,
-        "totalGpm": 1000,
+        "totalGpm": 500,
         "pumpPressure": 130,
-        "tolerance": 5,
-        "answerValue": 130,
-        "correctAnswer": 130,
-        "value": 130,
-        "pp": 130
+        "tolerance": 5
       },
       "overlays": [
         {
-          "label": "Deck gun",
-          "x": 24,
-          "y": 37
+          "text": "Engine 181",
+          "x": 18,
+          "y": 72
         },
         {
-          "label": "Portable monitor",
-          "x": 76,
-          "y": 47
+          "text": "Mounted deck gun",
+          "x": 42,
+          "y": 42
         },
         {
-          "label": "Engine 181",
-          "x": 23,
-          "y": 55
+          "text": "Portable monitor",
+          "x": 65,
+          "y": 58
         },
         {
-          "label": "Warehouse fire",
-          "x": 63,
-          "y": 25
+          "text": "Which governs?",
+          "x": 58,
+          "y": 34
         }
       ],
       "formulaBreakdown": [
-        "Portable monitor line FL = 2 × (250 / 100)^2 × 2 = 25 PSI.",
-        "Portable monitor PP = 25 + 80 + 0 + 25 = 130 PSI.",
-        "Deck gun path = 95 PSI.",
-        "The higher pressure path governs: 130 PSI."
+        "Deck gun PDP = 80 PSI",
+        "Portable monitor flow per line = 500 ÷ 2 = 250 GPM",
+        "Portable monitor FL = 2 × 2.5² × 2 = 25 PSI",
+        "Portable monitor PDP = 80 + 25 + 0 + 25 = 130 PSI",
+        "Governing PDP = 130 PSI"
       ],
-      "instructorExplanation": "Calculate the portable monitor path using the split flow per line, then compare it to the deck gun path. Use the higher required pressure.",
-      "explainMistake": "Do not add the deck gun pressure to the monitor pressure. Separate devices do not stack pressures; the highest pressure path governs."
+      "instructorExplanation": "The deck gun is mounted, so it stays at 80 PSI. The portable monitor has supply hose friction loss and appliance loss, so it governs at 130 PSI.",
+      "explainMistake": "Do not add elevation to the mounted deck gun. Compare the deck gun PDP of 80 PSI to the portable monitor PDP of 130 PSI; the higher pressure governs."
     }
   ],
   "tags": [
     "dual_master_stream",
     "deck_gun",
     "portable_monitor",
-    "warehouse_fire",
     "engine_181",
-    "hydrant_supply",
-    "master_stream",
-    "total_gpm",
-    "friction_loss",
-    "pump_pressure",
-    "driver_operator"
+    "pump_pressure"
   ]
 }

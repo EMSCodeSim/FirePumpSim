@@ -3,35 +3,32 @@
   "title": "Relay Pumping Operation",
   "difficulty": "advanced",
   "category": "relay",
-  "type": "pump",
+  "type": "relay",
   "image": "assets/images/relay_pumping_operation.png",
   "imageRatio": "4:7",
   "recommendedImageSize": "1080x1890",
   "sceneElements": {
-    "engine": "Engine 181",
+    "engine": "Engine 181 relay operation",
     "hoses": [
-      "Supply line from hydrant to Engine 181 intake",
-      "Relay Segment 1: 1000 ft of 5-inch LDH from Engine 181 discharge to Relay Engine intake",
-      "Relay Segment 2: 1000 ft of 5-inch LDH from Relay Engine discharge to Attack Engine intake"
+      "1000 ft of 5-inch LDH between relay engines"
     ],
     "nozzles": [
-      "Attack Engine deck gun with 1⅜-inch smooth bore tip",
-      "Master stream nozzle pressure: 80 PSI"
+      "Attack-engine mounted deck gun"
     ],
     "appliances": [
-      "Deck gun mounted on Attack Engine"
+      "Mounted deck gun on attack engine"
     ],
-    "elevation": "Level roadway operation, 0 PSI elevation correction"
+    "elevation": "No elevation for LDH relay questions; no elevation add-on for mounted deck gun"
   },
   "problems": [
     {
       "id": "relay_pumping_operation_p1",
-      "title": "Engine 181 Relay Discharge Pressure",
+      "title": "Supply Engine Discharge Pressure",
       "question": "Engine 181 must deliver 500 GPM through 1000 ft of 5-inch LDH to the relay engine and maintain 20 PSI intake pressure at the relay engine. The LDH friction loss is 20 PSI and there is no elevation change. What discharge pressure should Engine 181 pump?",
-      "answerLabel": "Engine 181 Discharge Pressure",
-      "answerUnit": "PSI",
-      "inputLabel": "Enter discharge pressure",
-      "inputPlaceholder": "PSI",
+      "answerLabel": "Discharge pressure",
+      "answerUnit": "psi",
+      "inputLabel": "Enter pressure",
+      "inputPlaceholder": "psi",
       "answerValue": 40,
       "correctPP": 40,
       "tolerance": 5,
@@ -46,50 +43,41 @@
       },
       "overlays": [
         {
-          "label": "Hydrant",
-          "x": 12,
-          "y": 84
+          "text": "Engine 181",
+          "x": 18,
+          "y": 70
         },
         {
-          "label": "Engine 181",
-          "x": 25,
-          "y": 67
+          "text": "Relay engine",
+          "x": 50,
+          "y": 62
         },
         {
-          "label": "Relay Engine",
-          "x": 55,
-          "y": 47
+          "text": "Attack engine",
+          "x": 75,
+          "y": 52
         },
         {
-          "label": "Relay Line",
-          "x": 43,
-          "y": 57
+          "text": "Maintain intake",
+          "x": 58,
+          "y": 42
         }
       ],
       "formulaBreakdown": [
-        "Relay PDP = relay hose FL + elevation + desired intake pressure.",
-        "FL = C × (GPM / 100)^2 × hose length in hundreds.",
-        "Relay Segment 1 uses 5-inch LDH, so C = 0.08.",
-        "Flow = 500 GPM.",
-        "Relay Segment 1 length = 1000 ft = 10 hundreds.",
-        "FL = 0.08 × (500 / 100)^2 × 10.",
-        "FL = 0.08 × 25 × 10.",
-        "FL = 20 PSI.",
-        "Desired receiving intake pressure = 20 PSI.",
-        "Relay PDP = 20 + 0 + 20.",
-        "Relay PDP = 40 PSI."
+        "Discharge pressure = LDH friction loss + desired intake pressure",
+        "Discharge pressure = 20 + 20 = 40 PSI"
       ],
-      "instructorExplanation": "Engine 181 must overcome friction loss in the relay line and still deliver the desired intake pressure to the relay engine. With 1000 ft of 5-inch LDH flowing 500 GPM, the friction loss is 20 PSI. Adding the 20 PSI desired intake pressure gives 40 PSI.",
-      "explainMistake": "Do not calculate only the relay hose friction loss. A relay engine must supply enough pressure to overcome friction loss and still leave the receiving engine with the required intake pressure."
+      "instructorExplanation": "The supply engine must overcome 20 PSI LDH friction loss and still leave 20 PSI intake pressure at the relay engine.",
+      "explainMistake": "Do not stop at friction loss only. The receiving engine still needs 20 PSI intake pressure."
     },
     {
       "id": "relay_pumping_operation_p2",
       "title": "Relay Engine Discharge Pressure",
       "question": "The relay engine must deliver 500 GPM through 1000 ft of 5-inch LDH to the attack engine and maintain 20 PSI intake pressure at the attack engine. The LDH friction loss is 20 PSI and there is no elevation change. What discharge pressure should the relay engine pump?",
-      "answerLabel": "Relay Engine Discharge Pressure",
-      "answerUnit": "PSI",
-      "inputLabel": "Enter discharge pressure",
-      "inputPlaceholder": "PSI",
+      "answerLabel": "Discharge pressure",
+      "answerUnit": "psi",
+      "inputLabel": "Enter pressure",
+      "inputPlaceholder": "psi",
       "answerValue": 40,
       "correctPP": 40,
       "tolerance": 5,
@@ -104,106 +92,95 @@
       },
       "overlays": [
         {
-          "label": "Relay Engine",
-          "x": 55,
-          "y": 47
+          "text": "Engine 181",
+          "x": 18,
+          "y": 70
         },
         {
-          "label": "Attack Engine",
-          "x": 79,
-          "y": 35
+          "text": "Relay engine",
+          "x": 50,
+          "y": 62
         },
         {
-          "label": "Relay Line",
-          "x": 69,
+          "text": "Attack engine",
+          "x": 75,
+          "y": 52
+        },
+        {
+          "text": "Maintain attack intake",
+          "x": 68,
           "y": 42
-        },
-        {
-          "label": "Fire Area",
-          "x": 86,
-          "y": 23
         }
       ],
       "formulaBreakdown": [
-        "Relay PDP = relay hose FL + elevation + desired intake pressure.",
-        "FL = C × (GPM / 100)^2 × hose length in hundreds.",
-        "Relay Segment 2 uses 5-inch LDH, so C = 0.08.",
-        "Flow = 500 GPM.",
-        "Relay Segment 2 length = 1000 ft = 10 hundreds.",
-        "FL = 0.08 × (500 / 100)^2 × 10.",
-        "FL = 0.08 × 25 × 10.",
-        "FL = 20 PSI.",
-        "Desired receiving intake pressure = 20 PSI.",
-        "Relay PDP = 20 + 0 + 20.",
-        "Relay PDP = 40 PSI."
+        "Discharge pressure = LDH friction loss + desired attack-engine intake pressure",
+        "Discharge pressure = 20 + 20 = 40 PSI"
       ],
-      "instructorExplanation": "The relay engine supplies the attack engine through the second relay segment. The second segment has the same hose length and flow as the first segment, so the required discharge pressure is also 40 PSI.",
-      "explainMistake": "Do not add the pressure from Engine 181 to this calculation. Each relay engine calculates its own discharge pressure based on the hose it is supplying and the desired intake pressure at the next engine."
+      "instructorExplanation": "The relay engine must cover the LDH friction loss and maintain the requested intake pressure at the attack engine.",
+      "explainMistake": "Add the desired intake pressure to the relay hose friction loss."
     },
     {
       "id": "relay_pumping_operation_p3",
-      "title": "Attack Engine Pump Discharge Pressure",
-      "question": "The attack engine is supplying a deck gun master stream at 80 PSI nozzle pressure. The deck gun is elevated 20 ft above the pump; use elevation pressure = height × 0.5 PSI/ft. It is mounted on the attack engine, with no hose friction loss or appliance loss. What pump discharge pressure should the attack engine set?",
-      "answerLabel": "Attack Engine Pump Discharge Pressure",
-      "answerUnit": "PSI",
-      "inputLabel": "Enter pump discharge pressure",
-      "inputPlaceholder": "PSI",
-      "answerValue": 90,
-      "correctPP": 90,
+      "title": "Attack Engine Deck Gun Pressure",
+      "question": "The attack engine is supplying a deck gun master stream at 80 PSI nozzle pressure. The deck gun is mounted on the attack engine, so do not add elevation for the height of the mounted deck gun. There is no hose friction loss or appliance loss. What pump discharge pressure should the attack engine set?",
+      "answerLabel": "PDP",
+      "answerUnit": "psi",
+      "inputLabel": "Enter PDP",
+      "inputPlaceholder": "psi",
+      "answerValue": 80,
+      "correctPP": 80,
       "tolerance": 5,
       "answers": {
         "frictionLoss": 0,
         "nozzlePressure": 80,
-        "elevation": 10,
+        "elevation": 0,
         "applianceLoss": 0,
         "totalGpm": 500,
-        "pumpPressure": 90,
-        "tolerance": 5,
-        "answerValue": 90,
-        "correctAnswer": 90,
-        "value": 90,
-        "pp": 90
+        "pumpPressure": 80,
+        "tolerance": 5
       },
       "overlays": [
         {
-          "label": "Attack Engine",
-          "x": 79,
-          "y": 35
+          "text": "Engine 181",
+          "x": 18,
+          "y": 70
         },
         {
-          "label": "Deck Gun",
-          "x": 80,
-          "y": 30
+          "text": "Relay engine",
+          "x": 50,
+          "y": 62
         },
         {
-          "label": "Stream",
-          "x": 87,
-          "y": 20
+          "text": "Attack engine",
+          "x": 75,
+          "y": 52
         },
         {
-          "label": "Fire Area",
-          "x": 89,
-          "y": 25
+          "text": "Mounted deck gun",
+          "x": 73,
+          "y": 34
         }
       ],
       "formulaBreakdown": [
-        "PP = FL + NP + elevation + appliance loss.",
-        "PP = 0 + 80 + 10 + 0 = 90 PSI."
+        "Mounted deck gun = part of the attack engine",
+        "Elevation add-on = 0 PSI",
+        "PDP = NP + FL + elevation + appliance loss",
+        "PDP = 80 + 0 + 0 + 0 = 80 PSI"
       ],
-      "instructorExplanation": "The attack engine only calculates the pressure for the mounted master stream; relay-line losses are handled by relay engines. Add the local elevation to nozzle pressure.",
-      "explainMistake": "Do not add relay segment friction loss to the attack engine discharge pressure."
+      "instructorExplanation": "Do not add elevation for a deck gun mounted on the attack engine. With no hose or appliance losses, set the attack engine to the 80 PSI nozzle pressure.",
+      "explainMistake": "If you entered 90 PSI, you added 20 ft of deck-gun height as elevation. For a mounted deck gun, elevation is 0 PSI."
     },
     {
       "id": "relay_pumping_operation_p4",
-      "title": "Total Flow Requirement",
-      "question": "The relay operation is supplying one attack-engine deck gun with a 1⅜-inch smooth-bore tip operating at 80 PSI nozzle pressure. Use the smooth-bore flow formula: GPM = 29.7 × diameter² × √NP. What is the approximate total flow requirement for the relay operation?",
-      "answerLabel": "Total Flow",
-      "answerUnit": "GPM",
-      "inputLabel": "Enter total flow",
-      "inputPlaceholder": "GPM",
+      "title": "Relay Operation Total Flow",
+      "question": "The relay operation is supplying one attack-engine deck gun with a 1⅜-inch smooth-bore tip operating at 80 PSI nozzle pressure. Use the smooth-bore flow formula: GPM = 29.7 x diameter^2 x √NP. What is the approximate total flow requirement for the relay operation?",
+      "answerLabel": "Flow",
+      "answerUnit": "gpm",
+      "inputLabel": "Enter flow",
+      "inputPlaceholder": "gpm",
       "answerValue": 500,
       "correctPP": 0,
-      "tolerance": 25,
+      "tolerance": 5,
       "answers": {
         "frictionLoss": 0,
         "nozzlePressure": 80,
@@ -211,55 +188,45 @@
         "applianceLoss": 0,
         "totalGpm": 500,
         "pumpPressure": 0,
-        "tolerance": 25,
-        "answerValue": 500,
-        "correctAnswer": 500,
-        "value": 500
+        "tolerance": 5
       },
       "overlays": [
         {
-          "label": "Engine 181",
-          "x": 25,
-          "y": 67
+          "text": "Engine 181",
+          "x": 18,
+          "y": 70
         },
         {
-          "label": "Relay Engine",
-          "x": 55,
-          "y": 47
+          "text": "Relay engine",
+          "x": 50,
+          "y": 62
         },
         {
-          "label": "Attack Engine",
-          "x": 79,
-          "y": 35
+          "text": "Attack engine",
+          "x": 75,
+          "y": 52
         },
         {
-          "label": "Fire Area",
-          "x": 89,
-          "y": 25
+          "text": "Find GPM",
+          "x": 73,
+          "y": 34
         }
       ],
       "formulaBreakdown": [
-        "Smooth bore flow formula: GPM = 29.7 × d² × √NP.",
-        "Deck gun tip diameter = 1.375 inches.",
-        "Master stream nozzle pressure = 80 PSI.",
-        "GPM = 29.7 × 1.375² × √80.",
-        "GPM ≈ 502.4.",
-        "Rounded total flow = 500 GPM."
+        "Smooth bore flow = 29.7 × diameter² × √NP",
+        "Flow = 29.7 × 1.375² × √80",
+        "Flow ≈ 500 GPM"
       ],
-      "instructorExplanation": "The relay flow requirement is based on the flowing master stream, not on the number of relay engines in the chain.",
-      "explainMistake": "Do not add 500 GPM for each relay segment. The same water moves through each relay engine."
+      "instructorExplanation": "A 1⅜-inch smooth-bore tip at 80 PSI flows approximately 500 GPM, so that is the relay flow requirement.",
+      "explainMistake": "This question asks for total flow requirement, not pump pressure. Use the smooth-bore flow formula."
     }
   ],
   "tags": [
     "relay",
-    "relay_pumping",
     "engine_181",
-    "hydrant_supply",
-    "attack_engine",
-    "relay_engine",
     "deck_gun",
-    "wildland",
-    "brush_fire",
-    "driver_operator"
+    "ldh",
+    "pump_pressure",
+    "flow"
   ]
 }
