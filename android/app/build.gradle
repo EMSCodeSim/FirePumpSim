@@ -40,10 +40,10 @@ android {
         applicationId "com.fireopssim.firepumpsim"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        minSdk = 24
         targetSdk = flutter.targetSdkVersion
-        versionCode = 6
-        versionName = "1.0.11"
+        versionCode = 7
+        versionName = "1.0.12"
     }
 
     buildTypes {
