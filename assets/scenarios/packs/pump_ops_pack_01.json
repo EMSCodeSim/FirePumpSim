@@ -1,9 +1,9 @@
 {
   "packId": "pump_ops_pack_01",
   "title": "Pump Operations Pack 1",
-  "description": "Premium Driver/Operator scenario pack. FREE FOR A LIMITED TIME while testing.",
-  "isFree": true,
-  "isPurchased": true,
+  "description": "Premium Driver/Operator scenario pack with attack lines, FDC operations, relay pumping, drafting, water shuttle, master streams, ladder pipe, foam, and multi-discharge scenarios.",
+  "isFree": false,
+  "isPurchased": false,
   "storeProductId": "firepumpsim.pump_ops_pack_01",
   "priceText": "$1.99",
   "imageRatio": "4:7",
