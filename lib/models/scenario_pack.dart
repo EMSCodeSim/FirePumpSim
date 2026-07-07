@@ -11,6 +11,8 @@ class ScenarioPack {
     required this.isFree,
     required this.isPurchased,
     required this.scenarioFiles,
+    this.storeProductId = '',
+    this.priceText = '',
   });
 
   final String packId;
@@ -21,6 +23,8 @@ class ScenarioPack {
   final bool isFree;
   final bool isPurchased;
   final List<String> scenarioFiles;
+  final String storeProductId;
+  final String priceText;
 
   ScenarioPack copyWith({
     String? packId,
@@ -31,6 +35,8 @@ class ScenarioPack {
     bool? isFree,
     bool? isPurchased,
     List<String>? scenarioFiles,
+    String? storeProductId,
+    String? priceText,
   }) {
     return ScenarioPack(
       packId: packId ?? this.packId,
@@ -41,6 +47,8 @@ class ScenarioPack {
       isFree: isFree ?? this.isFree,
       isPurchased: isPurchased ?? this.isPurchased,
       scenarioFiles: scenarioFiles ?? this.scenarioFiles,
+      storeProductId: storeProductId ?? this.storeProductId,
+      priceText: priceText ?? this.priceText,
     );
   }
 
@@ -61,6 +69,8 @@ class ScenarioPack {
       isFree: json['isFree'] == true,
       isPurchased: json['isPurchased'] == true,
       scenarioFiles: files,
+      storeProductId: (json['storeProductId'] ?? '').toString().trim(),
+      priceText: (json['priceText'] ?? '').toString().trim(),
     );
   }
 
@@ -74,6 +84,8 @@ class ScenarioPack {
       'isFree': isFree,
       'isPurchased': isPurchased,
       'scenarioFiles': scenarioFiles,
+      'storeProductId': storeProductId,
+      'priceText': priceText,
     };
   }
 }
