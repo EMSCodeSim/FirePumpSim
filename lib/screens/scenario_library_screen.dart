@@ -2,6 +2,7 @@ import 'package:firepumpsim/models/scenario_pack.dart';
 import 'package:firepumpsim/nav.dart';
 import 'package:firepumpsim/services/scenario_pack_repository.dart';
 import 'package:firepumpsim/services/scenario_pack_storage.dart';
+import 'package:firepumpsim/services/scenario_purchase_service.dart';
 import 'package:firepumpsim/theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -16,15 +17,36 @@ class ScenarioLibraryScreen extends StatefulWidget {
 
 class _ScenarioLibraryScreenState extends State<ScenarioLibraryScreen> {
   final ScenarioPackStorage _packStorage = ScenarioPackStorage();
+  final ScenarioPurchaseService _purchaseService = ScenarioPurchaseService.instance;
 
   bool _loading = true;
+  int _seenUnlockRevision = 0;
   List<ScenarioPack> _includedPacks = const [];
   List<ScenarioPack> _paidPacks = const [];
 
   @override
   void initState() {
     super.initState();
+    _seenUnlockRevision = _purchaseService.unlockRevision;
+    _purchaseService.addListener(_onPurchaseServiceChanged);
+    _purchaseService.initialize();
     _load();
+  }
+
+  @override
+  void dispose() {
+    _purchaseService.removeListener(_onPurchaseServiceChanged);
+    super.dispose();
+  }
+
+  void _onPurchaseServiceChanged() {
+    if (!mounted) return;
+    if (_purchaseService.unlockRevision != _seenUnlockRevision) {
+      _seenUnlockRevision = _purchaseService.unlockRevision;
+      _load();
+      return;
+    }
+    setState(() {});
   }
 
   Future<void> _load() async {
@@ -43,6 +65,48 @@ class _ScenarioLibraryScreenState extends State<ScenarioLibraryScreen> {
     }
   }
 
+  Future<void> _buyPack(ScenarioPack pack) async {
+    final started = await _purchaseService.purchasePack(pack.packId);
+    if (!mounted) return;
+    final error = _purchaseService.errorMessage;
+    if (!started && error != null && error.trim().isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+    }
+  }
+
+  Future<void> _restorePurchases() async {
+    await _purchaseService.restorePurchases();
+    if (!mounted) return;
+    final error = _purchaseService.errorMessage;
+    if (error != null && error.trim().isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+    }
+  }
+
+  String _priceForPack(ScenarioPack pack) {
+    final storePrice = _purchaseService.productForPack(pack.packId)?.price;
+    if (storePrice != null && storePrice.trim().isNotEmpty) return storePrice;
+    if (pack.priceText.trim().isNotEmpty) return pack.priceText.trim();
+    return r'$1.99';
+  }
+
+  String _purchaseButtonLabel(ScenarioPack pack) {
+    if (_purchaseService.isPurchasePendingForPack(pack.packId)) return 'Purchase Pending...';
+    if (_purchaseService.initializing || _purchaseService.queryingProducts) return 'Loading Store...';
+    if (!_purchaseService.storeAvailable) return 'Store Unavailable';
+    if (_purchaseService.productForPack(pack.packId) == null) return 'Store Item Not Found';
+    return 'Buy ${_priceForPack(pack)}';
+  }
+
+  String _lockedNoteForPack(ScenarioPack pack) {
+    final productId = _purchaseService.productIdForPack(pack.packId) ?? pack.storeProductId;
+    if (_purchaseService.productNotFoundForPack(pack.packId)) {
+      return 'Create and activate the non-consumable store product $productId, then refresh this screen.';
+    }
+    return 'One-time non-consumable unlock. Store product ID: $productId.';
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -52,7 +116,10 @@ class _ScenarioLibraryScreenState extends State<ScenarioLibraryScreen> {
       body: SafeArea(
         bottom: false,
         child: RefreshIndicator(
-          onRefresh: _load,
+          onRefresh: () async {
+            await _purchaseService.refreshProducts();
+            await _load();
+          },
           color: FirePumpSimColors.red,
           backgroundColor: FirePumpSimColors.charcoal2,
           child: ListView(
@@ -99,21 +166,46 @@ class _ScenarioLibraryScreenState extends State<ScenarioLibraryScreen> {
                 const SizedBox(height: AppSpacing.md),
                 _SectionHeader(title: 'Paid Add-On Packs', subtitle: 'One-time unlocks', icon: Icons.workspace_premium_outlined),
                 const SizedBox(height: AppSpacing.sm),
+                if (_purchaseService.errorMessage != null && _purchaseService.errorMessage!.trim().isNotEmpty) ...[
+                  _InfoCard(text: _purchaseService.errorMessage!),
+                  const SizedBox(height: AppSpacing.sm),
+                ],
                 if (_paidPacks.isEmpty)
                   const _InfoCard(text: 'No paid scenario packs are configured yet.')
-                else
+                else ...[
                   for (final p in _paidPacks) ...[
-                    _PackCard(
-                      pack: p,
-                      statusLabel: p.isPurchased ? 'UNLOCKED' : 'LOCKED',
-                      statusColor: p.isPurchased ? FirePumpSimColors.printGreen : FirePumpSimColors.libraryPurple,
-                      buttonLabel: p.isPurchased ? 'Open Practice Scenarios' : 'Available after purchase',
-                      buttonIcon: p.isPurchased ? Icons.play_arrow : Icons.lock_outline,
-                      onPressed: p.isPurchased ? () => context.go(AppRoutes.practiceScenarios) : null,
-                      lockedNote: p.isPurchased ? null : 'Connect this pack to the non-consumable in-app purchase firepumpsim.pump_ops_pack_01.',
+                    Builder(
+                      builder: (context) {
+                        final productReady = _purchaseService.productForPack(p.packId) != null;
+                        final canBuy = !p.isPurchased && !_purchaseService.isBusy && _purchaseService.storeAvailable && productReady;
+                        return _PackCard(
+                          pack: p,
+                          statusLabel: p.isPurchased ? 'UNLOCKED' : 'LOCKED',
+                          statusColor: p.isPurchased ? FirePumpSimColors.printGreen : FirePumpSimColors.libraryPurple,
+                          buttonLabel: p.isPurchased ? 'Open Practice Scenarios' : _purchaseButtonLabel(p),
+                          buttonIcon: p.isPurchased ? Icons.play_arrow : Icons.shopping_cart_outlined,
+                          onPressed: p.isPurchased ? () => context.go(AppRoutes.practiceScenarios) : (canBuy ? () => _buyPack(p) : null),
+                          lockedNote: p.isPurchased ? null : _lockedNoteForPack(p),
+                        );
+                      },
                     ),
                     const SizedBox(height: AppSpacing.sm),
                   ],
+                  OutlinedButton.icon(
+                    onPressed: _purchaseService.isBusy ? null : _restorePurchases,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: FirePumpSimColors.textHigh,
+                      side: BorderSide(color: FirePumpSimColors.steel.withValues(alpha: 0.65)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.lg)),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    ).copyWith(overlayColor: const WidgetStatePropertyAll(Colors.transparent)),
+                    icon: const Icon(Icons.restore, color: FirePumpSimColors.textHigh),
+                    label: Text(
+                      _purchaseService.restoring ? 'Restoring...' : 'Restore Purchases',
+                      style: textTheme.titleSmall?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900),
+                    ),
+                  ),
+                ],
               ],
             ],
           ),
