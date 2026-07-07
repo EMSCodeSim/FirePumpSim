@@ -1,7 +1,9 @@
 import 'package:firepumpsim/nav.dart';
 import 'package:firepumpsim/models/daily_challenge_models.dart';
+import 'package:firepumpsim/services/app_review_service.dart';
 import 'package:firepumpsim/services/daily_challenge_storage.dart';
 import 'package:firepumpsim/theme.dart';
+import 'package:firepumpsim/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -19,10 +21,53 @@ class _HomeScreenState extends State<HomeScreen> {
   DailyChallengeStats _dailyStats = DailyChallengeStats.empty;
   bool _dailyLoaded = false;
 
+  Future<void> _openFireOpsCalcStore() async {
+    const iosUrl = 'https://apps.apple.com/us/app/fireops-calc/id6753922160';
+    const androidUrl = 'https://play.google.com/store/apps/details?id=com.fireopscalc.app';
+
+    // Web/desktop can't be reliably mapped to iOS/Android; fall back to iOS unless
+    // the platform is explicitly known.
+    final String url = PlatformInfo.isIOS
+        ? iosUrl
+        : (PlatformInfo.isAndroid ? androidUrl : iosUrl);
+
+    final uri = Uri.parse(url);
+    try {
+      // `canLaunchUrl` is not always reliable across devices/embedders.
+      // Prefer attempting the launch and handling failures gracefully.
+      final ok = await launchUrl(
+        uri,
+        mode: kIsWeb ? LaunchMode.platformDefault : LaunchMode.externalApplication,
+        webOnlyWindowName: '_blank',
+      );
+      if (!ok) {
+        debugPrint('FireOps Calc promo: launchUrl returned false for $uri');
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open the store link.')),
+        );
+      }
+    } catch (e) {
+      debugPrint('FireOps Calc promo: failed to open $uri: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open the store link.')),
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _loadDaily();
+
+    // Safe place to prompt for ratings: only after the user reaches home.
+    // Schedule after first frame so we never block initial render.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future<void>.delayed(const Duration(milliseconds: 650), () {
+        AppReviewService.instance.onHomeScreenShown();
+      });
+    });
   }
 
   Future<void> _loadDaily() async {
@@ -37,35 +82,6 @@ class _HomeScreenState extends State<HomeScreen> {
       debugPrint('Home daily stats load failed: $e');
       if (!mounted) return;
       setState(() => _dailyLoaded = true);
-    }
-  }
-
-  Future<void> _openFireOpsCalcStore() async {
-    final Uri uri;
-
-    if (kIsWeb) {
-      uri = Uri.parse('https://fireopscalc.com');
-    } else {
-      switch (defaultTargetPlatform) {
-        case TargetPlatform.iOS:
-          uri = Uri.parse('https://apps.apple.com/us/app/fireops-calc/id6753922160');
-          break;
-        case TargetPlatform.android:
-          uri = Uri.parse('https://play.google.com/store/apps/details?id=com.fireopscalc.app');
-          break;
-        default:
-          uri = Uri.parse('https://fireopscalc.com');
-          break;
-      }
-    }
-
-    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!launched) {
-      debugPrint('Unable to open FireOps Calc link: $uri');
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Unable to open FireOps Calc right now.')),
-      );
     }
   }
 
@@ -154,6 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       title: 'Try FireOps Calc',
                       description: 'Pump pressure calculator for firefighters',
                       icon: Icons.calculate_outlined,
+                      indicator: Icon(Icons.open_in_new, size: 18, color: FirePumpSimColors.textMed.withValues(alpha: 0.9)),
                       onTap: () {
                         _openFireOpsCalcStore();
                       },
