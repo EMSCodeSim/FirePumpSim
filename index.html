@@ -1,96 +1,179 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FirePumpSim | Fire Pump Operator Training</title>
-  <meta name="description" content="FirePumpSim is a firefighter pump operator training app with visual scenarios, formula helpers, pump cards, printable worksheets, and daily challenges." />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Fire Pump Simulator App | Driver Operator Training | FirePumpSim</title>
+  <meta name="description" content="Practice fire pump operations with visual driver/operator scenarios, daily challenges, worked pump-pressure explanations and printable drills. Try FirePumpSim free on iPhone, Android or the web.">
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+  <meta name="theme-color" content="#070a0f">
+  <link rel="canonical" href="https://firepumpsim.com/">
+  <link rel="icon" href="web/favicon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="FirePumpSim — Fire Pump Operator Training">
+  <meta property="og:description" content="Visual fireground scenarios that help firefighters learn pump pressure, friction loss, standpipes, master streams and water supply decisions.">
+  <meta property="og:url" content="https://firepumpsim.com/">
+  <meta property="og:image" content="https://firepumpsim.com/assets/images/firepumpsim_brand_banner.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@graph":[
+      {
+        "@type":"SoftwareApplication",
+        "name":"FirePumpSim: Driver Operator",
+        "url":"https://firepumpsim.com/",
+        "applicationCategory":"EducationalApplication",
+        "operatingSystem":"iOS, Android, Web",
+        "description":"A visual fire pump operator training app for firefighters, driver/operators, instructors and academy students.",
+        "offers":{"@type":"Offer","price":"0","priceCurrency":"USD","description":"Free download with optional in-app purchases."},
+        "author":{"@type":"Person","name":"David Gallaher"},
+        "sameAs":[
+          "https://apps.apple.com/us/app/firepumpsim-driver-operator/id6768447355",
+          "https://play.google.com/store/apps/details?id=com.fireopssim.firepumpsim"
+        ]
+      },
+      {
+        "@type":"FAQPage",
+        "mainEntity":[
+          {"@type":"Question","name":"What is FirePumpSim?","acceptedAnswer":{"@type":"Answer","text":"FirePumpSim is a scenario-based fire pump operator training app for practicing pump discharge pressure, friction loss, nozzle pressure, elevation, appliance loss and water-supply concepts."}},
+          {"@type":"Question","name":"Is FirePumpSim free?","acceptedAnswer":{"@type":"Answer","text":"FirePumpSim is free to download and includes starter training content. Optional in-app purchases may unlock additional content as it becomes available."}},
+          {"@type":"Question","name":"Who is FirePumpSim for?","acceptedAnswer":{"@type":"Answer","text":"It is designed for driver/operator candidates, working engineers, firefighters, fire academy students, company officers and instructors."}},
+          {"@type":"Question","name":"Does FirePumpSim replace department pump charts or SOPs?","acceptedAnswer":{"@type":"Answer","text":"No. FirePumpSim is an educational practice tool. Always follow department SOPs, apparatus pump charts, manufacturer guidance and certified instruction."}}
+        ]
+      }
+    ]
+  }
+  </script>
   <style>
-    :root {
-      --bg: #05070a;
-      --panel: #0d1117;
-      --panel2: #151a22;
-      --red: #e50922;
-      --red2: #ff3146;
-      --text: #f5f7fa;
-      --muted: #b8bec8;
-      --border: rgba(229,9,34,.45);
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: radial-gradient(circle at top right, rgba(229,9,34,.25), transparent 35%), linear-gradient(180deg, #080b10, var(--bg));
-      color: var(--text);
-      line-height: 1.5;
-    }
-    .wrap { width: min(1100px, 92%); margin: 0 auto; }
-    header { padding: 26px 0; border-bottom: 1px solid rgba(255,255,255,.08); }
-    .brand { display: flex; align-items: center; gap: 12px; font-weight: 900; font-size: 28px; letter-spacing: .5px; }
-    .brand span { color: var(--red); }
-    .logo { width: 38px; height: 38px; border: 2px solid var(--red); border-radius: 10px; display: grid; place-items: center; color: var(--red); font-weight: 900; }
-    .hero { padding: 54px 0 36px; display: grid; grid-template-columns: 1.1fr .9fr; gap: 36px; align-items: center; }
-    h1 { font-size: clamp(42px, 7vw, 76px); line-height: .98; margin: 0 0 20px; letter-spacing: -2px; }
-    h1 span { color: var(--red); }
-    .lead { font-size: clamp(18px, 2.2vw, 24px); color: var(--muted); max-width: 680px; margin-bottom: 28px; }
-    .actions { display: flex; flex-wrap: wrap; gap: 14px; }
-    a.btn { color: var(--text); text-decoration: none; padding: 14px 18px; border-radius: 14px; font-weight: 800; border: 1px solid rgba(255,255,255,.14); background: var(--panel2); }
-    a.btn.primary { background: linear-gradient(135deg, var(--red), var(--red2)); border-color: var(--red); }
-    .phone-card, .card { background: rgba(13,17,23,.86); border: 1px solid rgba(255,255,255,.12); border-radius: 24px; box-shadow: 0 24px 70px rgba(0,0,0,.4); overflow: hidden; }
-    .phone-card img { width: 100%; display: block; }
-    .phone-card .fallback { padding: 28px; min-height: 260px; display: grid; place-items: center; text-align: center; color: var(--muted); }
-    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 24px 0 44px; }
-    .card { padding: 22px; }
-    .card h3 { margin: 0 0 8px; font-size: 20px; }
-    .card p { margin: 0; color: var(--muted); }
-    .disclaimer { color: var(--muted); border-top: 1px solid rgba(255,255,255,.08); padding: 24px 0 44px; font-size: 14px; }
-    footer { border-top: 1px solid rgba(255,255,255,.08); padding: 24px 0; color: var(--muted); }
-    footer a { color: var(--text); margin-right: 18px; }
-    @media (max-width: 850px) {
-      .hero { grid-template-columns: 1fr; padding-top: 36px; }
-      .grid { grid-template-columns: 1fr; }
-    }
+    :root{--bg:#070a0f;--panel:#10151e;--panel2:#171e29;--red:#ee263d;--red2:#ff5264;--gold:#f5b94c;--text:#f7f9fc;--muted:#abb5c4;--line:rgba(255,255,255,.1);--green:#34d399;--shadow:0 22px 70px rgba(0,0,0,.38)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 80% 0,rgba(238,38,61,.17),transparent 31rem),var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.55}a{color:inherit}.wrap{width:min(1160px,92%);margin:auto}.skip{position:absolute;left:-9999px}.skip:focus{left:1rem;top:1rem;background:#fff;color:#000;padding:.75rem;z-index:99}.top{position:sticky;top:0;z-index:20;background:rgba(7,10,15,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.nav{min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:11px;text-decoration:none;font-weight:900;font-size:1.25rem;letter-spacing:-.03em}.mark{width:38px;height:38px;display:grid;place-items:center;border-radius:10px;background:linear-gradient(145deg,var(--red),#9d1022);box-shadow:0 8px 24px rgba(238,38,61,.28)}.brand b{color:var(--red2)}.links{display:flex;align-items:center;gap:22px;font-weight:700;font-size:.92rem}.links a{text-decoration:none;color:#d8dee8}.links a:hover{color:#fff}.nav-cta{padding:10px 15px!important;background:var(--red);border-radius:10px;color:#fff!important}.hero{padding:70px 0 52px;display:grid;grid-template-columns:1.07fr .93fr;gap:52px;align-items:center}.eyebrow{display:inline-flex;align-items:center;gap:8px;color:#ffd1d6;text-transform:uppercase;font-weight:850;letter-spacing:.12em;font-size:.75rem}.dot{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 0 6px rgba(238,38,61,.15)}h1{font-size:clamp(2.8rem,6vw,5.5rem);line-height:.96;letter-spacing:-.06em;margin:16px 0 22px;max-width:760px}h1 span{color:var(--red2)}.lead{font-size:clamp(1.08rem,2vw,1.35rem);color:#c4ccd8;max-width:680px;margin:0 0 26px}.actions{display:flex;flex-wrap:wrap;gap:12px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 19px;border:1px solid var(--line);border-radius:13px;background:var(--panel2);text-decoration:none;font-weight:850;transition:.18s transform,.18s border-color}.btn:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.32)}.btn.primary{background:linear-gradient(135deg,var(--red),#b51227);border-color:var(--red)}.btn.ghost{background:transparent}.store-icon{font-size:1.25rem}.proof{display:flex;flex-wrap:wrap;gap:18px;margin-top:23px;color:var(--muted);font-size:.9rem}.proof span:before{content:"✓";color:var(--green);font-weight:900;margin-right:7px}.app-stage{position:relative;min-height:500px;display:grid;place-items:center}.glow{position:absolute;width:75%;height:75%;background:var(--red);opacity:.13;filter:blur(80px);border-radius:50%}.phone{position:relative;width:min(335px,84vw);padding:12px;border:1px solid rgba(255,255,255,.21);border-radius:36px;background:#030507;box-shadow:var(--shadow);transform:rotate(2deg)}.phone:before{content:"";display:block;position:absolute;z-index:2;width:34%;height:24px;top:12px;left:33%;background:#030507;border-radius:0 0 15px 15px}.screen{overflow:hidden;border-radius:27px;background:#10141b}.screen img{width:100%;height:250px;object-fit:cover;display:block}.screen-copy{padding:17px}.screen-tag{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:#ff9eaa;font-weight:850}.screen h3{font-size:1.15rem;margin:6px 0}.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:14px}.readout div{padding:9px 6px;text-align:center;border-radius:9px;background:#202936;color:#cdd5df;font-size:.7rem}.readout strong{display:block;color:#fff;font-size:.9rem}.stats{border-block:1px solid var(--line);background:#0b0f15}.stats-grid{display:grid;grid-template-columns:repeat(4,1fr)}.stat{padding:24px 18px;text-align:center;border-right:1px solid var(--line)}.stat:last-child{border:0}.stat strong{display:block;font-size:1.25rem}.stat span{color:var(--muted);font-size:.88rem}.section{padding:82px 0}.section.alt{background:#0a0e14;border-block:1px solid var(--line)}.section-head{max-width:760px;margin-bottom:35px}.kicker{color:var(--red2);font-weight:850;text-transform:uppercase;letter-spacing:.1em;font-size:.76rem}.section h2{font-size:clamp(2rem,4vw,3.5rem);line-height:1.05;letter-spacing:-.045em;margin:10px 0 14px}.section-head p{color:var(--muted);font-size:1.08rem}.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.feature{padding:24px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(150deg,rgba(255,255,255,.045),rgba(255,255,255,.018))}.feature .icon{font-size:1.45rem}.feature h3{margin:14px 0 7px}.feature p{margin:0;color:var(--muted)}.demo-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:28px;align-items:center}.scenario-img{border-radius:22px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow)}.scenario-img img{width:100%;display:block;aspect-ratio:4/3;object-fit:cover}.demo{padding:28px;border:1px solid rgba(238,38,61,.35);border-radius:22px;background:var(--panel);box-shadow:var(--shadow)}.demo-label{color:var(--red2);font-size:.76rem;font-weight:850;letter-spacing:.1em;text-transform:uppercase}.demo h3{font-size:1.55rem;margin:7px 0}.formula{padding:14px;border-radius:12px;background:#090c11;color:#d8dee8;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.answer-row{display:flex;gap:10px;margin-top:16px}.answer-row input{width:100%;min-width:0;padding:14px;border-radius:11px;border:1px solid var(--line);background:#080b10;color:#fff;font-size:1rem}.answer-row button{border:0;border-radius:11px;padding:0 18px;background:var(--red);color:#fff;font-weight:850;cursor:pointer}.feedback{display:none;margin-top:15px;padding:15px;border-radius:12px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.35);color:#c5f7e6}.feedback.bad{background:rgba(245,185,76,.09);border-color:rgba(245,185,76,.4);color:#ffe1a7}.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.shot{overflow:hidden;border-radius:19px;border:1px solid var(--line);background:var(--panel)}.shot img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}.shot div{padding:18px}.shot h3{margin:0 0 5px}.shot p{margin:0;color:var(--muted);font-size:.92rem}.pricing{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:900px}.price-card{padding:29px;border-radius:20px;border:1px solid var(--line);background:var(--panel)}.price-card.featured{border-color:rgba(238,38,61,.5);background:linear-gradient(155deg,rgba(238,38,61,.12),var(--panel) 55%)}.price{font-size:2rem;font-weight:900;margin:9px 0}.price-card ul{padding:0;list-style:none;color:#d2d9e3}.price-card li{margin:10px 0}.price-card li:before{content:"✓";color:var(--green);font-weight:900;margin-right:9px}.fine{color:var(--muted);font-size:.82rem}.tools-card{display:grid;grid-template-columns:1fr auto;align-items:center;gap:30px;padding:35px;border-radius:22px;background:linear-gradient(120deg,#17202d,#10151e);border:1px solid var(--line)}.tools-card p{color:var(--muted);margin-bottom:0}.faq{max-width:900px}.faq details{border-bottom:1px solid var(--line);padding:20px 0}.faq summary{font-weight:850;font-size:1.05rem;cursor:pointer}.faq details p{color:var(--muted);margin-bottom:0}.final{padding:78px 0;text-align:center;background:radial-gradient(circle at 50% 100%,rgba(238,38,61,.2),transparent 50%)}.final p{color:var(--muted);font-size:1.1rem;max-width:680px;margin:0 auto 25px}.footer{padding:32px 0;border-top:1px solid var(--line);color:var(--muted)}.footer-grid{display:flex;align-items:center;justify-content:space-between;gap:25px}.footer-links{display:flex;flex-wrap:wrap;gap:18px}.footer a{text-decoration:none}.footer a:hover{color:#fff}
+    @media(max-width:880px){.links a:not(.nav-cta){display:none}.hero,.demo-grid{grid-template-columns:1fr}.hero{padding-top:48px}.app-stage{min-height:420px}.feature-grid,.gallery{grid-template-columns:1fr 1fr}.tools-card{grid-template-columns:1fr}.stats-grid{grid-template-columns:1fr 1fr}.stat:nth-child(2){border-right:0}.stat:nth-child(-n+2){border-bottom:1px solid var(--line)}}
+    @media(max-width:590px){.feature-grid,.gallery,.pricing{grid-template-columns:1fr}.section{padding:62px 0}.actions .btn{width:100%}.answer-row{flex-direction:column}.answer-row button{min-height:48px}.stats-grid{grid-template-columns:1fr 1fr}.stat{padding:18px 10px}.footer-grid{align-items:flex-start;flex-direction:column}.tools-card{padding:25px}}
   </style>
 </head>
 <body>
-  <header>
-    <div class="wrap brand"><div class="logo">F</div> Fire<span>Pump</span>Sim</div>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <nav class="wrap nav" aria-label="Main navigation">
+      <a class="brand" href="/"><span class="mark">F</span><span>Fire<b>Pump</b>Sim</span></a>
+      <div class="links">
+        <a href="#features">Features</a><a href="#demo">Demo</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a>
+        <a class="nav-cta" href="#download">Get the app</a>
+      </div>
+    </nav>
   </header>
 
-  <main class="wrap">
-    <section class="hero">
+  <main id="main">
+    <section class="wrap hero">
       <div>
-        <h1>Train pump operators with <span>real scenarios.</span></h1>
-        <p class="lead">FirePumpSim helps firefighters and driver/operator students practice pump pressure, friction loss, elevation, standpipe/FDC, wye, relay, and master stream problems.</p>
-        <div class="actions">
-          <a class="btn primary" href="/support">Support</a>
-          <a class="btn" href="/privacy">Privacy Policy</a>
+        <div class="eyebrow"><span class="dot"></span>Firefighter-built driver/operator training</div>
+        <h1>Make pump math <span>fireground ready.</span></h1>
+        <p class="lead">FirePumpSim turns fire pump calculations into visual, decision-based scenarios. Practice pump discharge pressure, friction loss, standpipes, wyes, master streams, relay pumping and water supply—then see the math behind every answer.</p>
+        <div class="actions" id="download">
+          <a class="btn primary" href="https://apps.apple.com/us/app/firepumpsim-driver-operator/id6768447355" rel="noopener"><span class="store-icon">●</span> Download on the App Store</a>
+          <a class="btn" href="https://play.google.com/store/apps/details?id=com.fireopssim.firepumpsim" rel="noopener"><span class="store-icon">▶</span> Get it on Google Play</a>
+          <a class="btn ghost" href="https://t1wgtxvjk0hdhef9pk23.share.dreamflow.app" rel="noopener">Try the free web app →</a>
+        </div>
+        <div class="proof"><span>Free to download</span><span>Built by a firefighter/paramedic</span><span>No account required</span></div>
+      </div>
+      <div class="app-stage" aria-label="FirePumpSim app preview">
+        <div class="glow"></div>
+        <div class="phone">
+          <div class="screen">
+            <img src="assets/images/starter_fdc_standpipe_010.png" alt="FirePumpSim standpipe fire pump training scenario">
+            <div class="screen-copy"><span class="screen-tag">Visual scenario</span><h3>5th-floor standpipe operation</h3><div class="readout"><div><strong>200 ft</strong>hose</div><div><strong>185 GPM</strong>flow</div><div><strong>+50 ft</strong>elevation</div></div></div>
+          </div>
         </div>
       </div>
-      <div class="phone-card">
-        <img src="assets/images/firepumpsim_brand_banner.jpg" alt="FirePumpSim training app banner" onerror="this.style.display='none';this.nextElementSibling.style.display='grid';" />
-        <div class="fallback" style="display:none;">FirePumpSim<br/>Train • Practice • Perform</div>
+    </section>
+
+    <section class="stats"><div class="wrap stats-grid"><div class="stat"><strong>iPhone</strong><span>Free download</span></div><div class="stat"><strong>Android</strong><span>Free download</span></div><div class="stat"><strong>Web</strong><span>Try in a browser</span></div><div class="stat"><strong>Real math</strong><span>Worked explanations</span></div></div></section>
+
+    <section class="section" id="features">
+      <div class="wrap">
+        <div class="section-head"><span class="kicker">Learn by doing</span><h2>A fire pump simulator built for repetition.</h2><p>Memorizing a formula is not enough. FirePumpSim gives the formula a fireground context so students can practice choosing the inputs, calculating the answer and reviewing why it works.</p></div>
+        <div class="feature-grid">
+          <article class="feature"><span class="icon">🚒</span><h3>Visual pump scenarios</h3><p>Work through attack lines, FDCs, wyes, deck guns, portable monitors, relay pumping and rural water supply.</p></article>
+          <article class="feature"><span class="icon">🧮</span><h3>Math you can review</h3><p>See how nozzle pressure, friction loss, elevation and appliance loss combine into pump discharge pressure.</p></article>
+          <article class="feature"><span class="icon">🎯</span><h3>Daily challenge</h3><p>Use short, repeatable questions to keep driver/operator calculations fresh between training evolutions.</p></article>
+          <article class="feature"><span class="icon">📚</span><h3>Scenario library</h3><p>Practice beginner through advanced problems across common hose layouts and fireground operations.</p></article>
+          <article class="feature"><span class="icon">🖨️</span><h3>Printable training</h3><p>Turn app practice into station drills, classroom worksheets and instructor-led review.</p></article>
+          <article class="feature"><span class="icon">📱</span><h3>Train anywhere</h3><p>Use the mobile app at the station, at home or before driver/operator testing—without creating an account.</p></article>
+        </div>
       </div>
     </section>
 
-    <section class="grid" aria-label="FirePumpSim features">
-      <div class="card"><h3>Practice Scenarios</h3><p>Visual pump problems built around common fireground layouts.</p></div>
-      <div class="card"><h3>Formula Helpers</h3><p>Quick tools for pump pressure, friction loss, elevation, and nozzle reaction.</p></div>
-      <div class="card"><h3>Printable Sheets</h3><p>Training worksheets and answer keys for driver/operator practice.</p></div>
-      <div class="card"><h3>Pump Cards</h3><p>Simple reference material for hose, nozzle, and pump math review.</p></div>
+    <section class="section alt" id="demo">
+      <div class="wrap demo-grid">
+        <div class="scenario-img"><img src="assets/images/single_line_preconnect_001.png" alt="Fire engine supplying a single attack line in a FirePumpSim scenario"></div>
+        <div class="demo">
+          <span class="demo-label">60-second sample</span><h3>What pump pressure would you set?</h3>
+          <p>A 200-foot 1¾-inch attack line flows 185 GPM through a 50 PSI nozzle. There is no elevation or appliance loss.</p>
+          <div class="formula">PDP = NP + FL ± EP + AL</div>
+          <div class="answer-row"><label class="skip" for="pdp-answer">Pump discharge pressure</label><input id="pdp-answer" inputmode="numeric" placeholder="Enter PSI" aria-describedby="demo-feedback"><button type="button" id="check-answer">Check answer</button></div>
+          <div class="feedback" id="demo-feedback" role="status"></div>
+        </div>
+      </div>
     </section>
 
-    <section class="disclaimer">
-      FirePumpSim is for education, practice, and reference only. It does not replace department SOPs, certified instruction, manufacturer guidance, or real-world fireground decision-making.
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head"><span class="kicker">Inside the training</span><h2>From attack lines to complex operations.</h2><p>Use realistic layouts to connect the numbers to what the pump operator sees on the fireground.</p></div>
+        <div class="gallery">
+          <article class="shot"><img src="assets/images/residential_wye_operation.png" alt="Residential wye pump operation training scenario" loading="lazy"><div><h3>Wye operations</h3><p>Compare branch requirements and identify the controlling pressure.</p></div></article>
+          <article class="shot"><img src="assets/images/relay_pumping_operation.png" alt="Fire apparatus relay pumping training scenario" loading="lazy"><div><h3>Relay pumping</h3><p>Review distance, flow, friction loss and engine placement decisions.</p></div></article>
+          <article class="shot"><img src="assets/images/rural_water_shuttle_operation.png" alt="Rural tender water shuttle training scenario" loading="lazy"><div><h3>Rural water supply</h3><p>Think beyond PDP with tender cycles, dump sites and sustained flow.</p></div></article>
+        </div>
+      </div>
     </section>
+
+    <section class="section alt" id="pricing">
+      <div class="wrap">
+        <div class="section-head"><span class="kicker">Start free</span><h2>Practice first. Add more when you need it.</h2><p>Download FirePumpSim without an upfront charge. The free experience is designed to let firefighters try the training workflow before considering additional content.</p></div>
+        <div class="pricing">
+          <article class="price-card featured"><span class="kicker">Included</span><div class="price">Free download</div><ul><li>Starter practice scenarios</li><li>Daily challenge</li><li>Formula and pump-card references</li><li>Access on iPhone or Android</li><li>No account required</li></ul><a class="btn primary" href="#download">Choose your device</a></article>
+          <article class="price-card"><span class="kicker">Optional</span><div class="price">Additional content</div><ul><li>Expanded scenario content as released</li><li>More focused practice opportunities</li><li>Purchases handled securely by your app store</li><li>No website payment information collected</li></ul><p class="fine">Exact products, prices and availability are shown inside the app and may vary by platform or region.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap tools-card">
+        <div><span class="kicker">Need field tools?</span><h2>Train here. Calculate with FireOpsCalc.</h2><p>FirePumpSim is the scenario-based learning app. For full web calculators, department pump cards, hydrant flow, relay tools, nozzle reaction and other engineer references, use FireOpsCalc.</p></div>
+        <div class="actions"><a class="btn primary" href="https://fireopscalc.com/" rel="noopener">Open FireOpsCalc</a><a class="btn" href="https://fireopscalc.com/tools/engineer-tools" rel="noopener">Browse engineer tools</a></div>
+      </div>
+    </section>
+
+    <section class="section alt" id="faq">
+      <div class="wrap faq">
+        <div class="section-head"><span class="kicker">Questions</span><h2>FirePumpSim FAQ</h2></div>
+        <details open><summary>What is FirePumpSim?</summary><p>FirePumpSim is a visual fire pump operator training app. It gives firefighters short scenarios involving pump discharge pressure, hose friction loss, nozzle pressure, elevation, appliance loss, standpipes, master streams, relay pumping and related driver/operator concepts.</p></details>
+        <details><summary>Is FirePumpSim free?</summary><p>The app is free to download and includes starter training content. Optional in-app purchases may provide additional content as it becomes available. Your device’s app store shows the current products and prices before any purchase.</p></details>
+        <details><summary>Who should use it?</summary><p>FirePumpSim is designed for driver/operator candidates, working engineers, firefighters studying pump operations, academy students, instructors and company officers looking for quick training problems.</p></details>
+        <details><summary>Can I try FirePumpSim without installing it?</summary><p>Yes. Use the free browser version linked on this page. The iPhone and Android apps provide the best mobile experience.</p></details>
+        <details><summary>Does the app replace department pump charts or SOPs?</summary><p>No. FirePumpSim is for education, practice and classroom discussion. Always follow department SOPs/SOGs, apparatus pump charts, manufacturer data, incident command and certified instruction.</p></details>
+        <details><summary>Where can I find full fire pump calculators?</summary><p><a href="https://fireopscalc.com/">FireOpsCalc.com</a> provides the full web-based engineer toolkit, including pump pressure, friction loss, hydrant flow, relay pumping, nozzle reaction, water supply and pump-card tools.</p></details>
+        <details><summary>How do I get help?</summary><p>Visit <a href="/support">FirePumpSim Support</a> for contact information. You can also review the <a href="/privacy">Privacy Policy</a>.</p></details>
+      </div>
+    </section>
+
+    <section class="final"><div class="wrap"><span class="kicker">Your next pump problem is ready</span><h2>Build confidence one scenario at a time.</h2><p>Start with the free app, try a visual scenario and make the pump math part of your normal training rhythm.</p><div class="actions" style="justify-content:center"><a class="btn primary" href="https://apps.apple.com/us/app/firepumpsim-driver-operator/id6768447355">Download for iPhone</a><a class="btn" href="https://play.google.com/store/apps/details?id=com.fireopssim.firepumpsim">Download for Android</a><a class="btn ghost" href="https://t1wgtxvjk0hdhef9pk23.share.dreamflow.app">Try the web app</a></div></div></section>
   </main>
 
-  <footer>
-    <div class="wrap">
-      <a href="/support">Support</a>
-      <a href="/privacy">Privacy Policy</a>
-      <span>© 2026 FirePumpSim</span>
-    </div>
-  </footer>
+  <footer class="footer"><div class="wrap footer-grid"><a class="brand" href="/"><span class="mark">F</span><span>Fire<b>Pump</b>Sim</span></a><div class="footer-links"><a href="/support">Support</a><a href="/privacy">Privacy</a><a href="#faq">FAQ</a><a href="https://fireopscalc.com/">FireOpsCalc</a><a href="https://fireopssim.com/">FireOpsSim</a></div><span>© 2026 FirePumpSim</span></div></footer>
+  <script>
+    const answer=document.getElementById('pdp-answer');
+    const button=document.getElementById('check-answer');
+    const feedback=document.getElementById('demo-feedback');
+    function checkAnswer(){
+      const value=Number(answer.value.replace(/[^0-9.]/g,''));
+      feedback.style.display='block';
+      if(value>=154&&value<=158){feedback.className='feedback';feedback.innerHTML='<strong>Correct: approximately 156 PSI.</strong><br>FL = 15.5 × (1.85²) × 2 ≈ 106 PSI. Add 50 PSI nozzle pressure for a PDP of 156 PSI.';}
+      else{feedback.className='feedback bad';feedback.innerHTML='<strong>Keep working the formula.</strong><br>Calculate friction loss for 200 feet at 185 GPM, then add the 50 PSI nozzle pressure. The target is approximately 156 PSI.';}
+    }
+    button.addEventListener('click',checkAnswer);
+    answer.addEventListener('keydown',event=>{if(event.key==='Enter')checkAnswer();});
+  </script>
 </body>
 </html>
