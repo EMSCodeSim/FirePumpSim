@@ -2,14 +2,18 @@ name: firepumpsim
 description: "Fire pump operator training scenarios, formulas, calculator tools, and printable pump practice."
 publish_to: "none"
 
-version: 1.0.12+7
+version: 1.0.13+8
 
 environment:
-  sdk: ^3.6.0
+  sdk: ">=3.10.0 <4.0.0"
 dependencies:
   url_launcher: ^6.0.0
   in_app_review: ^2.0.0
   in_app_purchase: ^3.3.0
+  # Pin the endorsed Android implementation at the first release that uses
+  # Google Play Billing Library 8.0.0. This prevents an older compatible
+  # transitive implementation from being selected for Android release builds.
+  in_app_purchase_android: 0.5.0
   shared_preferences: ^2.0.0
   printing: ^5.0.0
   pdf: ^3.0.0
