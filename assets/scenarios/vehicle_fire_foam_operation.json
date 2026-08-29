@@ -50,26 +50,10 @@
         "value": 280
       },
       "overlays": [
-        {
-          "label": "Hydrant",
-          "x": 12,
-          "y": 78
-        },
-        {
-          "label": "Engine 181",
-          "x": 28,
-          "y": 44
-        },
-        {
-          "label": "Foam eductor",
-          "x": 63,
-          "y": 71
-        },
-        {
-          "label": "Vehicle fire",
-          "x": 82,
-          "y": 38
-        }
+        {"label": "Hydrant", "x": 12, "y": 78},
+        {"label": "Engine 181", "x": 28, "y": 44},
+        {"label": "Foam eductor", "x": 63, "y": 71},
+        {"label": "Vehicle fire", "x": 82, "y": 38}
       ],
       "formulaBreakdown": [
         "Foam line flow = 95 GPM.",
@@ -81,56 +65,42 @@
     },
     {
       "id": "vehicle_fire_foam_operation_p2",
-      "title": "Foam Eductor Inlet Pressure",
+      "title": "Engine Discharge Pressure to Eductor",
       "question": "Engine 181 is pumping a foam-eductor line. The eductor requires 200 PSI at its inlet, and the hose from the engine to the eductor has 15 PSI friction loss. What engine discharge pressure is needed to deliver the required eductor inlet pressure?",
-      "answerLabel": "Eductor Inlet Pressure",
+      "answerLabel": "Pump Discharge Pressure",
       "answerUnit": "PSI",
-      "inputLabel": "Enter eductor inlet pressure",
+      "inputLabel": "Enter pump discharge pressure",
       "inputPlaceholder": "PSI",
-      "answerValue": 200,
-      "correctPP": 200,
+      "answerValue": 215,
+      "correctPP": 215,
       "tolerance": 5,
       "answers": {
         "frictionLoss": 15,
         "nozzlePressure": 0,
         "elevation": 0,
-        "applianceLoss": 0,
+        "applianceLoss": 200,
         "totalGpm": 95,
-        "pumpPressure": 200,
+        "pumpPressure": 215,
         "tolerance": 5,
-        "answerValue": 200,
-        "correctAnswer": 200,
-        "value": 200,
-        "pp": 200
+        "answerValue": 215,
+        "correctAnswer": 215,
+        "value": 215,
+        "pp": 215
       },
       "overlays": [
-        {
-          "label": "Engine 181",
-          "x": 28,
-          "y": 44
-        },
-        {
-          "label": "Foam eductor",
-          "x": 63,
-          "y": 71
-        },
-        {
-          "label": "Foam bucket",
-          "x": 66,
-          "y": 80
-        },
-        {
-          "label": "Vehicle fire",
-          "x": 82,
-          "y": 38
-        }
+        {"label": "Engine 181", "x": 28, "y": 44},
+        {"label": "Foam eductor", "x": 63, "y": 71},
+        {"label": "Foam bucket", "x": 66, "y": 80},
+        {"label": "Vehicle fire", "x": 82, "y": 38}
       ],
       "formulaBreakdown": [
-        "Eductor inlet pressure = engine discharge pressure - pre-eductor friction loss.",
-        "Eductor inlet pressure = 215 - 15 = 200 PSI."
+        "Pump discharge pressure = required eductor inlet pressure + pre-eductor friction loss.",
+        "Required eductor inlet pressure = 200 PSI.",
+        "Pre-eductor friction loss = 15 PSI.",
+        "Pump discharge pressure = 200 + 15 = 215 PSI."
       ],
-      "instructorExplanation": "This checks the eductor logic from the opposite direction: pump discharge pressure minus the hose loss before the eductor equals eductor inlet pressure.",
-      "explainMistake": "Do not add post-eductor nozzle pressure here. The question is asking what reaches the eductor inlet."
+      "instructorExplanation": "The eductor must receive 200 PSI at its inlet after the 15 PSI loss in the hose between the engine and the eductor. Engine 181 therefore must discharge at 215 PSI.",
+      "explainMistake": "Do not answer 200 PSI. That is the pressure required at the eductor inlet; the pump must also overcome the 15 PSI pre-eductor hose loss."
     },
     {
       "id": "vehicle_fire_foam_operation_p3",
@@ -153,21 +123,9 @@
         "tolerance": 5
       },
       "overlays": [
-        {
-          "label": "Engine 181",
-          "x": 28,
-          "y": 44
-        },
-        {
-          "label": "Pre-eductor hose",
-          "x": 47,
-          "y": 63
-        },
-        {
-          "label": "Foam eductor",
-          "x": 63,
-          "y": 71
-        }
+        {"label": "Engine 181", "x": 28, "y": 44},
+        {"label": "Pre-eductor hose", "x": 47, "y": 63},
+        {"label": "Foam eductor", "x": 63, "y": 71}
       ],
       "formulaBreakdown": [
         "FL = C × (GPM / 100)^2 × hose length in hundreds.",
@@ -203,26 +161,10 @@
         "tolerance": 5
       },
       "overlays": [
-        {
-          "label": "Hydrant",
-          "x": 12,
-          "y": 78
-        },
-        {
-          "label": "Engine 181",
-          "x": 28,
-          "y": 44
-        },
-        {
-          "label": "Foam eductor",
-          "x": 63,
-          "y": 71
-        },
-        {
-          "label": "Vehicle fire",
-          "x": 82,
-          "y": 38
-        }
+        {"label": "Hydrant", "x": 12, "y": 78},
+        {"label": "Engine 181", "x": 28, "y": 44},
+        {"label": "Foam eductor", "x": 63, "y": 71},
+        {"label": "Vehicle fire", "x": 82, "y": 38}
       ],
       "formulaBreakdown": [
         "Foam operation PP = pre-eductor FL + required eductor inlet pressure + elevation.",
@@ -256,26 +198,10 @@
         "tolerance": 0.5
       },
       "overlays": [
-        {
-          "label": "Foam eductor",
-          "x": 63,
-          "y": 71
-        },
-        {
-          "label": "Pickup tube",
-          "x": 66,
-          "y": 76
-        },
-        {
-          "label": "Foam bucket",
-          "x": 66,
-          "y": 80
-        },
-        {
-          "label": "Vehicle fire",
-          "x": 82,
-          "y": 38
-        }
+        {"label": "Foam eductor", "x": 63, "y": 71},
+        {"label": "Pickup tube", "x": 66, "y": 76},
+        {"label": "Foam bucket", "x": 66, "y": 80},
+        {"label": "Vehicle fire", "x": 82, "y": 38}
       ],
       "formulaBreakdown": [
         "Foam solution used = flow × time.",
