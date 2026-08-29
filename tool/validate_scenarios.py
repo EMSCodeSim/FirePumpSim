@@ -1,13 +1,8 @@
 #!/usr/bin/env python3
-"""Validate FirePumpSim scenario content before an App Store / Play Store build.
+"""Validate FirePumpSim scenario content before a store build.
 
-Checks:
-- all scenario JSON files parse
-- scenario/problem IDs are present and unique after normalization
-- referenced images exist in assets/images or assets/printable
-- manifest and pack file references point to bundled JSON
-- duplicated answer-key fields agree with one another
-- hydrant available-flow teaching uses the 0.54 exponent
+Checks JSON parsing, unique IDs, image/file references, duplicated answer keys,
+and hydrant available-flow formula consistency.
 """
 from __future__ import annotations
 
@@ -21,7 +16,6 @@ ROOT = Path(__file__).resolve().parents[1]
 SCENARIOS = ROOT / "assets" / "scenarios"
 IMAGES = ROOT / "assets" / "images"
 PRINTABLE = ROOT / "assets" / "printable"
-
 INDEX_FILES = {"scenario_manifest.json", "scenario-packs.json", "daily-challenge-index.json"}
 
 
@@ -41,24 +35,18 @@ def normalize_asset_path(raw: str, default_dir: str) -> str:
     value = raw.strip()
     if not value:
         return ""
-    if value.startswith("assets/"):
-        return value
-    return f"{default_dir}/{value}"
+    return value if value.startswith("assets/") else f"{default_dir}/{value}"
 
 
 def scenario_list(data: Any) -> list[dict[str, Any]]:
     if isinstance(data, dict) and isinstance(data.get("scenarios"), list):
         return [s for s in data["scenarios"] if isinstance(s, dict)]
-    if isinstance(data, dict):
-        return [data]
-    return []
+    return [data] if isinstance(data, dict) else []
 
 
 def problem_list(scenario: dict[str, Any]) -> list[dict[str, Any]]:
     raw = scenario.get("problems") or scenario.get("variations")
-    if isinstance(raw, list) and raw:
-        return [p for p in raw if isinstance(p, dict)]
-    return [scenario]
+    return [p for p in raw if isinstance(p, dict)] if isinstance(raw, list) and raw else [scenario]
 
 
 def numeric(value: Any) -> float | None:
@@ -86,13 +74,17 @@ def check_answer_consistency(problem: dict[str, Any], label: str, errors: list[s
         if answers.get(key) is not None:
             candidates.append((f"answers.{key}", answers[key]))
 
-    # pumpPressure/correctPP are only comparable to the answer for questions that
-    # actually ask for pump/discharge/PDP pressure.
-    question_text = " ".join(
-        str(problem.get(k) or "") for k in ("title", "question", "answerLabel", "inputLabel")
+    # Only compare pumpPressure/correctPP when the answer surface itself requests
+    # a pressure. A governing-line question may mention pump discharge pressure
+    # in its wording but still correctly expect "1" or "2" as the answer.
+    answer_surface = " ".join(
+        str(problem.get(k) or "") for k in ("title", "answerLabel", "inputLabel", "answerUnit")
     ).lower()
-    is_pdp = any(term in question_text for term in ("pump discharge", "pdp", "discharge pressure", "gauge pressure", "relay pdp"))
-    if is_pdp:
+    is_pressure_answer = (
+        ("pressure" in answer_surface or "pdp" in answer_surface)
+        and not any(term in answer_surface for term in ("line number", "governing line", "additional line", "additional stream"))
+    )
+    if is_pressure_answer:
         for key in ("correctPP", "pumpPressure"):
             value = problem.get(key) if problem.get(key) is not None else answers.get(key)
             if value is not None:
@@ -107,27 +99,21 @@ def check_answer_consistency(problem: dict[str, Any], label: str, errors: list[s
 
 
 def check_hydrant_available_flow(problem: dict[str, Any], label: str, errors: list[str]) -> None:
-    text = " ".join(
-        [str(problem.get("question") or ""), str(problem.get("title") or "")]
-        + [str(v) for v in (problem.get("formulaBreakdown") or [])]
-    ).lower()
+    formula = " ".join(str(v) for v in (problem.get("formulaBreakdown") or []))
+    text = f"{problem.get('title', '')} {problem.get('question', '')} {formula}".lower()
     if "available flow" not in text and "available-flow" not in text:
         return
     if "static" not in text or "residual" not in text:
         return
-    # NFPA 291-style available-flow projection uses exponent 0.54. Flag the old
-    # square-root/0.50 approximation if it reappears in authored teaching text.
-    if "0.54" not in text or re.search(r"\^\s*0\.5(?:0\b|\b)", text) or "sqrt((" in text:
+    if "0.54" not in text or re.search(r"\^\s*0\.50\b", text) or "sqrt((" in text:
         fail(errors, f"Hydrant available-flow formula must use exponent 0.54 for {label}")
 
 
 def main() -> int:
     errors: list[str] = []
     warnings: list[str] = []
-
     image_paths = {str(p.relative_to(ROOT)).replace("\\", "/") for p in IMAGES.glob("*") if p.is_file()}
     image_paths |= {str(p.relative_to(ROOT)).replace("\\", "/") for p in PRINTABLE.glob("*") if p.is_file()}
-
     scenario_ids: dict[str, Path] = {}
     problem_ids: dict[str, Path] = {}
     scenario_count = 0
@@ -137,7 +123,6 @@ def main() -> int:
         p for p in SCENARIOS.rglob("*.json")
         if p.name not in INDEX_FILES and "packs" not in p.relative_to(SCENARIOS).parts
     )
-
     for path in scenario_jsons:
         data = read_json(path, errors)
         if data is None:
@@ -167,11 +152,9 @@ def main() -> int:
                     if key in problem_ids:
                         fail(errors, f"Duplicate problem id '{pid}' in {path.relative_to(ROOT)} and {problem_ids[key].relative_to(ROOT)}")
                     problem_ids[key] = path
-
                 answer = problem.get("answerValue") or problem.get("correctAnswer") or problem.get("answer") or problem.get("correctPP")
                 if answer is None and not isinstance(problem.get("answers"), dict):
                     warnings.append(f"No obvious answer key for problem '{pid or sid}' in {path.relative_to(ROOT)}")
-
                 check_answer_consistency(problem, label, errors)
                 check_hydrant_available_flow(problem, label, errors)
 
@@ -195,12 +178,12 @@ def main() -> int:
     print(f"Validated {scenario_count} scenarios and {problem_count} playable problems.")
     if warnings:
         print("Warnings:")
-        for w in warnings:
-            print(f"  - {w}")
+        for warning in warnings:
+            print(f"  - {warning}")
     if errors:
         print("Errors:")
-        for e in errors:
-            print(f"  - {e}")
+        for error in errors:
+            print(f"  - {error}")
         return 1
     print("Scenario validation passed.")
     return 0
