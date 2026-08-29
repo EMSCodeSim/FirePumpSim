@@ -7,6 +7,7 @@ import 'package:firepumpsim/services/scenario_pack_repository.dart';
 import 'package:firepumpsim/services/scenario_pack_storage.dart';
 import 'package:firepumpsim/services/scenario_repository.dart';
 import 'package:firepumpsim/theme.dart';
+import 'package:firepumpsim/widgets/app_layout.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -174,12 +175,17 @@ class _PracticeScenariosScreenState extends State<PracticeScenariosScreen> {
                           child: pageContent(_EmptyState(onClear: _clearAll)),
                         )
                       : ListView(
-                          padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.lg),
+                          padding: EdgeInsets.fromLTRB(
+                            AppSpacing.md,
+                            0,
+                            AppSpacing.md,
+                            AppLayout.scrollBottomPadding(context),
+                          ),
                           children: [
                             pageContent(
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [...grouped, const SizedBox(height: 90)],
+                                children: grouped,
                               ),
                             ),
                           ],
@@ -1306,6 +1312,14 @@ class _ScenarioMetaRow extends StatelessWidget {
 
   final _ScenarioListCard card;
 
+  static Color _difficultyColor(String difficulty) {
+    final d = difficulty.trim().toLowerCase();
+    if (d.contains('beginner')) return FirePumpSimColors.printGreen;
+    if (d.contains('advanced')) return FirePumpSimColors.redSoft;
+    if (d.contains('intermediate')) return const Color(0xFFF59E0B);
+    return FirePumpSimColors.textMed;
+  }
+
   @override
   Widget build(BuildContext context) {
     final badges = <Widget>[];
@@ -1315,7 +1329,7 @@ class _ScenarioMetaRow extends StatelessWidget {
     if (card.type.trim().isNotEmpty) {
       badges.add(_Badge(label: card.type, icon: Icons.category, accent: FirePumpSimColors.textMed));
     }
-    badges.add(_Badge(label: card.difficulty, icon: Icons.trending_up, accent: FirePumpSimColors.textMed));
+    badges.add(_Badge(label: card.difficulty, icon: Icons.trending_up, accent: _difficultyColor(card.difficulty)));
     badges.add(
       _Badge(
         label: card.timedModeAvailable ? 'Timed mode' : 'Untimed',

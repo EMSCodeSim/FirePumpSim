@@ -4,6 +4,7 @@ import 'package:firepumpsim/services/scenario_pack_repository.dart';
 import 'package:firepumpsim/services/scenario_pack_storage.dart';
 import 'package:firepumpsim/services/scenario_purchase_service.dart';
 import 'package:firepumpsim/theme.dart';
+import 'package:firepumpsim/widgets/app_layout.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -99,11 +100,24 @@ class _ScenarioLibraryScreenState extends State<ScenarioLibraryScreen> {
   }
 
   String _lockedNoteForPack(ScenarioPack pack) {
-    final productId = _purchaseService.productIdForPack(pack.packId) ?? pack.storeProductId;
     if (_purchaseService.productNotFoundForPack(pack.packId)) {
-      return 'Create and activate the non-consumable store product $productId, then refresh this screen.';
+      return 'This pack is not available from the store yet. Purchases are only supported on iOS and Android.';
     }
-    return 'One-time non-consumable unlock. Store product ID: $productId.';
+    return 'One-time purchase unlocks this pack permanently.';
+  }
+
+  String? _userFacingStoreMessage(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return null;
+    final message = raw.trim();
+    if (message.contains('LateInitializationError') ||
+        message.contains('not available on this device') ||
+        message.contains('Store purchase setup failed')) {
+      return 'In-app purchases are only available on iOS and Android. Included packs are ready to practice now.';
+    }
+    if (message.contains('not found') || message.contains('No store products')) {
+      return 'Store products are not configured yet. Included packs are ready to practice now.';
+    }
+    return message;
   }
 
 
@@ -124,7 +138,12 @@ class _ScenarioLibraryScreenState extends State<ScenarioLibraryScreen> {
           backgroundColor: FirePumpSimColors.charcoal2,
           child: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 110),
+            padding: EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              AppSpacing.md,
+              AppSpacing.md,
+              AppLayout.scrollBottomPadding(context),
+            ),
             children: [
               TextButton.icon(
                 onPressed: () => context.go(AppRoutes.home),
@@ -166,8 +185,8 @@ class _ScenarioLibraryScreenState extends State<ScenarioLibraryScreen> {
                 const SizedBox(height: AppSpacing.md),
                 _SectionHeader(title: 'Paid Add-On Packs', subtitle: 'One-time unlocks', icon: Icons.workspace_premium_outlined),
                 const SizedBox(height: AppSpacing.sm),
-                if (_purchaseService.errorMessage != null && _purchaseService.errorMessage!.trim().isNotEmpty) ...[
-                  _InfoCard(text: _purchaseService.errorMessage!),
+                if (_userFacingStoreMessage(_purchaseService.errorMessage) != null) ...[
+                  _InfoCard(text: _userFacingStoreMessage(_purchaseService.errorMessage)!),
                   const SizedBox(height: AppSpacing.sm),
                 ],
                 if (_paidPacks.isEmpty)

@@ -7,6 +7,7 @@ import 'package:firepumpsim/screens/formulas_screen.dart';
 import 'package:firepumpsim/services/daily_challenge_storage.dart';
 import 'package:firepumpsim/services/scenario_repository.dart';
 import 'package:firepumpsim/theme.dart';
+import 'package:firepumpsim/widgets/app_layout.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -630,9 +631,9 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
             ? const Center(child: CircularProgressIndicator())
             : (_loadError != null && _today == null)
                 ? _EmptyState(
-                    title: _loadError ?? 'Today\'s challenge could not be loaded.',
-                    subtitle: 'Add scenarios to assets/scenarios and check scenario_manifest.json.',
-                    primaryLabel: 'Pick Another Challenge',
+                    title: 'Daily challenge unavailable',
+                    subtitle: 'We could not load today\'s problem. Pull to refresh or try again in a moment.',
+                    primaryLabel: 'Try Another',
                     onPrimary: _pickAnotherChallenge,
                   )
                 : RefreshIndicator(
@@ -642,7 +643,12 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
                     child: SingleChildScrollView(
                       controller: _scrollCtrl,
                       physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 110),
+                      padding: EdgeInsets.fromLTRB(
+                        AppSpacing.md,
+                        AppSpacing.md,
+                        AppSpacing.md,
+                        AppLayout.scrollBottomPadding(context),
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -1851,14 +1857,14 @@ class _EmptyState extends StatelessWidget {
             const SizedBox(height: 16),
             SizedBox(
               height: 48,
-              width: 220,
-              child: ElevatedButton(
+              child: FilledButton(
                 onPressed: () async => onPrimary(),
-                style: ElevatedButton.styleFrom(
+                style: FilledButton.styleFrom(
                   backgroundColor: FirePumpSimColors.red,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
                 ),
-                child: Text(primaryLabel, style: textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w900)),
+                child: Text(primaryLabel, style: textTheme.titleSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w800)),
               ),
             ),
           ],
