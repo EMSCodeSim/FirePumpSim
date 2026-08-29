@@ -10,7 +10,7 @@ class FirePumpSimColors {
   static const steel = Color(0xFF232A33);
 
   static const textHigh = Color(0xFFF2F5F8);
-  static const textMed = Color(0xFFB9C0C8);
+  static const textMed = Color(0xFFC8D0D8);
 
   /// Primary brand accent.
   static const red = Color(0xFFE11D2E);

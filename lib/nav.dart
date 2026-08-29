@@ -248,18 +248,17 @@ class _ReferenceLauncherBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: FirePumpSimColors.charcoal2,
-          border: Border(top: BorderSide(color: FirePumpSimColors.red.withValues(alpha: 0.10), width: 1)),
+          border: Border(top: BorderSide(color: FirePumpSimColors.steel.withValues(alpha: 0.65), width: 1)),
           boxShadow: [
-            BoxShadow(color: Colors.black.withValues(alpha: 0.6), blurRadius: 18, offset: const Offset(0, -10)),
-            BoxShadow(color: FirePumpSimColors.red.withValues(alpha: 0.05), blurRadius: 18, offset: const Offset(0, -10)),
+            BoxShadow(color: Colors.black.withValues(alpha: 0.45), blurRadius: 16, offset: const Offset(0, -6)),
           ],
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
+          padding: const EdgeInsets.fromLTRB(12, 6, 12, 8),
           child: Row(
             children: [
               Expanded(
@@ -269,7 +268,7 @@ class _ReferenceLauncherBar extends StatelessWidget {
                   onTap: () => showCalculatorOverlay(context),
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
               Expanded(
                 child: _ReferenceLauncherButton(
                   icon: Icons.functions_outlined,
@@ -277,7 +276,7 @@ class _ReferenceLauncherBar extends StatelessWidget {
                   onTap: () => showFormulasOverlay(context),
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
               Expanded(
                 child: _ReferenceLauncherButton(
                   icon: Icons.credit_card_outlined,
@@ -322,25 +321,28 @@ class _ReferenceLauncherButtonState extends State<_ReferenceLauncherButton> {
         curve: Curves.easeOutCubic,
         scale: _pressed ? 0.98 : 1,
         child: Container(
-          height: 54,
+          height: 48,
           decoration: BoxDecoration(
-            color: FirePumpSimColors.charcoal3.withValues(alpha: 0.55),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.55)),
+            color: _pressed ? FirePumpSimColors.charcoal3 : FirePumpSimColors.charcoal3.withValues(alpha: 0.45),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: _pressed ? FirePumpSimColors.red.withValues(alpha: 0.45) : FirePumpSimColors.steel.withValues(alpha: 0.45),
+            ),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(widget.icon, color: FirePumpSimColors.red, size: 22),
-              const SizedBox(height: 4),
+              Icon(widget.icon, color: FirePumpSimColors.red, size: 20),
+              const SizedBox(height: 3),
               Text(
                 widget.label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: (textTheme.labelSmall ?? const TextStyle(fontSize: 11)).copyWith(
                   color: fg,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 0.2,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.15,
+                  fontSize: 10.5,
                 ),
               ),
             ],

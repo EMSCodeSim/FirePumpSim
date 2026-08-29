@@ -1,5 +1,6 @@
 import 'package:firepumpsim/nav.dart';
 import 'package:firepumpsim/theme.dart';
+import 'package:firepumpsim/widgets/app_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -29,7 +30,7 @@ class HowToScreen extends StatelessWidget {
     _HowToTopic(
       title: 'Friction Loss',
       subtitle: 'Hose size, flow, and length',
-      icon: Icons.water_drop,
+      icon: Icons.show_chart_outlined,
       formula: 'FL = C x (GPM / 100)^2 x length in hundreds',
       steps: [
         'Choose the correct hose coefficient for the hose size.',
@@ -242,6 +243,7 @@ class HowToScreen extends StatelessWidget {
               const SizedBox(height: AppSpacing.md),
               Expanded(
                 child: ListView.separated(
+                  padding: EdgeInsets.only(bottom: AppLayout.scrollBottomPadding(context)),
                   itemCount: _topics.length,
                   separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.sm),
                   itemBuilder: (context, index) {
@@ -376,7 +378,7 @@ class _TopTipCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: FirePumpSimColors.charcoal2,
         borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(color: FirePumpSimColors.red.withValues(alpha: 0.34)),
+        border: Border.all(color: FirePumpSimColors.red.withValues(alpha: 0.30)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -436,7 +438,7 @@ class _HowToTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: FirePumpSimColors.charcoal2,
         borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(color: FirePumpSimColors.red.withValues(alpha: 0.34)),
+        border: Border.all(color: FirePumpSimColors.steel.withValues(alpha: 0.45)),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(AppRadius.xl),

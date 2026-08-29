@@ -4,6 +4,7 @@ import 'package:firepumpsim/services/app_review_service.dart';
 import 'package:firepumpsim/services/daily_challenge_storage.dart';
 import 'package:firepumpsim/theme.dart';
 import 'package:firepumpsim/utils/platform_info.dart';
+import 'package:firepumpsim/widgets/app_layout.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -94,9 +95,10 @@ class _HomeScreenState extends State<HomeScreen> {
     // that aspect ratio so the image ends cleanly instead of leaving a large
     // charcoal/black dead area under the banner.
     final double heroTopInset = isTight ? 6 : 8;
-    final double heroHeight = ((screenWidth / 2.0) + heroTopInset).clamp(182.0, 260.0);
-    final double cardHeight = isTight ? 62 : 68;
-    const double cardGap = 12;
+    final double heroHeight = ((screenWidth / 2.2) + heroTopInset).clamp(160.0, 220.0);
+    final double cardHeight = isTight ? 64 : 72;
+    const double cardGap = 10;
+    final double bottomPad = AppLayout.scrollBottomPadding(context);
 
     return Scaffold(
       backgroundColor: FirePumpSimColors.charcoal,
@@ -112,73 +114,85 @@ class _HomeScreenState extends State<HomeScreen> {
             _HeroHeader(height: heroHeight, topInset: heroTopInset),
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.md, 8, AppSpacing.md, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const _SectionLabel('TRAINING'),
-                    const SizedBox(height: 6),
-                    _MainMenuCard(
-                      height: cardHeight,
-                      title: 'Practice Scenarios',
-                      description: 'Free Starter Pack + unlocked packs',
-                      icon: Icons.safety_check,
-                      onTap: () => context.go(AppRoutes.practiceScenarios),
+                padding: EdgeInsets.fromLTRB(AppSpacing.md, 8, AppSpacing.md, bottomPad),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: AppLayout.maxContentWidth),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const _SectionLabel('TRAINING'),
+                        const SizedBox(height: 8),
+                        _MainMenuCard(
+                          height: cardHeight,
+                          title: 'Practice Scenarios',
+                          description: 'Free Starter Pack + unlocked packs',
+                          icon: Icons.safety_check,
+                          accent: FirePumpSimColors.red,
+                          onTap: () => context.go(AppRoutes.practiceScenarios),
+                        ),
+                        const SizedBox(height: cardGap),
+                        _MainMenuCard(
+                          height: cardHeight,
+                          title: 'Daily Challenge',
+                          description: _dailyLoaded
+                              ? (_dailyStats.currentStreak > 0
+                                  ? 'One question per day • Streak ${_dailyStats.currentStreak}d'
+                                  : 'One question per day')
+                              : 'Loading…',
+                          icon: Icons.calendar_today,
+                          accent: FirePumpSimColors.challengeBlue,
+                          indicator: const _TodayPill(),
+                          onTap: () => context.go(AppRoutes.dailyChallenge),
+                        ),
+                        const SizedBox(height: cardGap),
+                        _MainMenuCard(
+                          height: cardHeight,
+                          title: 'Scenario Library',
+                          description: 'Unlock more practice packs',
+                          icon: Icons.auto_stories,
+                          accent: FirePumpSimColors.libraryPurple,
+                          onTap: () => context.go(AppRoutes.scenarioLibrary),
+                        ),
+                        const SizedBox(height: 18),
+                        const _SectionLabel('TOOLS'),
+                        const SizedBox(height: 8),
+                        _MainMenuCard(
+                          height: cardHeight,
+                          title: 'Printable Scenarios',
+                          description: 'Worksheets and answer keys',
+                          icon: Icons.print,
+                          accent: FirePumpSimColors.printGreen,
+                          onTap: () => context.go(AppRoutes.printableScenarios),
+                        ),
+                        const SizedBox(height: cardGap),
+                        _MainMenuCard(
+                          height: cardHeight,
+                          title: 'How To',
+                          description: 'Step-by-step calculations',
+                          icon: Icons.school,
+                          accent: const Color(0xFFF59E0B),
+                          onTap: () => context.go(AppRoutes.howTo),
+                        ),
+                        const SizedBox(height: cardGap),
+                        _MainMenuCard(
+                          height: cardHeight,
+                          title: 'Try FireOps Calc',
+                          description: 'Pump pressure calculator for firefighters',
+                          icon: Icons.calculate_outlined,
+                          accent: FirePumpSimColors.steel,
+                          showChevron: false,
+                          indicator: Icon(Icons.open_in_new, size: 18, color: FirePumpSimColors.textMed.withValues(alpha: 0.9)),
+                          onTap: () {
+                            _openFireOpsCalcStore();
+                          },
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        const _SafetyPrivacyCard(),
+                        const SizedBox(height: AppSpacing.md),
+                      ],
                     ),
-                    const SizedBox(height: cardGap),
-                    _MainMenuCard(
-                      height: cardHeight,
-                      title: 'Daily Challenge',
-                      description: _dailyLoaded
-                          ? (_dailyStats.currentStreak > 0
-                              ? 'One question per day • Streak ${_dailyStats.currentStreak}d'
-                              : 'One question per day')
-                          : 'Loading…',
-                      icon: Icons.calendar_today,
-                      indicator: const _TodayPill(),
-                      onTap: () => context.go(AppRoutes.dailyChallenge),
-                    ),
-                    const SizedBox(height: cardGap),
-                    _MainMenuCard(
-                      height: cardHeight,
-                      title: 'Scenario Library',
-                      description: 'Unlock more practice packs',
-                      icon: Icons.auto_stories,
-                      onTap: () => context.go(AppRoutes.scenarioLibrary),
-                    ),
-                    const SizedBox(height: 20),
-                    const _SectionLabel('TOOLS'),
-                    const SizedBox(height: 10),
-                    _MainMenuCard(
-                      height: cardHeight,
-                      title: 'Printable Scenarios',
-                      description: 'Worksheets and answer keys',
-                      icon: Icons.print,
-                      onTap: () => context.go(AppRoutes.printableScenarios),
-                    ),
-                    const SizedBox(height: cardGap),
-                    _MainMenuCard(
-                      height: cardHeight,
-                      title: 'How To',
-                      description: 'Step-by-step calculations',
-                      icon: Icons.school,
-                      onTap: () => context.go(AppRoutes.howTo),
-                    ),
-                    const SizedBox(height: cardGap),
-                    _MainMenuCard(
-                      height: cardHeight,
-                      title: 'Try FireOps Calc',
-                      description: 'Pump pressure calculator for firefighters',
-                      icon: Icons.calculate_outlined,
-                      indicator: Icon(Icons.open_in_new, size: 18, color: FirePumpSimColors.textMed.withValues(alpha: 0.9)),
-                      onTap: () {
-                        _openFireOpsCalcStore();
-                      },
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-                    const _SafetyPrivacyCard(),
-                    const SizedBox(height: AppSpacing.lg),
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -333,26 +347,36 @@ class _SafetyPrivacyCard extends StatelessWidget {
 }
 
 class _MainMenuCard extends StatelessWidget {
-  const _MainMenuCard({required this.title, required this.description, required this.icon, required this.onTap, required this.height, this.indicator});
+  const _MainMenuCard({
+    required this.title,
+    required this.description,
+    required this.icon,
+    required this.onTap,
+    required this.height,
+    required this.accent,
+    this.indicator,
+    this.showChevron = true,
+  });
 
   final String title;
   final String description;
   final IconData icon;
   final VoidCallback onTap;
   final double height;
+  final Color accent;
   final Widget? indicator;
+  final bool showChevron;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    const accent = FirePumpSimColors.red;
 
     return Container(
       height: height,
       decoration: BoxDecoration(
         color: FirePumpSimColors.charcoal2,
         borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(color: accent.withValues(alpha: 0.55)),
+        border: Border.all(color: accent.withValues(alpha: 0.35)),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(AppRadius.xl),
@@ -361,18 +385,18 @@ class _MainMenuCard extends StatelessWidget {
           child: InkWell(
             onTap: onTap,
             splashFactory: NoSplash.splashFactory,
-            highlightColor: Colors.white.withValues(alpha: 0.035),
+            highlightColor: accent.withValues(alpha: 0.06),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 10),
               child: Row(
                 children: [
                   Container(
-                    height: 40,
-                    width: 40,
+                    height: 42,
+                    width: 42,
                     decoration: BoxDecoration(
-                      color: accent.withValues(alpha: 0.10),
+                      color: accent.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(AppRadius.md),
-                      border: Border.all(color: accent.withValues(alpha: 0.35)),
+                      border: Border.all(color: accent.withValues(alpha: 0.30)),
                     ),
                     child: Center(child: Icon(icon, size: 22, color: accent)),
                   ),
@@ -386,14 +410,14 @@ class _MainMenuCard extends StatelessWidget {
                           title,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: textTheme.titleMedium?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w900),
+                          style: textTheme.titleMedium?.copyWith(color: FirePumpSimColors.textHigh, fontWeight: FontWeight.w800),
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 3),
                         Text(
                           description,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed, height: 1.25, fontSize: 11.5),
+                          style: textTheme.bodySmall?.copyWith(color: FirePumpSimColors.textMed, height: 1.3, fontSize: 12),
                         ),
                       ],
                     ),
@@ -402,8 +426,10 @@ class _MainMenuCard extends StatelessWidget {
                     const SizedBox(width: AppSpacing.sm),
                     indicator!,
                   ],
-                  const SizedBox(width: AppSpacing.xs),
-                  Icon(Icons.chevron_right, size: 26, color: FirePumpSimColors.textMed),
+                  if (showChevron) ...[
+                    const SizedBox(width: AppSpacing.xs),
+                    Icon(Icons.chevron_right, size: 24, color: FirePumpSimColors.textMed.withValues(alpha: 0.7)),
+                  ],
                 ],
               ),
             ),
@@ -421,12 +447,25 @@ class _SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = Theme.of(context).textTheme.labelSmall;
-    return Text(
-      label,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: style?.copyWith(color: FirePumpSimColors.red.withValues(alpha: 0.62), fontWeight: FontWeight.w800, letterSpacing: 1.2),
+    final style = Theme.of(context).textTheme.labelMedium;
+    return Row(
+      children: [
+        Text(
+          label,
+          style: style?.copyWith(
+            color: FirePumpSimColors.textHigh.withValues(alpha: 0.75),
+            fontWeight: FontWeight.w800,
+            letterSpacing: 1.4,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Container(
+            height: 1,
+            color: FirePumpSimColors.steel.withValues(alpha: 0.55),
+          ),
+        ),
+      ],
     );
   }
 }

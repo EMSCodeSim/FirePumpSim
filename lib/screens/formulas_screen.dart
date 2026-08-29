@@ -1,6 +1,7 @@
 import 'package:firepumpsim/nav.dart';
 import 'package:firepumpsim/screens/calculator_screen.dart';
 import 'package:firepumpsim/theme.dart';
+import 'package:firepumpsim/widgets/app_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -140,7 +141,12 @@ class _FormulasReferenceViewState extends State<FormulasReferenceView> {
     final textTheme = Theme.of(context).textTheme;
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.lg),
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        AppSpacing.sm,
+        AppSpacing.md,
+        AppLayout.scrollBottomPadding(context),
+      ),
       children: [
         if (!widget.compactHeader) ...[
           Text('Quick Formulas', style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
