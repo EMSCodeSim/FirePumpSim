@@ -1,0 +1,49 @@
+name: Android Play Compliance
+
+on:
+  pull_request:
+    paths:
+      - 'android/**'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - 'lib/**'
+      - '.github/workflows/android-play-compliance.yml'
+  workflow_dispatch:
+
+jobs:
+  build-android-appbundle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter stable
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Flutter version
+        run: flutter --version
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Verify Play Billing 8+
+        working-directory: android
+        run: |
+          ./gradlew :app:dependencies --configuration releaseRuntimeClasspath > billing-dependencies.txt
+          cat billing-dependencies.txt
+          if ! grep -Eq 'com\.android\.billingclient:billing:[89]\.' billing-dependencies.txt; then
+            echo 'Google Play Billing Library 8.0.0 or later was not resolved.'
+            exit 1
+          fi
+
+      - name: Build release app bundle
+        run: flutter build appbundle --release
