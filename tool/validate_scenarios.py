@@ -6,11 +6,14 @@ Checks:
 - scenario/problem IDs are present and unique after normalization
 - referenced images exist in assets/images or assets/printable
 - manifest and pack file references point to bundled JSON
+- duplicated answer-key fields agree with one another
+- hydrant available-flow teaching uses the 0.54 exponent
 """
 from __future__ import annotations
 
 import json
 from pathlib import Path
+import re
 import sys
 from typing import Any
 
@@ -19,11 +22,7 @@ SCENARIOS = ROOT / "assets" / "scenarios"
 IMAGES = ROOT / "assets" / "images"
 PRINTABLE = ROOT / "assets" / "printable"
 
-INDEX_FILES = {
-    "scenario_manifest.json",
-    "scenario-packs.json",
-    "daily-challenge-index.json",
-}
+INDEX_FILES = {"scenario_manifest.json", "scenario-packs.json", "daily-challenge-index.json"}
 
 
 def fail(errors: list[str], message: str) -> None:
@@ -33,7 +32,7 @@ def fail(errors: list[str], message: str) -> None:
 def read_json(path: Path, errors: list[str]) -> Any | None:
     try:
         return json.loads(path.read_text(encoding="utf-8"))
-    except Exception as exc:  # noqa: BLE001 - validation script should capture all parse failures
+    except Exception as exc:  # noqa: BLE001
         fail(errors, f"Invalid JSON: {path.relative_to(ROOT)} — {exc}")
         return None
 
@@ -60,6 +59,66 @@ def problem_list(scenario: dict[str, Any]) -> list[dict[str, Any]]:
     if isinstance(raw, list) and raw:
         return [p for p in raw if isinstance(p, dict)]
     return [scenario]
+
+
+def numeric(value: Any) -> float | None:
+    if isinstance(value, bool) or value is None:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def values_disagree(a: Any, b: Any) -> bool:
+    na, nb = numeric(a), numeric(b)
+    if na is not None and nb is not None:
+        return abs(na - nb) > 0.01
+    return str(a).strip() != str(b).strip()
+
+
+def check_answer_consistency(problem: dict[str, Any], label: str, errors: list[str]) -> None:
+    answers = problem.get("answers") if isinstance(problem.get("answers"), dict) else {}
+    candidates: list[tuple[str, Any]] = []
+    for key in ("answerValue", "correctAnswer", "answer", "value"):
+        if problem.get(key) is not None:
+            candidates.append((f"top.{key}", problem[key]))
+        if answers.get(key) is not None:
+            candidates.append((f"answers.{key}", answers[key]))
+
+    # pumpPressure/correctPP are only comparable to the answer for questions that
+    # actually ask for pump/discharge/PDP pressure.
+    question_text = " ".join(
+        str(problem.get(k) or "") for k in ("title", "question", "answerLabel", "inputLabel")
+    ).lower()
+    is_pdp = any(term in question_text for term in ("pump discharge", "pdp", "discharge pressure", "gauge pressure", "relay pdp"))
+    if is_pdp:
+        for key in ("correctPP", "pumpPressure"):
+            value = problem.get(key) if problem.get(key) is not None else answers.get(key)
+            if value is not None:
+                candidates.append((key, value))
+
+    if len(candidates) < 2:
+        return
+    base_name, base_value = candidates[0]
+    for name, value in candidates[1:]:
+        if values_disagree(base_value, value):
+            fail(errors, f"Conflicting answer keys for {label}: {base_name}={base_value!r} vs {name}={value!r}")
+
+
+def check_hydrant_available_flow(problem: dict[str, Any], label: str, errors: list[str]) -> None:
+    text = " ".join(
+        [str(problem.get("question") or ""), str(problem.get("title") or "")]
+        + [str(v) for v in (problem.get("formulaBreakdown") or [])]
+    ).lower()
+    if "available flow" not in text and "available-flow" not in text:
+        return
+    if "static" not in text or "residual" not in text:
+        return
+    # NFPA 291-style available-flow projection uses exponent 0.54. Flag the old
+    # square-root/0.50 approximation if it reappears in authored teaching text.
+    if "0.54" not in text or re.search(r"\^\s*0\.5(?:0\b|\b)", text) or "sqrt((" in text:
+        fail(errors, f"Hydrant available-flow formula must use exponent 0.54 for {label}")
 
 
 def main() -> int:
@@ -102,6 +161,7 @@ def main() -> int:
             for problem in problem_list(scenario):
                 problem_count += 1
                 pid = str(problem.get("id") or "").strip()
+                label = f"'{pid or sid}' in {path.relative_to(ROOT)}"
                 if pid:
                     key = pid.lower()
                     if key in problem_ids:
@@ -111,6 +171,9 @@ def main() -> int:
                 answer = problem.get("answerValue") or problem.get("correctAnswer") or problem.get("answer") or problem.get("correctPP")
                 if answer is None and not isinstance(problem.get("answers"), dict):
                     warnings.append(f"No obvious answer key for problem '{pid or sid}' in {path.relative_to(ROOT)}")
+
+                check_answer_consistency(problem, label, errors)
+                check_hydrant_available_flow(problem, label, errors)
 
     manifest = read_json(SCENARIOS / "scenario_manifest.json", errors)
     if isinstance(manifest, dict):
