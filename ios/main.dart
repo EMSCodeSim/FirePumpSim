@@ -1,27 +1,5 @@
-import 'package:flutter/material.dart';
-
-import 'services/scenario_purchase_service.dart';
-import 'nav.dart';
-import 'theme.dart';
-
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  ScenarioPurchaseService.instance.initialize();
-  runApp(const FirePumpSimApp());
-}
-
-class FirePumpSimApp extends StatelessWidget {
-  const FirePumpSimApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'FirePumpSim',
-      debugShowCheckedModeBanner: false,
-      theme: lightTheme,
-      darkTheme: darkTheme,
-      themeMode: ThemeMode.dark,
-      routerConfig: AppRouter.router,
-    );
-  }
-}
+// Intentionally left blank.
+//
+// This project’s real Flutter entrypoint is `lib/main.dart`.
+// A Dart file living under `ios/` can get picked up by the analyzer and
+// cause spurious import errors, so we keep this as a comment-only stub.

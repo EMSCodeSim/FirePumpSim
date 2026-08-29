@@ -200,8 +200,30 @@ class _CalculatorReferenceViewState extends State<CalculatorReferenceView> {
     if (s.isEmpty) return null;
     final tokens = _tokenize(s);
     if (tokens.isEmpty) return null;
+    // If the user is still typing (ex: "12/"), treat as incomplete so we don't
+    // show an error while they enter the next operand.
+    if (_isIncomplete(tokens)) return null;
     final rpn = _toRpn(tokens);
     return _evalRpn(rpn);
+  }
+
+  bool _isIncomplete(List<String> tokens) {
+    bool isOp(String t) => t == '+' || t == '-' || t == '*' || t == '/' || t == '^';
+    if (tokens.isEmpty) return true;
+
+    final last = tokens.last;
+    // Trailing binary operator.
+    if (isOp(last)) return true;
+    // Unclosed paren.
+    int open = 0;
+    for (final t in tokens) {
+      if (t == '(') open++;
+      if (t == ')') open = math.max(0, open - 1);
+    }
+    if (open > 0) return true;
+    // Trailing function token (rare, but defensive).
+    if (last == 'sqrt' || last == 'u-') return true;
+    return false;
   }
 
   List<String> _tokenize(String s) {
@@ -330,16 +352,17 @@ class _CalculatorReferenceViewState extends State<CalculatorReferenceView> {
 
     for (final t in rpn) {
       if (!isOp(t) && !isFn(t)) {
-        final v = double.parse(t);
+        final v = double.tryParse(t);
+        if (v == null) return double.nan;
         stack.add(v);
         continue;
       }
 
       if (isFn(t)) {
-        if (stack.isEmpty) throw StateError('Bad expression');
+        if (stack.isEmpty) return double.nan;
         final a = stack.removeLast();
         final res = switch (t) {
-          'sqrt' => math.sqrt(a),
+          'sqrt' => a < 0 ? double.nan : math.sqrt(a),
           'u-' => -a,
           _ => throw StateError('Unknown fn'),
         };
@@ -347,21 +370,21 @@ class _CalculatorReferenceViewState extends State<CalculatorReferenceView> {
         continue;
       }
 
-      if (stack.length < 2) throw StateError('Bad expression');
+      if (stack.length < 2) return double.nan;
       final b = stack.removeLast();
       final a = stack.removeLast();
       final res = switch (t) {
         '+' => a + b,
         '-' => a - b,
         '*' => a * b,
-        '/' => a / b,
+        '/' => b == 0 ? double.nan : a / b,
         '^' => math.pow(a, b).toDouble(),
         _ => throw StateError('Unknown op'),
       };
       stack.add(res);
     }
 
-    if (stack.length != 1) throw StateError('Bad expression');
+    if (stack.length != 1) return double.nan;
     return stack.single;
   }
 
