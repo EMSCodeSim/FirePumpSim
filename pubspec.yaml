@@ -5,7 +5,7 @@ publish_to: "none"
 version: 1.0.13+8
 
 environment:
-  sdk: ">=3.10.0 <4.0.0"
+  sdk: ">=3.8.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -17,9 +17,7 @@ dependencies:
   web: ^1.0.0
   url_launcher: ^6.3.0
   in_app_review: ^2.0.9
-  in_app_purchase: ^3.3.0
-  # Billing 8 implementation required for Google Play updates after Aug 30, 2026.
-  in_app_purchase_android: 0.5.0
+  in_app_purchase: ^3.2.3
   shared_preferences: ^2.2.3
   printing: ^5.13.4
   pdf: ^3.11.0
